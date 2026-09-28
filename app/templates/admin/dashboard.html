@@ -10,6 +10,10 @@ Dashboard | Kalxa Stories
 
 <style>
 
+    /* =====================================================
+       METRICS
+    ===================================================== */
+
     .metrics {
 
         display: grid;
@@ -70,6 +74,64 @@ Dashboard | Kalxa Stories
     }
 
 
+    .metric-note {
+
+        margin-top: 8px;
+
+        color: #777c84;
+
+        font-size: 12px;
+
+    }
+
+
+    /* =====================================================
+       SECTION HEADER
+    ===================================================== */
+
+    .section-header {
+
+        display: flex;
+
+        align-items: flex-end;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        margin:
+            38px
+            0
+            16px;
+
+    }
+
+
+    .section-header h2 {
+
+        margin: 0;
+
+    }
+
+
+    .section-header p {
+
+        margin:
+            6px
+            0
+            0;
+
+        color: #777c84;
+
+        font-size: 13px;
+
+    }
+
+
+    /* =====================================================
+       ARTICLE LIST
+    ===================================================== */
+
     .article-list {
 
         display: grid;
@@ -124,6 +186,274 @@ Dashboard | Kalxa Stories
     }
 
 
+    /* =====================================================
+       ANALYTICS TABLE
+    ===================================================== */
+
+    .table-wrap {
+
+        width: 100%;
+
+        overflow-x: auto;
+
+    }
+
+
+    .analytics-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        min-width: 680px;
+
+    }
+
+
+    .analytics-table th {
+
+        padding:
+            13px
+            14px;
+
+        color: #777c84;
+
+        font-size: 11px;
+
+        font-weight: 800;
+
+        text-align: left;
+
+        text-transform: uppercase;
+
+        letter-spacing: .6px;
+
+        border-bottom:
+            1px solid
+            #d7dade;
+
+    }
+
+
+    .analytics-table td {
+
+        padding:
+            15px
+            14px;
+
+        border-bottom:
+            1px solid
+            #eceef1;
+
+        vertical-align: middle;
+
+    }
+
+
+    .analytics-table tbody tr:last-child td {
+
+        border-bottom: 0;
+
+    }
+
+
+    .analytics-table tbody tr:hover {
+
+        background: #f8f9fa;
+
+    }
+
+
+    .number-cell {
+
+        font-weight: 800;
+
+        white-space: nowrap;
+
+    }
+
+
+    .ctr {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-width: 62px;
+
+        padding:
+            6px
+            9px;
+
+        border-radius: 999px;
+
+        background: #f0f1f2;
+
+        font-size: 12px;
+
+        font-weight: 900;
+
+    }
+
+
+    .restaurant-name {
+
+        font-weight: 800;
+
+    }
+
+
+    .restaurant-area {
+
+        margin-top: 3px;
+
+        color: #777c84;
+
+        font-size: 12px;
+
+    }
+
+
+    /* =====================================================
+       RECENT ACTIVITY
+    ===================================================== */
+
+    .activity-list {
+
+        display: grid;
+
+    }
+
+
+    .activity-row {
+
+        display: grid;
+
+        grid-template-columns:
+            160px
+            minmax(0, 1fr)
+            auto;
+
+        gap: 18px;
+
+        align-items: center;
+
+        padding:
+            15px
+            0;
+
+        border-bottom:
+            1px solid
+            #eceef1;
+
+    }
+
+
+    .activity-row:last-child {
+
+        border-bottom: 0;
+
+    }
+
+
+    .event-badge {
+
+        display: inline-flex;
+
+        width: fit-content;
+
+        padding:
+            6px
+            9px;
+
+        border-radius: 999px;
+
+        background: #f0f1f2;
+
+        color: #33373d;
+
+        font-size: 10px;
+
+        font-weight: 900;
+
+        text-transform: uppercase;
+
+        letter-spacing: .4px;
+
+    }
+
+
+    .event-badge.article-view {
+
+        background: #edf2ff;
+
+    }
+
+
+    .event-badge.restaurant-impression {
+
+        background: #f3f0ff;
+
+    }
+
+
+    .event-badge.restaurant-click {
+
+        background: #eaf8ef;
+
+    }
+
+
+    .activity-title {
+
+        font-weight: 800;
+
+    }
+
+
+    .activity-subtitle {
+
+        margin-top: 4px;
+
+        color: #777c84;
+
+        font-size: 12px;
+
+    }
+
+
+    .activity-time {
+
+        color: #777c84;
+
+        font-size: 12px;
+
+        white-space: nowrap;
+
+    }
+
+
+    /* =====================================================
+       EMPTY STATE
+    ===================================================== */
+
+    .empty-state {
+
+        padding:
+            28px
+            0;
+
+        color: #777c84;
+
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
     @media (
         max-width: 950px
     ) {
@@ -135,6 +465,22 @@ Dashboard | Kalxa Stories
                     2,
                     1fr
                 );
+
+        }
+
+
+        .activity-row {
+
+            grid-template-columns:
+                140px
+                minmax(0, 1fr);
+
+        }
+
+
+        .activity-time {
+
+            grid-column: 2;
 
         }
 
@@ -152,6 +498,35 @@ Dashboard | Kalxa Stories
 
         }
 
+
+        .section-header {
+
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+
+        }
+
+
+        .activity-row {
+
+            grid-template-columns:
+                1fr;
+
+            gap: 8px;
+
+        }
+
+
+        .activity-time {
+
+            grid-column:
+                auto;
+
+        }
+
     }
 
 </style>
@@ -163,6 +538,10 @@ Dashboard | Kalxa Stories
 {% block content %}
 
 
+<!-- =====================================================
+     PAGE HEADER
+====================================================== -->
+
 <div class="page-header">
 
     <div>
@@ -172,7 +551,7 @@ Dashboard | Kalxa Stories
         </h1>
 
         <p>
-            Restaurant editorial and sponsored content.
+            Restaurant editorial, sponsored content and performance.
         </p>
 
     </div>
@@ -190,6 +569,10 @@ Dashboard | Kalxa Stories
 </div>
 
 
+
+<!-- =====================================================
+     CONTENT METRICS
+====================================================== -->
 
 <div class="metrics">
 
@@ -250,29 +633,535 @@ Dashboard | Kalxa Stories
 
 
 
+<!-- =====================================================
+     ANALYTICS HEADER
+====================================================== -->
+
+<div class="section-header">
+
+    <div>
+
+        <h2>
+            Story Analytics
+        </h2>
+
+        <p>
+            Anonymous engagement across published Kalxa Stories.
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     ANALYTICS METRICS
+====================================================== -->
+
+<div class="metrics">
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Story Views
+        </div>
+
+        <div class="metric-value">
+            {{ total_story_views }}
+        </div>
+
+        <div class="metric-note">
+
+            {{ unique_story_visitors }}
+            anonymous visitor{% if unique_story_visitors != 1 %}s{% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Restaurant Impressions
+        </div>
+
+        <div class="metric-value">
+            {{ total_restaurant_impressions }}
+        </div>
+
+        <div class="metric-note">
+            Restaurant cards shown
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Restaurant Clicks
+        </div>
+
+        <div class="metric-value">
+            {{ total_restaurant_clicks }}
+        </div>
+
+        <div class="metric-note">
+            Visits sent to Kalxa Ticketing
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Restaurant CTR
+        </div>
+
+        <div class="metric-value">
+            {{ "%.1f"|format(restaurant_ctr) }}%
+        </div>
+
+        <div class="metric-note">
+            Clicks ÷ impressions
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PERFORMANCE BY STORY
+====================================================== -->
+
+<div class="section-header">
+
+    <div>
+
+        <h2>
+            Performance by Story
+        </h2>
+
+        <p>
+            See which stories generate restaurant interest.
+        </p>
+
+    </div>
+
+</div>
+
+
 <div class="panel">
 
 
-    <div class="page-header">
+    {% if story_performance %}
 
-        <div>
 
-            <h2>
-                Recent Stories
-            </h2>
+        <div class="table-wrap">
+
+            <table class="analytics-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Story
+                        </th>
+
+                        <th>
+                            Views
+                        </th>
+
+                        <th>
+                            Impressions
+                        </th>
+
+                        <th>
+                            Clicks
+                        </th>
+
+                        <th>
+                            CTR
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for item
+                        in story_performance
+                    %}
+
+                        <tr>
+
+                            <td>
+
+                                <a
+                                    class="article-title"
+                                    href="{{ url_for(
+                                        'admin.article_edit',
+                                        article_id=item.id
+                                    ) }}"
+                                >
+                                    {{ item.title }}
+                                </a>
+
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.views }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.impressions }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.clicks }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="ctr">
+                                    {{ "%.1f"|format(item.ctr) }}%
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
 
         </div>
 
 
-        <a
-            href="{{ url_for(
-                'admin.articles'
-            ) }}"
-        >
-            View all →
-        </a>
+    {% else %}
+
+
+        <div class="empty-state">
+            No story analytics yet.
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =====================================================
+     RESTAURANT PERFORMANCE
+====================================================== -->
+
+<div class="section-header">
+
+    <div>
+
+        <h2>
+            Restaurant Performance
+        </h2>
+
+        <p>
+            Engagement generated for restaurants through Kalxa Stories.
+        </p>
 
     </div>
+
+</div>
+
+
+<div class="panel">
+
+
+    {% if restaurant_performance %}
+
+
+        <div class="table-wrap">
+
+            <table class="analytics-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Restaurant
+                        </th>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Impressions
+                        </th>
+
+                        <th>
+                            Clicks
+                        </th>
+
+                        <th>
+                            CTR
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for item
+                        in restaurant_performance
+                    %}
+
+                        <tr>
+
+                            <td>
+
+                                <div class="restaurant-name">
+                                    {{ item.business_name }}
+                                </div>
+
+
+                                {% if item.area %}
+
+                                    <div class="restaurant-area">
+                                        {{ item.area }}
+                                    </div>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td class="number-cell">
+                                #{{ item.restaurant_id }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.impressions }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.clicks }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="ctr">
+                                    {{ "%.1f"|format(item.ctr) }}%
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+
+        <div class="empty-state">
+            No restaurant engagement yet.
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =====================================================
+     RECENT ANALYTICS ACTIVITY
+====================================================== -->
+
+<div class="section-header">
+
+    <div>
+
+        <h2>
+            Recent Activity
+        </h2>
+
+        <p>
+            Latest anonymous story and restaurant interactions.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="panel">
+
+
+    {% if recent_activity %}
+
+
+        <div class="activity-list">
+
+
+            {% for item
+                in recent_activity
+            %}
+
+                <div class="activity-row">
+
+
+                    <div>
+
+                        <span
+                            class="
+                                event-badge
+                                {{ item.event_type.replace('_', '-') }}
+                            "
+                        >
+                            {{ item.event_type.replace("_", " ") }}
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="activity-title">
+
+                            {{ item.article_title }}
+
+                        </div>
+
+
+                        {% if item.restaurant_id %}
+
+                            <div class="activity-subtitle">
+
+                                {% if item.restaurant_name %}
+
+                                    {{ item.restaurant_name }}
+
+                                {% else %}
+
+                                    Restaurant #{{ item.restaurant_id }}
+
+                                {% endif %}
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="activity-subtitle">
+                                Story activity
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        {% if item.created_at %}
+
+                            {{ item.created_at.strftime(
+                                "%d %b %Y %H:%M"
+                            ) }}
+
+                        {% endif %}
+
+                    </div>
+
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+    {% else %}
+
+
+        <div class="empty-state">
+
+            No analytics activity yet.
+
+            Open a published story to start generating data.
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =====================================================
+     RECENT STORIES
+====================================================== -->
+
+<div class="section-header">
+
+    <div>
+
+        <h2>
+            Recent Stories
+        </h2>
+
+    </div>
+
+
+    <a
+        href="{{ url_for(
+            'admin.articles'
+        ) }}"
+    >
+        View all →
+    </a>
+
+</div>
+
+
+<div class="panel">
 
 
     {% if recent_articles %}
