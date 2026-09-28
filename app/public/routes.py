@@ -8,12 +8,12 @@ from uuid import uuid4
 from flask import (
     Blueprint,
     abort,
+    current_app,
     redirect,
     render_template,
     request,
     session,
 )
-
 from app.extensions import db
 
 from app.models import (
