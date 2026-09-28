@@ -170,7 +170,18 @@ Dashboard | Kalxa Stories
 
     .article-title {
 
+        color: inherit;
+
         font-weight: 800;
+
+        text-decoration: none;
+
+    }
+
+
+    .article-title:hover {
+
+        text-decoration: underline;
 
     }
 
@@ -312,6 +323,136 @@ Dashboard | Kalxa Stories
         color: #777c84;
 
         font-size: 12px;
+
+    }
+
+
+    /* =====================================================
+       ANALYTICS FUNNEL
+    ===================================================== */
+
+    .analytics-funnel {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+        gap: 12px;
+
+    }
+
+
+    .funnel-step {
+
+        position: relative;
+
+        padding: 18px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #f5f6f7
+            );
+
+        border:
+            1px solid
+            #d7dade;
+
+        border-radius: 14px;
+
+    }
+
+
+    .funnel-number {
+
+        display: block;
+
+        margin-bottom: 7px;
+
+        font-size: 27px;
+
+        font-weight: 900;
+
+        letter-spacing: -1px;
+
+    }
+
+
+    .funnel-label {
+
+        color: #555b64;
+
+        font-size: 11px;
+
+        font-weight: 800;
+
+        text-transform: uppercase;
+
+        letter-spacing: .5px;
+
+    }
+
+
+    .funnel-note {
+
+        margin-top: 6px;
+
+        color: #8a8f97;
+
+        font-size: 11px;
+
+    }
+
+
+    /* =====================================================
+       STAGE 6 PLACEHOLDER
+    ===================================================== */
+
+    .conversion-preview {
+
+        margin-top: 16px;
+
+        padding: 18px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #181a1e,
+                #292c31
+            );
+
+        color: #ffffff;
+
+        border-radius: 15px;
+
+    }
+
+
+    .conversion-preview strong {
+
+        display: block;
+
+        margin-bottom: 5px;
+
+        font-size: 13px;
+
+    }
+
+
+    .conversion-preview p {
+
+        margin: 0;
+
+        color: #c8ccd2;
+
+        font-size: 12px;
+
+        line-height: 1.6;
 
     }
 
@@ -465,6 +606,14 @@ Dashboard | Kalxa Stories
                     2,
                     1fr
                 );
+
+        }
+
+
+        .analytics-funnel {
+
+            grid-template-columns:
+                1fr;
 
         }
 
@@ -675,7 +824,9 @@ Dashboard | Kalxa Stories
         <div class="metric-note">
 
             {{ unique_story_visitors }}
-            anonymous visitor{% if unique_story_visitors != 1 %}s{% endif %}
+
+            anonymous
+            visitor{% if unique_story_visitors != 1 %}s{% endif %}
 
         </div>
 
@@ -723,7 +874,9 @@ Dashboard | Kalxa Stories
         </div>
 
         <div class="metric-value">
-            {{ "%.1f"|format(restaurant_ctr) }}%
+            {{ "%.1f"|format(
+                restaurant_ctr
+            ) }}%
         </div>
 
         <div class="metric-note">
@@ -732,6 +885,106 @@ Dashboard | Kalxa Stories
 
     </div>
 
+
+</div>
+
+
+
+<!-- =====================================================
+     CURRENT FUNNEL
+====================================================== -->
+
+<div class="section-header">
+
+    <div>
+
+        <h2>
+            Story → Restaurant Funnel
+        </h2>
+
+        <p>
+            Current measured journey from editorial attention
+            into Kalxa Ticketing.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="panel">
+
+    <div class="analytics-funnel">
+
+
+        <div class="funnel-step">
+
+            <span class="funnel-number">
+                {{ total_story_views }}
+            </span>
+
+            <span class="funnel-label">
+                Story Views
+            </span>
+
+            <div class="funnel-note">
+                People opening published stories
+            </div>
+
+        </div>
+
+
+        <div class="funnel-step">
+
+            <span class="funnel-number">
+                {{ total_restaurant_impressions }}
+            </span>
+
+            <span class="funnel-label">
+                Restaurant Impressions
+            </span>
+
+            <div class="funnel-note">
+                Restaurant recommendations displayed
+            </div>
+
+        </div>
+
+
+        <div class="funnel-step">
+
+            <span class="funnel-number">
+                {{ total_restaurant_clicks }}
+            </span>
+
+            <span class="funnel-label">
+                Restaurant Visits
+            </span>
+
+            <div class="funnel-note">
+                Traffic sent into Kalxa Ticketing
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="conversion-preview">
+
+        <strong>
+            Stage 6 · Cross-platform conversions
+        </strong>
+
+        <p>
+            The next analytics layer will continue this funnel
+            inside Kalxa Ticketing and attribute restaurant
+            actions such as experience views, WhatsApp clicks,
+            calls and directions back to the originating story.
+        </p>
+
+    </div>
 
 </div>
 
@@ -750,7 +1003,7 @@ Dashboard | Kalxa Stories
         </h2>
 
         <p>
-            See which stories generate restaurant interest.
+            See which published stories generate restaurant interest.
         </p>
 
     </div>
@@ -839,7 +1092,11 @@ Dashboard | Kalxa Stories
                             <td>
 
                                 <span class="ctr">
-                                    {{ "%.1f"|format(item.ctr) }}%
+
+                                    {{ "%.1f"|format(
+                                        item.ctr
+                                    ) }}%
+
                                 </span>
 
                             </td>
@@ -860,7 +1117,7 @@ Dashboard | Kalxa Stories
 
 
         <div class="empty-state">
-            No story analytics yet.
+            No published story analytics yet.
         </div>
 
 
@@ -919,7 +1176,7 @@ Dashboard | Kalxa Stories
                         </th>
 
                         <th>
-                            Clicks
+                            Visits
                         </th>
 
                         <th>
@@ -976,7 +1233,11 @@ Dashboard | Kalxa Stories
                             <td>
 
                                 <span class="ctr">
-                                    {{ "%.1f"|format(item.ctr) }}%
+
+                                    {{ "%.1f"|format(
+                                        item.ctr
+                                    ) }}%
+
                                 </span>
 
                             </td>
@@ -1050,10 +1311,18 @@ Dashboard | Kalxa Stories
                         <span
                             class="
                                 event-badge
-                                {{ item.event_type.replace('_', '-') }}
+                                {{ item.event_type.replace(
+                                    '_',
+                                    '-'
+                                ) }}
                             "
                         >
-                            {{ item.event_type.replace("_", " ") }}
+
+                            {{ item.event_type.replace(
+                                "_",
+                                " "
+                            ) }}
+
                         </span>
 
                     </div>
@@ -1062,9 +1331,7 @@ Dashboard | Kalxa Stories
                     <div>
 
                         <div class="activity-title">
-
                             {{ item.article_title }}
-
                         </div>
 
 
@@ -1192,7 +1459,8 @@ Dashboard | Kalxa Stories
 
                         <div class="article-type">
 
-                            {{ article.article_type
+                            {{
+                                article.article_type
                                 .replace(
                                     "_",
                                     " "
@@ -1223,9 +1491,9 @@ Dashboard | Kalxa Stories
     {% else %}
 
 
-        <p>
+        <div class="empty-state">
             No stories yet.
-        </p>
+        </div>
 
 
     {% endif %}
