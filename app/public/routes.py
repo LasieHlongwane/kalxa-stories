@@ -212,7 +212,7 @@ def record_analytics_event(
 
         db.session.rollback()
 
-        public_bp.logger.exception(
+        current_app.logger.exception(
             "Unable to record Kalxa Stories "
             "analytics event."
         )
