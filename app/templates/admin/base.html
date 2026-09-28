@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="theme-color"
+        content="#111318"
+    >
+
+    <title>
+        {% block title %}
+            Kalxa Stories Control Centre
+        {% endblock %}
+    </title>
+
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #e5e7ea;
+
+            color: #17191d;
+
+        }
+
+
+        a {
+
+            color: inherit;
+
+            text-decoration: none;
+
+        }
+
+
+        button,
+        input,
+        textarea,
+        select {
+
+            font: inherit;
+
+        }
+
+
+
+        /* =====================================================
+           LAYOUT
+        ===================================================== */
+
+        .admin-shell {
+
+            min-height: 100vh;
+
+            display: grid;
+
+            grid-template-columns:
+                250px
+                minmax(0, 1fr);
+
+        }
+
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+
+            position: sticky;
+
+            top: 0;
+
+            height: 100vh;
+
+            padding:
+                28px
+                20px;
+
+            background: #111318;
+
+            color: white;
+
+        }
+
+
+        .brand {
+
+            margin-bottom: 42px;
+
+        }
+
+
+        .brand-main {
+
+            font-size: 22px;
+
+            font-weight: 900;
+
+        }
+
+
+        .brand-sub {
+
+            margin-top: 3px;
+
+            color: #777c84;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.6px;
+
+        }
+
+
+        .nav {
+
+            display: grid;
+
+            gap: 8px;
+
+        }
+
+
+        .nav a {
+
+            padding:
+                12px
+                14px;
+
+            border-radius: 10px;
+
+            color: #c5c8ce;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+        }
+
+
+        .nav a:hover {
+
+            background: #25282d;
+
+            color: white;
+
+        }
+
+
+        .sidebar-bottom {
+
+            position: absolute;
+
+            left: 20px;
+
+            right: 20px;
+
+            bottom: 24px;
+
+        }
+
+
+        .logout-button {
+
+            width: 100%;
+
+            padding: 11px;
+
+            border:
+                1px solid
+                #363a41;
+
+            border-radius: 10px;
+
+            background: transparent;
+
+            color: #b9bdc4;
+
+            cursor: pointer;
+
+        }
+
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .admin-main {
+
+            min-width: 0;
+
+            padding:
+                42px
+                45px
+                80px;
+
+        }
+
+
+        .page-header {
+
+            margin-bottom: 32px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .page-header h1 {
+
+            margin: 0;
+
+            font-size: 35px;
+
+            letter-spacing: -1.4px;
+
+        }
+
+
+        .page-header p {
+
+            margin:
+                6px
+                0
+                0;
+
+            color: #717680;
+
+        }
+
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .button {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding:
+                0
+                18px;
+
+            border: 0;
+
+            border-radius: 10px;
+
+            background: #111318;
+
+            color: white;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+        }
+
+
+        .button.secondary {
+
+            background: #e9eaec;
+
+            color: #202328;
+
+        }
+
+
+        .button.danger {
+
+            background: #9c2525;
+
+        }
+
+
+        .button.small {
+
+            min-height: 34px;
+
+            padding:
+                0
+                12px;
+
+            font-size: 12px;
+
+        }
+
+
+
+        /* =====================================================
+           CARDS
+        ===================================================== */
+
+        .panel {
+
+            padding: 24px;
+
+            border:
+                1px solid
+                #d7dade;
+
+            border-radius: 16px;
+
+            background: white;
+
+        }
+
+
+
+        /* =====================================================
+           FLASH
+        ===================================================== */
+
+        .flash-stack {
+
+            display: grid;
+
+            gap: 10px;
+
+            margin-bottom: 24px;
+
+        }
+
+
+        .flash {
+
+            padding:
+                13px
+                15px;
+
+            border-radius: 10px;
+
+            background: white;
+
+            border:
+                1px solid
+                #d7dade;
+
+            font-size: 14px;
+
+        }
+
+
+        .flash.success {
+
+            border-left:
+                4px solid
+                #27844c;
+
+        }
+
+
+        .flash.error {
+
+            border-left:
+                4px solid
+                #b82d2d;
+
+        }
+
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+
+            display: inline-flex;
+
+            padding:
+                5px
+                9px;
+
+            border-radius: 999px;
+
+            background: #eceef1;
+
+            color: #5e636b;
+
+            font-size: 10px;
+
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            letter-spacing: .7px;
+
+        }
+
+
+        .status.published {
+
+            background: #dff2e5;
+
+            color: #21633a;
+
+        }
+
+
+        .status.draft {
+
+            background: #fff1cc;
+
+            color: #795b0a;
+
+        }
+
+
+        .status.archived {
+
+            background: #eceef1;
+
+            color: #666b73;
+
+        }
+
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (
+            max-width: 800px
+        ) {
+
+            .admin-shell {
+
+                display: block;
+
+            }
+
+
+            .sidebar {
+
+                position: static;
+
+                height: auto;
+
+            }
+
+
+            .nav {
+
+                grid-template-columns:
+                    repeat(
+                        3,
+                        1fr
+                    );
+
+            }
+
+
+            .sidebar-bottom {
+
+                position: static;
+
+                margin-top: 20px;
+
+            }
+
+
+            .admin-main {
+
+                padding:
+                    28px
+                    18px
+                    60px;
+
+            }
+
+
+            .page-header {
+
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+
+            }
+
+        }
+
+    </style>
+
+
+    {% block extra_head %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+
+<div class="admin-shell">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-main">
+                Kalxa
+            </div>
+
+            <div class="brand-sub">
+                STORIES CONTROL CENTRE
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+            <a
+                href="{{ url_for(
+                    'admin.dashboard'
+                ) }}"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for(
+                    'admin.articles'
+                ) }}"
+            >
+                Stories
+            </a>
+
+            <a
+                href="{{ url_for(
+                    'admin.article_new'
+                ) }}"
+            >
+                New Story
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'admin.logout'
+                ) }}"
+            >
+
+                <button
+                    class="logout-button"
+                    type="submit"
+                >
+                    Sign out
+                </button>
+
+            </form>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+
+    <main class="admin-main">
+
+
+        {% with messages =
+            get_flashed_messages(
+                with_categories=true
+            )
+        %}
+
+            {% if messages %}
+
+            <div class="flash-stack">
+
+                {% for category, message
+                    in messages
+                %}
+
+                    <div
+                        class="flash {{ category }}"
+                    >
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        {% block content %}
+        {% endblock %}
+
+
+    </main>
+
+
+</div>
+
+
+</body>
+
+</html>

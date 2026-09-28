@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Kalxa Stories | Local Food & Restaurant Stories
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ========================================================
+     HERO
+========================================================= -->
+
+<section class="home-hero">
+
+    <div class="page-container">
+
+        <div class="hero-label">
+            KALXA STORIES
+        </div>
+
+        <h1>
+            Taste what's
+            happening around you.
+        </h1>
+
+        <p class="hero-copy">
+            Restaurant stories, local food,
+            hidden spots and experiences worth discovering.
+        </p>
+
+    </div>
+
+</section>
+
+
+
+{% if featured_article %}
+
+<!-- ========================================================
+     FEATURED STORY
+========================================================= -->
+
+<section class="section">
+
+    <div class="page-container">
+
+        <div class="section-heading">
+
+            <span>
+                Featured
+            </span>
+
+        </div>
+
+
+        <a
+            href="{{ url_for(
+                'public.article_detail',
+                slug=featured_article.slug
+            ) }}"
+            class="featured-story"
+        >
+
+
+            <div class="featured-image">
+
+                {% if featured_article.cover_image_url %}
+
+                    <img
+                        src="{{ featured_article.cover_image_url }}"
+                        alt="{{ featured_article.title }}"
+                    >
+
+                {% else %}
+
+                    <div class="image-placeholder">
+
+                        <span>
+                            K
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="featured-content">
+
+                <div class="story-meta">
+
+                    {% if featured_article.is_sponsored %}
+
+                        <span class="sponsored-label">
+                            Sponsored
+                        </span>
+
+                    {% endif %}
+
+
+                    <span>
+                        {{ featured_article.article_type
+                            .replace("_", " ")
+                            .title()
+                        }}
+                    </span>
+
+                </div>
+
+
+                <h2>
+                    {{ featured_article.title }}
+                </h2>
+
+
+                {% if featured_article.excerpt %}
+
+                    <p>
+                        {{ featured_article.excerpt }}
+                    </p>
+
+                {% endif %}
+
+
+                <span class="read-link">
+                    Read story →
+                </span>
+
+            </div>
+
+        </a>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- ========================================================
+     LATEST STORIES
+========================================================= -->
+
+<section class="section latest-section">
+
+    <div class="page-container">
+
+        <div class="section-heading">
+
+            <span>
+                Latest stories
+            </span>
+
+            <a
+                href="{{ url_for('public.stories') }}"
+            >
+                View all
+            </a>
+
+        </div>
+
+
+        {% if articles %}
+
+        <div class="story-grid">
+
+
+            {% for article in articles %}
+
+            <article class="story-card">
+
+
+                <a
+                    href="{{ url_for(
+                        'public.article_detail',
+                        slug=article.slug
+                    ) }}"
+                    class="story-image-link"
+                >
+
+                    <div class="story-image">
+
+                        {% if article.cover_image_url %}
+
+                            <img
+                                src="{{ article.cover_image_url }}"
+                                alt="{{ article.title }}"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="image-placeholder small">
+
+                                <span>
+                                    K
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </a>
+
+
+                <div class="story-card-content">
+
+
+                    <div class="story-meta">
+
+                        {% if article.is_sponsored %}
+
+                            <span class="sponsored-label">
+                                Sponsored
+                            </span>
+
+                        {% endif %}
+
+
+                        <span>
+                            {{ article.article_type
+                                .replace("_", " ")
+                                .title()
+                            }}
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+
+                        <a
+                            href="{{ url_for(
+                                'public.article_detail',
+                                slug=article.slug
+                            ) }}"
+                        >
+                            {{ article.title }}
+                        </a>
+
+                    </h3>
+
+
+                    {% if article.excerpt %}
+
+                    <p>
+                        {{ article.excerpt }}
+                    </p>
+
+                    {% endif %}
+
+
+                    <a
+                        class="read-link"
+                        href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}"
+                    >
+                        Read story →
+                    </a>
+
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                K
+            </div>
+
+            <h2>
+                Stories are coming.
+            </h2>
+
+            <p>
+                We're discovering restaurants,
+                food and experiences worth sharing.
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</section>
+
+
+{% endblock %}

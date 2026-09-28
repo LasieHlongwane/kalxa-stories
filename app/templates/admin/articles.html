@@ -1,0 +1,373 @@
+{% extends "admin/base.html" %}
+
+
+{% block title %}
+Stories | Kalxa Control Centre
+{% endblock %}
+
+
+{% block extra_head %}
+
+<style>
+
+    .filters {
+
+        margin-bottom: 22px;
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 8px;
+
+    }
+
+
+    .filter {
+
+        padding:
+            8px
+            13px;
+
+        border-radius: 999px;
+
+        background: white;
+
+        border:
+            1px solid
+            #d7dade;
+
+        font-size: 12px;
+
+        font-weight: 800;
+
+    }
+
+
+    .filter.active {
+
+        background: #111318;
+
+        color: white;
+
+        border-color: #111318;
+
+    }
+
+
+    .story-row {
+
+        padding:
+            20px
+            0;
+
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+
+        gap: 25px;
+
+        border-bottom:
+            1px solid
+            #eceef1;
+
+    }
+
+
+    .story-row:last-child {
+
+        border-bottom: 0;
+
+    }
+
+
+    .story-title {
+
+        margin-bottom: 6px;
+
+        font-size: 17px;
+
+        font-weight: 900;
+
+    }
+
+
+    .story-meta {
+
+        color: #777c84;
+
+        font-size: 12px;
+
+    }
+
+
+    .story-actions {
+
+        display: flex;
+
+        align-items: center;
+
+        flex-wrap: wrap;
+
+        justify-content: flex-end;
+
+        gap: 7px;
+
+    }
+
+
+    .story-actions form {
+
+        margin: 0;
+
+    }
+
+
+    @media (
+        max-width: 700px
+    ) {
+
+        .story-row {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .story-actions {
+
+            justify-content:
+                flex-start;
+
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Stories
+        </h1>
+
+        <p>
+            Create and manage Kalxa restaurant stories.
+        </p>
+
+    </div>
+
+
+    <a
+        class="button"
+        href="{{ url_for(
+            'admin.article_new'
+        ) }}"
+    >
+        + New Story
+    </a>
+
+</div>
+
+
+
+<div class="filters">
+
+
+    <a
+        class="filter
+        {% if not selected_status %}
+            active
+        {% endif %}"
+        href="{{ url_for(
+            'admin.articles'
+        ) }}"
+    >
+        All
+    </a>
+
+
+    {% for status in [
+        "draft",
+        "published",
+        "archived"
+    ] %}
+
+        <a
+            class="filter
+            {% if selected_status == status %}
+                active
+            {% endif %}"
+            href="{{ url_for(
+                'admin.articles',
+                status=status
+            ) }}"
+        >
+            {{ status.title() }}
+        </a>
+
+    {% endfor %}
+
+
+</div>
+
+
+
+<div class="panel">
+
+
+{% if articles %}
+
+
+    {% for article in articles %}
+
+
+    <div class="story-row">
+
+
+        <div>
+
+
+            <div class="story-title">
+
+                <a
+                    href="{{ url_for(
+                        'admin.article_edit',
+                        article_id=article.id
+                    ) }}"
+                >
+                    {{ article.title }}
+                </a>
+
+            </div>
+
+
+            <div class="story-meta">
+
+                {{ article.article_type
+                    .replace(
+                        "_",
+                        " "
+                    )
+                    .title()
+                }}
+
+                ·
+
+                {{ article.restaurants | length }}
+                restaurant(s)
+
+                {% if article.is_sponsored %}
+
+                    · Sponsored
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="story-actions">
+
+
+            <span
+                class="status {{ article.status }}"
+            >
+                {{ article.status }}
+            </span>
+
+
+            <a
+                class="button secondary small"
+                href="{{ url_for(
+                    'admin.article_edit',
+                    article_id=article.id
+                ) }}"
+            >
+                Edit
+            </a>
+
+
+            {% if article.status != "published" %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'admin.article_publish',
+                        article_id=article.id
+                    ) }}"
+                >
+
+                    <button
+                        class="button small"
+                        type="submit"
+                    >
+                        Publish
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+            {% if article.status != "archived" %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'admin.article_archive',
+                        article_id=article.id
+                    ) }}"
+                >
+
+                    <button
+                        class="button secondary small"
+                        type="submit"
+                    >
+                        Archive
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </div>
+
+
+    {% endfor %}
+
+
+{% else %}
+
+
+    <p>
+        No stories found.
+    </p>
+
+
+{% endif %}
+
+
+</div>
+
+
+{% endblock %}

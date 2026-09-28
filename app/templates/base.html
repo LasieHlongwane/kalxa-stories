@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="theme-color"
+        content="#111111"
+    >
+
+    <title>
+        {% block title %}
+            Kalxa Stories
+        {% endblock %}
+    </title>
+
+    <meta
+        name="description"
+        content="{% block meta_description %}Discover restaurant stories, food guides and local experiences on Kalxa.{% endblock %}"
+    >
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/style.css'
+        ) }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ========================================================
+     HEADER
+========================================================= -->
+
+<header class="site-header">
+
+    <div class="header-inner">
+
+        <a
+            href="{{ url_for('public.home') }}"
+            class="brand"
+        >
+
+            <span class="brand-name">
+                Kalxa
+            </span>
+
+            <span class="brand-section">
+                Stories
+            </span>
+
+        </a>
+
+
+        <nav class="main-nav">
+
+            <a
+                href="{{ url_for('public.home') }}"
+            >
+                Discover
+            </a>
+
+            <a
+                href="{{ url_for('public.stories') }}"
+            >
+                Stories
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+
+<!-- ========================================================
+     PAGE
+========================================================= -->
+
+<main>
+
+    {% block content %}
+    {% endblock %}
+
+</main>
+
+
+
+<!-- ========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="site-footer">
+
+    <div class="footer-inner">
+
+        <div>
+
+            <div class="footer-brand">
+                Kalxa Stories
+            </div>
+
+            <p>
+                Discover the people, food and experiences
+                around you.
+            </p>
+
+        </div>
+
+
+        <div class="footer-small">
+
+            Restaurant discovery by Kalxa.
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+
+</html>

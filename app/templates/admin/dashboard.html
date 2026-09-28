@@ -1,0 +1,348 @@
+{% extends "admin/base.html" %}
+
+
+{% block title %}
+Dashboard | Kalxa Stories
+{% endblock %}
+
+
+{% block extra_head %}
+
+<style>
+
+    .metrics {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                4,
+                minmax(0, 1fr)
+            );
+
+        gap: 16px;
+
+        margin-bottom: 30px;
+
+    }
+
+
+    .metric {
+
+        padding: 22px;
+
+        border-radius: 15px;
+
+        background: white;
+
+        border:
+            1px solid
+            #d7dade;
+
+    }
+
+
+    .metric-label {
+
+        margin-bottom: 10px;
+
+        color: #777c84;
+
+        font-size: 11px;
+
+        font-weight: 800;
+
+        text-transform: uppercase;
+
+        letter-spacing: .8px;
+
+    }
+
+
+    .metric-value {
+
+        font-size: 35px;
+
+        font-weight: 900;
+
+        letter-spacing: -1px;
+
+    }
+
+
+    .article-list {
+
+        display: grid;
+
+    }
+
+
+    .article-row {
+
+        padding:
+            17px
+            0;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            space-between;
+
+        gap: 20px;
+
+        border-bottom:
+            1px solid
+            #eceef1;
+
+    }
+
+
+    .article-row:last-child {
+
+        border-bottom: 0;
+
+    }
+
+
+    .article-title {
+
+        font-weight: 800;
+
+    }
+
+
+    .article-type {
+
+        margin-top: 4px;
+
+        color: #777c84;
+
+        font-size: 12px;
+
+    }
+
+
+    @media (
+        max-width: 950px
+    ) {
+
+        .metrics {
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    1fr
+                );
+
+        }
+
+    }
+
+
+    @media (
+        max-width: 520px
+    ) {
+
+        .metrics {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Stories
+        </h1>
+
+        <p>
+            Restaurant editorial and sponsored content.
+        </p>
+
+    </div>
+
+
+    <a
+        class="button"
+        href="{{ url_for(
+            'admin.article_new'
+        ) }}"
+    >
+        + New Story
+    </a>
+
+</div>
+
+
+
+<div class="metrics">
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Total Stories
+        </div>
+
+        <div class="metric-value">
+            {{ total_articles }}
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Published
+        </div>
+
+        <div class="metric-value">
+            {{ published_articles }}
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Drafts
+        </div>
+
+        <div class="metric-value">
+            {{ draft_articles }}
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Sponsored
+        </div>
+
+        <div class="metric-value">
+            {{ sponsored_articles }}
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<div class="panel">
+
+
+    <div class="page-header">
+
+        <div>
+
+            <h2>
+                Recent Stories
+            </h2>
+
+        </div>
+
+
+        <a
+            href="{{ url_for(
+                'admin.articles'
+            ) }}"
+        >
+            View all →
+        </a>
+
+    </div>
+
+
+    {% if recent_articles %}
+
+
+        <div class="article-list">
+
+
+            {% for article
+                in recent_articles
+            %}
+
+                <div class="article-row">
+
+
+                    <div>
+
+                        <a
+                            class="article-title"
+                            href="{{ url_for(
+                                'admin.article_edit',
+                                article_id=article.id
+                            ) }}"
+                        >
+                            {{ article.title }}
+                        </a>
+
+
+                        <div class="article-type">
+
+                            {{ article.article_type
+                                .replace(
+                                    "_",
+                                    " "
+                                )
+                                .title()
+                            }}
+
+                        </div>
+
+                    </div>
+
+
+                    <span
+                        class="status {{ article.status }}"
+                    >
+                        {{ article.status }}
+                    </span>
+
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+    {% else %}
+
+
+        <p>
+            No stories yet.
+        </p>
+
+
+    {% endif %}
+
+
+</div>
+
+
+{% endblock %}

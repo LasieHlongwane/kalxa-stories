@@ -1,0 +1,1594 @@
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: #f7f5f0;
+
+    color: #111318;
+
+    line-height: 1.6;
+}
+
+
+img {
+
+    display: block;
+
+    width: 100%;
+
+}
+
+
+a {
+
+    color: inherit;
+
+    text-decoration: none;
+
+}
+
+
+
+/* =========================================================
+   GLOBAL CONTAINERS
+========================================================= */
+
+.page-container {
+
+    width: min(
+        1180px,
+        calc(100% - 40px)
+    );
+
+    margin: 0 auto;
+
+}
+
+
+.article-container {
+
+    width: min(
+        760px,
+        calc(100% - 40px)
+    );
+
+    margin: 0 auto;
+
+}
+
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.site-header {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    background:
+        rgba(
+            247,
+            245,
+            240,
+            0.94
+        );
+
+    backdrop-filter:
+        blur(16px);
+
+    border-bottom:
+        1px solid
+        rgba(
+            17,
+            19,
+            24,
+            0.08
+        );
+
+}
+
+
+.header-inner {
+
+    width: min(
+        1180px,
+        calc(100% - 40px)
+    );
+
+    min-height: 74px;
+
+    margin: 0 auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    gap: 30px;
+
+}
+
+
+.brand {
+
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 8px;
+
+}
+
+
+.brand-name {
+
+    font-size: 22px;
+
+    font-weight: 900;
+
+    letter-spacing: -0.8px;
+
+}
+
+
+.brand-section {
+
+    font-size: 13px;
+
+    color: #737373;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.4px;
+
+}
+
+
+.main-nav {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 28px;
+
+}
+
+
+.main-nav a {
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.main-nav a:hover {
+
+    opacity: 0.55;
+
+}
+
+
+
+/* =========================================================
+   HOME HERO
+========================================================= */
+
+.home-hero {
+
+    padding:
+        110px
+        0
+        85px;
+
+}
+
+
+.hero-label {
+
+    margin-bottom: 20px;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    color: #77736b;
+
+}
+
+
+.home-hero h1 {
+
+    max-width: 780px;
+
+    margin:
+        0
+        0
+        25px;
+
+    font-size:
+        clamp(
+            46px,
+            7vw,
+            88px
+        );
+
+    line-height: 0.98;
+
+    letter-spacing: -4px;
+
+}
+
+
+.hero-copy {
+
+    max-width: 570px;
+
+    margin: 0;
+
+    font-size: 19px;
+
+    color: #65625c;
+
+}
+
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.section {
+
+    padding:
+        35px
+        0
+        90px;
+
+}
+
+
+.latest-section {
+
+    padding-top: 65px;
+
+}
+
+
+.section-heading {
+
+    margin-bottom: 28px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    gap: 20px;
+
+    border-bottom:
+        1px solid
+        #d9d5cd;
+
+    padding-bottom: 14px;
+
+}
+
+
+.section-heading > span {
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.6px;
+
+}
+
+
+.section-heading > a {
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    color: #66625c;
+
+}
+
+
+
+/* =========================================================
+   FEATURED STORY
+========================================================= */
+
+.featured-story {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(300px, 0.8fr);
+
+    background: #111318;
+
+    color: white;
+
+    overflow: hidden;
+
+    border-radius: 26px;
+
+}
+
+
+.featured-image {
+
+    min-height: 500px;
+
+    background: #282a2d;
+
+}
+
+
+.featured-image img {
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+.featured-content {
+
+    padding: 55px 45px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+}
+
+
+.featured-content h2 {
+
+    margin:
+        15px
+        0
+        18px;
+
+    font-size:
+        clamp(
+            34px,
+            4vw,
+            54px
+        );
+
+    line-height: 1.02;
+
+    letter-spacing: -2px;
+
+}
+
+
+.featured-content p {
+
+    color: #c9c9c9;
+
+    font-size: 16px;
+
+}
+
+
+
+/* =========================================================
+   META
+========================================================= */
+
+.story-meta {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.1px;
+
+    color: #77736b;
+
+}
+
+
+.featured-content
+.story-meta {
+
+    color: #c3c3c3;
+
+}
+
+
+.sponsored-label {
+
+    padding:
+        5px
+        8px;
+
+    border-radius: 999px;
+
+    background: #ece8df;
+
+    color: #111318;
+
+}
+
+
+
+/* =========================================================
+   STORY GRID
+========================================================= */
+
+.story-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap:
+        46px
+        25px;
+
+}
+
+
+.story-card {
+
+    min-width: 0;
+
+}
+
+
+.story-image {
+
+    position: relative;
+
+    overflow: hidden;
+
+    aspect-ratio: 4 / 3;
+
+    margin-bottom: 20px;
+
+    background: #dedbd3;
+
+    border-radius: 18px;
+
+}
+
+
+.story-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform
+        0.35s
+        ease;
+
+}
+
+
+.story-card:hover
+.story-image img {
+
+    transform: scale(1.025);
+
+}
+
+
+.story-card-content h2,
+.story-card-content h3 {
+
+    margin:
+        12px
+        0
+        10px;
+
+    font-size: 25px;
+
+    line-height: 1.12;
+
+    letter-spacing: -0.8px;
+
+}
+
+
+.story-card-content p {
+
+    margin:
+        0
+        0
+        16px;
+
+    color: #69665f;
+
+    font-size: 14px;
+
+}
+
+
+.read-link {
+
+    display: inline-block;
+
+    margin-top: 8px;
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+}
+
+
+
+/* =========================================================
+   PLACEHOLDERS
+========================================================= */
+
+.image-placeholder {
+
+    width: 100%;
+
+    height: 100%;
+
+    min-height: 500px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #292b2f,
+            #17181b
+        );
+
+}
+
+
+.image-placeholder.small {
+
+    min-height: 100%;
+
+}
+
+
+.image-placeholder span {
+
+    font-size: 72px;
+
+    font-weight: 900;
+
+    color: rgba(
+        255,
+        255,
+        255,
+        0.18
+    );
+
+}
+
+
+
+/* =========================================================
+   STORIES PAGE
+========================================================= */
+
+.page-intro {
+
+    padding:
+        95px
+        0
+        60px;
+
+}
+
+
+.page-intro h1 {
+
+    margin:
+        0
+        0
+        18px;
+
+    font-size:
+        clamp(
+            45px,
+            6vw,
+            76px
+        );
+
+    line-height: 1;
+
+    letter-spacing: -3px;
+
+}
+
+
+.page-intro p {
+
+    max-width: 560px;
+
+    color: #6b6862;
+
+    font-size: 18px;
+
+}
+
+
+
+/* =========================================================
+   ARTICLE
+========================================================= */
+
+.article-header {
+
+    padding:
+        95px
+        0
+        50px;
+
+}
+
+
+.article-header h1 {
+
+    margin:
+        18px
+        0
+        22px;
+
+    font-size:
+        clamp(
+            43px,
+            7vw,
+            76px
+        );
+
+    line-height: 1;
+
+    letter-spacing: -3px;
+
+}
+
+
+.article-excerpt {
+
+    max-width: 680px;
+
+    margin:
+        0
+        0
+        22px;
+
+    font-size: 20px;
+
+    color: #66635d;
+
+}
+
+
+.article-date {
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #88847d;
+
+}
+
+
+.article-image-container {
+
+    width: min(
+        1050px,
+        calc(100% - 40px)
+    );
+
+    margin: 0 auto;
+
+}
+
+
+.article-cover img {
+
+    max-height: 650px;
+
+    object-fit: cover;
+
+    border-radius: 26px;
+
+}
+
+
+.article-body-section {
+
+    padding:
+        70px
+        0
+        100px;
+
+}
+
+
+.article-body {
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 19px;
+
+    line-height: 1.85;
+
+    color: #272727;
+
+}
+
+
+.article-body p {
+
+    margin:
+        0
+        0
+        27px;
+
+}
+
+
+.article-body h2 {
+
+    margin:
+        50px
+        0
+        20px;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 32px;
+
+    line-height: 1.1;
+
+    letter-spacing: -1px;
+
+}
+
+
+.article-body h3 {
+
+    margin:
+        38px
+        0
+        15px;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+}
+
+
+
+/* =========================================================
+   RESTAURANT ARTICLE BOX
+========================================================= */
+
+.restaurant-story-box {
+
+    margin-top: 70px;
+
+    padding: 30px;
+
+    border-radius: 22px;
+
+    background: #111318;
+
+    color: white;
+
+}
+
+
+.restaurant-story-label {
+
+    margin-bottom: 8px;
+
+    color: #aaa;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+
+}
+
+
+.restaurant-story-box h3 {
+
+    margin:
+        0
+        0
+        8px;
+
+    font-size: 25px;
+
+}
+
+
+.restaurant-story-box > p {
+
+    margin:
+        0
+        0
+        25px;
+
+    color: #aaa;
+
+}
+
+
+.restaurant-reference {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    gap: 20px;
+
+    padding:
+        18px
+        0;
+
+    border-top:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.12
+        );
+
+}
+
+
+.restaurant-reference-label {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #999;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+}
+
+
+.coming-soon {
+
+    white-space: nowrap;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    color: #999;
+
+}
+
+
+
+/* =========================================================
+   RELATED
+========================================================= */
+
+.related-section {
+
+    padding:
+        70px
+        0
+        100px;
+
+    background: #eeebe4;
+
+}
+
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+
+    padding:
+        100px
+        20px;
+
+    text-align: center;
+
+}
+
+
+.empty-state h2 {
+
+    margin-bottom: 8px;
+
+    font-size: 30px;
+
+}
+
+
+.empty-state p {
+
+    color: #77736d;
+
+}
+
+
+.empty-icon {
+
+    width: 60px;
+
+    height: 60px;
+
+    margin:
+        0
+        auto
+        20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #111318;
+
+    color: white;
+
+    font-size: 24px;
+
+    font-weight: 900;
+
+}
+
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.site-footer {
+
+    padding:
+        70px
+        0;
+
+    background: #111318;
+
+    color: white;
+
+}
+
+
+.footer-inner {
+
+    width: min(
+        1180px,
+        calc(100% - 40px)
+    );
+
+    margin: 0 auto;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content:
+        space-between;
+
+    gap: 30px;
+
+}
+
+
+.footer-brand {
+
+    font-size: 22px;
+
+    font-weight: 900;
+
+}
+
+
+.footer-inner p {
+
+    max-width: 400px;
+
+    margin-bottom: 0;
+
+    color: #999;
+
+}
+
+
+.footer-small {
+
+    color: #777;
+
+    font-size: 12px;
+
+}
+
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (
+    max-width: 900px
+) {
+
+    .featured-story {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .featured-image {
+
+        min-height: 400px;
+
+    }
+
+
+    .story-grid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (
+    max-width: 620px
+) {
+
+    .page-container,
+    .article-container,
+    .article-image-container,
+    .header-inner,
+    .footer-inner {
+
+        width:
+            calc(
+                100% - 28px
+            );
+
+    }
+
+
+    .header-inner {
+
+        min-height: 64px;
+
+    }
+
+
+    .brand-section {
+
+        display: none;
+
+    }
+
+
+    .main-nav {
+
+        gap: 16px;
+
+    }
+
+
+    .home-hero {
+
+        padding:
+            70px
+            0
+            55px;
+
+    }
+
+
+    .home-hero h1 {
+
+        letter-spacing: -2.5px;
+
+    }
+
+
+    .featured-story {
+
+        border-radius: 20px;
+
+    }
+
+
+    .featured-image {
+
+        min-height: 290px;
+
+    }
+
+
+    .featured-content {
+
+        padding:
+            30px
+            24px
+            35px;
+
+    }
+
+
+    .story-grid {
+
+        grid-template-columns:
+            1fr;
+
+        gap: 45px;
+
+    }
+
+
+    .article-header {
+
+        padding:
+            65px
+            0
+            35px;
+
+    }
+
+
+    .article-header h1 {
+
+        letter-spacing: -2px;
+
+    }
+
+
+    .article-cover img {
+
+        border-radius: 18px;
+
+    }
+
+
+    .article-body {
+
+        font-size: 18px;
+
+    }
+
+
+    .restaurant-reference {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .footer-inner {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+    }
+
+}
+
+
+.restaurant-search-row {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    gap: 9px;
+
+}
+
+
+.restaurant-search-row
+.button {
+
+    min-width: 100px;
+
+}
+
+
+.restaurant-search-status {
+
+    margin-bottom: 12px;
+
+    color: #777c84;
+
+    font-size: 12px;
+
+}
+
+
+.restaurant-search-results,
+.selected-restaurants {
+
+    display: grid;
+
+    gap: 9px;
+
+}
+
+
+.restaurant-result,
+.selected-restaurant {
+
+    padding: 13px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    border:
+        1px solid
+        #e0e2e5;
+
+    border-radius: 11px;
+
+    background: #f8f9fa;
+
+}
+
+
+.restaurant-result-info {
+
+    min-width: 0;
+
+}
+
+
+.restaurant-result-name {
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+}
+
+
+.restaurant-result-area {
+
+    margin-top: 3px;
+
+    color: #777c84;
+
+    font-size: 11px;
+
+}
+
+
+.restaurant-add-button,
+.restaurant-remove-button {
+
+    flex: 0 0 auto;
+
+    padding:
+        7px
+        10px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+}
+
+
+.restaurant-add-button {
+
+    background: #111318;
+
+    color: white;
+
+}
+
+
+.restaurant-remove-button {
+
+    background: #eceef1;
+
+    color: #33363b;
+
+}
+
+
+.selected-restaurants-heading {
+
+    margin:
+        25px
+        0
+        10px;
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    letter-spacing: .8px;
+
+}
+
+
+.restaurant-empty {
+
+    padding: 16px;
+
+    border:
+        1px dashed
+        #d3d6da;
+
+    border-radius: 10px;
+
+    color: #858a92;
+
+    font-size: 12px;
+
+    text-align: center;
+
+}
+
+
+@media (
+    max-width: 520px
+) {
+
+    .restaurant-search-row {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   LIVE KALXA RESTAURANTS
+========================================================= */
+
+.featured-restaurant-list {
+
+    display: grid;
+
+}
+
+
+.restaurant-reference-content {
+
+    min-width: 0;
+
+}
+
+
+.restaurant-reference-headline {
+
+    margin-top: 5px;
+
+    color: #c8c8c8;
+
+    font-size: 13px;
+
+}
+
+
+.restaurant-reference-area {
+
+    margin-top: 8px;
+
+    color: #969696;
+
+    font-size: 12px;
+
+}
+
+
+.restaurant-reference-price {
+
+    margin-top: 5px;
+
+    color: #d8d8d8;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+}
+
+
+.restaurant-view-button {
+
+    flex: 0 0 auto;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 42px;
+
+    padding:
+        0
+        16px;
+
+    border-radius: 999px;
+
+    background: white;
+
+    color: #111318;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    transition:
+        transform
+        .15s
+        ease,
+        opacity
+        .15s
+        ease;
+
+}
+
+
+.restaurant-view-button:hover {
+
+    transform:
+        translateY(-1px);
+
+    opacity: .88;
+
+}
+
+
+@media (
+    max-width: 620px
+) {
+
+    .restaurant-view-button {
+
+        width: 100%;
+
+    }
+
+}

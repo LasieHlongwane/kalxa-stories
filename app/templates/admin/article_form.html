@@ -1,0 +1,1489 @@
+{% extends "admin/base.html" %}
+
+
+{% block title %}
+
+{% if page_mode == "new" %}
+    New Story
+{% else %}
+    Edit Story
+{% endif %}
+
+| Kalxa
+
+{% endblock %}
+
+
+
+{% block extra_head %}
+
+<style>
+
+    .editor-layout {
+
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            310px;
+
+        gap: 24px;
+
+        align-items: start;
+
+    }
+
+
+    .form-section {
+
+        margin-bottom: 20px;
+
+        padding: 25px;
+
+        border:
+            1px solid
+            #d7dade;
+
+        border-radius: 16px;
+
+        background: white;
+
+    }
+
+
+    .form-section h2 {
+
+        margin:
+            0
+            0
+            22px;
+
+        font-size: 18px;
+
+    }
+
+
+    .field {
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .field:last-child {
+
+        margin-bottom: 0;
+
+    }
+
+
+    label {
+
+        display: block;
+
+        margin-bottom: 7px;
+
+        font-size: 12px;
+
+        font-weight: 800;
+
+    }
+
+
+    input[type="text"],
+    input[type="url"],
+    textarea,
+    select {
+
+        width: 100%;
+
+        border:
+            1px solid
+            #d7dade;
+
+        border-radius: 9px;
+
+        background: white;
+
+        color: #17191d;
+
+        outline: none;
+
+    }
+
+
+    input[type="text"],
+    input[type="url"],
+    select {
+
+        min-height: 45px;
+
+        padding:
+            0
+            12px;
+
+    }
+
+
+    textarea {
+
+        min-height: 115px;
+
+        padding: 12px;
+
+        resize: vertical;
+
+    }
+
+
+    textarea.body-editor {
+
+        min-height: 500px;
+
+        font-family:
+            "SFMono-Regular",
+            Consolas,
+            monospace;
+
+        line-height: 1.6;
+
+    }
+
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+
+        border-color: #111318;
+
+    }
+
+
+    .help {
+
+        margin-top: 6px;
+
+        color: #81868e;
+
+        font-size: 11px;
+
+        line-height: 1.5;
+
+    }
+
+
+    .checkbox-row {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+    }
+
+
+    .checkbox-row label {
+
+        margin: 0;
+
+    }
+
+
+    .side-panel {
+
+        position: sticky;
+
+        top: 25px;
+
+    }
+
+
+    .side-actions {
+
+        display: grid;
+
+        gap: 9px;
+
+    }
+
+
+    .side-actions .button {
+
+        width: 100%;
+
+    }
+
+
+    .danger-zone {
+
+        margin-top: 18px;
+
+        padding-top: 18px;
+
+        border-top:
+            1px solid
+            #eceef1;
+
+    }
+
+
+    @media (
+        max-width: 950px
+    ) {
+
+        .editor-layout {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .side-panel {
+
+            position: static;
+
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+
+            {% if page_mode == "new" %}
+
+                New Story
+
+            {% else %}
+
+                Edit Story
+
+            {% endif %}
+
+        </h1>
+
+
+        <p>
+            Restaurant editorial and sponsored content.
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<form method="POST">
+
+
+<div class="editor-layout">
+
+
+    <!-- =====================================================
+         MAIN EDITOR
+    ====================================================== -->
+
+    <div>
+
+
+        <div class="form-section">
+
+            <h2>
+                Story
+            </h2>
+
+
+            <div class="field">
+
+                <label>
+                    Title
+                </label>
+
+                <input
+                    type="text"
+                    name="title"
+                    value="{{
+                        request.form.get(
+                            'title',
+                            article.title
+                            if article
+                            else ''
+                        )
+                    }}"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    URL Slug
+                </label>
+
+                <input
+                    type="text"
+                    name="slug"
+                    placeholder="inside-mnandi-kitchen"
+                    value="{{
+                        request.form.get(
+                            'slug',
+                            article.slug
+                            if article
+                            else ''
+                        )
+                    }}"
+                    required
+                >
+
+                <div class="help">
+                    Example:
+                    inside-mnandi-kitchen
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Excerpt
+                </label>
+
+                <textarea
+                    name="excerpt"
+                    placeholder="Short introduction shown on story cards."
+                >{{ request.form.get(
+                    'excerpt',
+                    article.excerpt
+                    if article
+                    and article.excerpt
+                    else ''
+                ) }}</textarea>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Article Body
+                </label>
+
+                <textarea
+                    class="body-editor"
+                    name="body"
+                    required
+                >{{ request.form.get(
+                    'body',
+                    article.body
+                    if article
+                    else ''
+                ) }}</textarea>
+
+                <div class="help">
+                    HTML is currently supported.
+                    Example:
+                    &lt;p&gt;Story text&lt;/p&gt;
+                    &lt;h2&gt;Heading&lt;/h2&gt;
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MEDIA
+        ================================================== -->
+
+        <div class="form-section">
+
+            <h2>
+                Media
+            </h2>
+
+
+            <div class="field">
+
+                <label>
+                    Cover Image URL
+                </label>
+
+                <input
+                    type="url"
+                    name="cover_image_url"
+                    placeholder="https://..."
+                    value="{{
+                        request.form.get(
+                            'cover_image_url',
+                            article.cover_image_url
+                            if article
+                            and article.cover_image_url
+                            else ''
+                        )
+                    }}"
+                >
+
+                <div class="help">
+                    We'll connect Cloudinary uploads
+                    directly in a later stage.
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+     KALXA RESTAURANTS
+================================================== -->
+
+<div class="form-section">
+
+    <h2>
+        Kalxa Restaurants
+    </h2>
+
+
+    <!-- =============================================
+         SEARCH
+    ============================================== -->
+
+    <div class="field">
+
+        <label>
+            Search Kalxa Ticketing
+        </label>
+
+
+        <div class="restaurant-search-row">
+
+            <input
+                id="restaurant-search"
+                type="text"
+                placeholder="Search restaurant name or area"
+                autocomplete="off"
+            >
+
+
+            <button
+                id="restaurant-search-button"
+                class="button"
+                type="button"
+            >
+                Search
+            </button>
+
+        </div>
+
+
+        <div class="help">
+
+            Restaurants come directly from
+            Kalxa Ticketing.
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =============================================
+         RESULTS
+    ============================================== -->
+
+    <div
+        id="restaurant-search-status"
+        class="restaurant-search-status"
+    ></div>
+
+
+    <div
+        id="restaurant-search-results"
+        class="restaurant-search-results"
+    ></div>
+
+
+
+    <!-- =============================================
+         SELECTED
+    ============================================== -->
+
+    <div class="selected-restaurants-heading">
+
+        Selected Restaurants
+
+    </div>
+
+
+    <div
+        id="selected-restaurants"
+        class="selected-restaurants"
+    ></div>
+
+
+    <!--
+        This hidden input remains compatible
+        with our Stage 3 backend.
+
+        Example:
+        1,7,12
+    -->
+
+    <input
+        id="restaurant_ids"
+        type="hidden"
+        name="restaurant_ids"
+        value="{{ restaurant_ids }}"
+    >
+
+
+</div>
+
+
+        <!-- =================================================
+             SEO
+        ================================================== -->
+
+        <div class="form-section">
+
+            <h2>
+                Search
+            </h2>
+
+
+            <div class="field">
+
+                <label>
+                    SEO Title
+                </label>
+
+                <input
+                    type="text"
+                    name="meta_title"
+                    value="{{
+                        request.form.get(
+                            'meta_title',
+                            article.meta_title
+                            if article
+                            and article.meta_title
+                            else ''
+                        )
+                    }}"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    SEO Description
+                </label>
+
+                <textarea
+                    name="meta_description"
+                >{{ request.form.get(
+                    'meta_description',
+                    article.meta_description
+                    if article
+                    and article.meta_description
+                    else ''
+                ) }}</textarea>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="side-panel">
+
+
+        <div class="form-section">
+
+            <h2>
+                Publish
+            </h2>
+
+
+            <div class="field">
+
+                <label>
+                    Story Type
+                </label>
+
+                {% set current_type =
+                    request.form.get(
+                        'article_type',
+                        article.article_type
+                        if article
+                        else 'restaurant_story'
+                    )
+                %}
+
+
+                <select
+                    name="article_type"
+                >
+
+                    {% for value, label in [
+                        (
+                            "restaurant_story",
+                            "Restaurant Story"
+                        ),
+                        (
+                            "food_guide",
+                            "Food Guide"
+                        ),
+                        (
+                            "sponsored",
+                            "Sponsored Story"
+                        ),
+                        (
+                            "new_restaurant",
+                            "New Restaurant"
+                        ),
+                        (
+                            "experience",
+                            "Experience"
+                        )
+                    ] %}
+
+                        <option
+                            value="{{ value }}"
+                            {% if current_type == value %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ label }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+
+            <div class="field">
+
+                <label>
+                    Status
+                </label>
+
+
+                {% set current_status =
+                    request.form.get(
+                        'status',
+                        article.status
+                        if article
+                        else 'draft'
+                    )
+                %}
+
+
+                <select
+                    name="status"
+                >
+
+                    <option
+                        value="draft"
+                        {% if current_status == "draft" %}
+                            selected
+                        {% endif %}
+                    >
+                        Draft
+                    </option>
+
+
+                    <option
+                        value="published"
+                        {% if current_status == "published" %}
+                            selected
+                        {% endif %}
+                    >
+                        Published
+                    </option>
+
+
+                    <option
+                        value="archived"
+                        {% if current_status == "archived" %}
+                            selected
+                        {% endif %}
+                    >
+                        Archived
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="field">
+
+                <div class="checkbox-row">
+
+                    <input
+                        id="is_sponsored"
+                        type="checkbox"
+                        name="is_sponsored"
+
+                        {% if
+                            request.form.get(
+                                'is_sponsored'
+                            )
+                            or
+                            (
+                                not request.form
+                                and
+                                article
+                                and
+                                article.is_sponsored
+                            )
+                        %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <label
+                        for="is_sponsored"
+                    >
+                        Sponsored story
+                    </label>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="side-actions">
+
+                <button
+                    class="button"
+                    type="submit"
+                >
+
+                    {% if page_mode == "new" %}
+
+                        Create Story
+
+                    {% else %}
+
+                        Save Changes
+
+                    {% endif %}
+
+                </button>
+
+
+                {% if
+                    article
+                    and
+                    article.status == "published"
+                %}
+
+                    <a
+                        class="button secondary"
+                        target="_blank"
+                        href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}"
+                    >
+                        View Story
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+
+            {% if article %}
+
+            <div class="danger-zone">
+
+                <button
+                    class="button danger"
+                    type="submit"
+                    formaction="{{ url_for(
+                        'admin.article_delete',
+                        article_id=article.id
+                    ) }}"
+                    formmethod="POST"
+                    onclick="
+                        return confirm(
+                            'Delete this story permanently?'
+                        );
+                    "
+                >
+                    Delete Story
+                </button>
+
+            </div>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </aside>
+
+
+</div>
+
+
+</form>
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
+
+        const searchInput =
+            document.getElementById(
+                "restaurant-search"
+            );
+
+        const searchButton =
+            document.getElementById(
+                "restaurant-search-button"
+            );
+
+        const resultsContainer =
+            document.getElementById(
+                "restaurant-search-results"
+            );
+
+        const statusContainer =
+            document.getElementById(
+                "restaurant-search-status"
+            );
+
+        const selectedContainer =
+            document.getElementById(
+                "selected-restaurants"
+            );
+
+        const hiddenInput =
+            document.getElementById(
+                "restaurant_ids"
+            );
+
+
+        // ====================================================
+        // SELECTED STATE
+        // ====================================================
+
+        const selectedRestaurants =
+            new Map();
+
+
+        // Existing article IDs.
+
+        const initialIds =
+            hiddenInput.value
+                .split(",")
+                .map(
+                    value =>
+                        value.trim()
+                )
+                .filter(Boolean);
+
+
+        for (
+            const id
+            of initialIds
+        ) {
+
+            selectedRestaurants.set(
+                String(id),
+                {
+                    id:
+                        Number(id),
+
+                    business_name:
+                        "Restaurant #" + id,
+
+                    area:
+                        "Loading..."
+                }
+            );
+
+        }
+
+
+        renderSelected();
+
+
+        // Load real information for
+        // existing restaurant IDs.
+
+        hydrateExistingRestaurants();
+
+
+
+        // ====================================================
+        // SEARCH
+        // ====================================================
+
+        async function searchRestaurants() {
+
+            const query =
+                searchInput.value.trim();
+
+            statusContainer.textContent =
+                "Searching Kalxa Ticketing...";
+
+            resultsContainer.innerHTML =
+                "";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{{ url_for('admin.restaurant_search') }}"
+                        +
+                        "?q="
+                        +
+                        encodeURIComponent(
+                            query
+                        )
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Restaurant search failed."
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                const restaurants =
+                    data.restaurants || [];
+
+
+                statusContainer.textContent =
+                    restaurants.length
+                        ? (
+                            restaurants.length
+                            +
+                            " restaurant(s) found."
+                        )
+                        : (
+                            "No restaurants found."
+                        );
+
+
+                renderResults(
+                    restaurants
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+                statusContainer.textContent =
+                    "Unable to connect to Kalxa Ticketing.";
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // RESULTS
+        // ====================================================
+
+        function renderResults(
+            restaurants
+        ) {
+
+            resultsContainer.innerHTML =
+                "";
+
+
+            for (
+                const restaurant
+                of restaurants
+            ) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "restaurant-result";
+
+
+                const info =
+                    document.createElement(
+                        "div"
+                    );
+
+                info.className =
+                    "restaurant-result-info";
+
+
+                const name =
+                    document.createElement(
+                        "div"
+                    );
+
+                name.className =
+                    "restaurant-result-name";
+
+                name.textContent =
+                    restaurant.business_name
+                    ||
+                    (
+                        "Restaurant #"
+                        +
+                        restaurant.id
+                    );
+
+
+                const area =
+                    document.createElement(
+                        "div"
+                    );
+
+                area.className =
+                    "restaurant-result-area";
+
+                area.textContent =
+                    restaurant.area
+                    ||
+                    restaurant.address
+                    ||
+                    "Area not specified";
+
+
+                info.appendChild(
+                    name
+                );
+
+                info.appendChild(
+                    area
+                );
+
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type =
+                    "button";
+
+                button.className =
+                    "restaurant-add-button";
+
+                button.textContent =
+                    selectedRestaurants.has(
+                        String(
+                            restaurant.id
+                        )
+                    )
+                        ? "Added"
+                        : "+ Add";
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        addRestaurant(
+                            restaurant
+                        );
+
+                        button.textContent =
+                            "Added";
+
+                    }
+                );
+
+
+                card.appendChild(
+                    info
+                );
+
+                card.appendChild(
+                    button
+                );
+
+                resultsContainer.appendChild(
+                    card
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // ADD
+        // ====================================================
+
+        function addRestaurant(
+            restaurant
+        ) {
+
+            selectedRestaurants.set(
+                String(
+                    restaurant.id
+                ),
+                restaurant
+            );
+
+            renderSelected();
+
+            syncHiddenInput();
+
+        }
+
+
+
+        // ====================================================
+        // REMOVE
+        // ====================================================
+
+        function removeRestaurant(
+            restaurantId
+        ) {
+
+            selectedRestaurants.delete(
+                String(
+                    restaurantId
+                )
+            );
+
+            renderSelected();
+
+            syncHiddenInput();
+
+        }
+
+
+
+        // ====================================================
+        // RENDER SELECTED
+        // ====================================================
+
+        function renderSelected() {
+
+            selectedContainer.innerHTML =
+                "";
+
+
+            if (
+                selectedRestaurants.size
+                === 0
+            ) {
+
+                const empty =
+                    document.createElement(
+                        "div"
+                    );
+
+                empty.className =
+                    "restaurant-empty";
+
+                empty.textContent =
+                    "No restaurants selected.";
+
+                selectedContainer.appendChild(
+                    empty
+                );
+
+                return;
+
+            }
+
+
+            for (
+                const restaurant
+                of selectedRestaurants.values()
+            ) {
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+                row.className =
+                    "selected-restaurant";
+
+
+                const info =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                const name =
+                    document.createElement(
+                        "div"
+                    );
+
+                name.className =
+                    "restaurant-result-name";
+
+                name.textContent =
+                    restaurant.business_name
+                    ||
+                    (
+                        "Restaurant #"
+                        +
+                        restaurant.id
+                    );
+
+
+                const area =
+                    document.createElement(
+                        "div"
+                    );
+
+                area.className =
+                    "restaurant-result-area";
+
+                area.textContent =
+                    restaurant.area
+                    ||
+                    restaurant.address
+                    ||
+                    "";
+
+
+                info.appendChild(
+                    name
+                );
+
+                info.appendChild(
+                    area
+                );
+
+
+                const removeButton =
+                    document.createElement(
+                        "button"
+                    );
+
+                removeButton.type =
+                    "button";
+
+                removeButton.className =
+                    "restaurant-remove-button";
+
+                removeButton.textContent =
+                    "Remove";
+
+
+                removeButton.addEventListener(
+                    "click",
+                    function () {
+
+                        removeRestaurant(
+                            restaurant.id
+                        );
+
+                    }
+                );
+
+
+                row.appendChild(
+                    info
+                );
+
+                row.appendChild(
+                    removeButton
+                );
+
+                selectedContainer.appendChild(
+                    row
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // HIDDEN INPUT
+        // ====================================================
+
+        function syncHiddenInput() {
+
+            hiddenInput.value =
+                Array.from(
+                    selectedRestaurants.keys()
+                )
+                .join(",");
+
+        }
+
+
+
+        // ====================================================
+        // HYDRATE EXISTING
+        // ====================================================
+
+        async function hydrateExistingRestaurants() {
+
+            if (
+                initialIds.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{{ url_for('admin.restaurant_search') }}"
+                    );
+
+
+                if (!response.ok) {
+
+                    return;
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                const restaurants =
+                    data.restaurants || [];
+
+
+                for (
+                    const restaurant
+                    of restaurants
+                ) {
+
+                    const key =
+                        String(
+                            restaurant.id
+                        );
+
+
+                    if (
+                        selectedRestaurants.has(
+                            key
+                        )
+                    ) {
+
+                        selectedRestaurants.set(
+                            key,
+                            restaurant
+                        );
+
+                    }
+
+                }
+
+
+                renderSelected();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // EVENTS
+        // ====================================================
+
+        searchButton.addEventListener(
+            "click",
+            searchRestaurants
+        );
+
+
+        searchInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    searchRestaurants();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+{% endblock %}
