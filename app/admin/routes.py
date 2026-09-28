@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from functools import wraps
 
-from sqlalchemy import func
+from sqlalchemy import case, func
 
 from flask import (
     Blueprint,
@@ -293,7 +293,7 @@ def dashboard():
 
 
     # ========================================================
-    # OVERALL CTR
+    # OVERALL RESTAURANT CTR
     # ========================================================
 
     if total_restaurant_impressions > 0:
@@ -314,8 +314,35 @@ def dashboard():
 
 
     # ========================================================
-    # PERFORMANCE BY STORY
+    # PERFORMANCE BY PUBLISHED STORY
     # ========================================================
+
+    article_view_case = case(
+        (
+            StoryAnalyticsEvent.event_type
+            == "article_view",
+            1,
+        ),
+        else_=0,
+    )
+
+    restaurant_impression_case = case(
+        (
+            StoryAnalyticsEvent.event_type
+            == "restaurant_impression",
+            1,
+        ),
+        else_=0,
+    )
+
+    restaurant_click_case = case(
+        (
+            StoryAnalyticsEvent.event_type
+            == "restaurant_click",
+            1,
+        ),
+        else_=0,
+    )
 
     article_rows = (
         db.session.query(
@@ -324,40 +351,19 @@ def dashboard():
             Article.slug,
 
             func.sum(
-                db.case(
-                    (
-                        StoryAnalyticsEvent.event_type
-                        == "article_view",
-                        1,
-                    ),
-                    else_=0,
-                )
+                article_view_case
             ).label(
                 "views"
             ),
 
             func.sum(
-                db.case(
-                    (
-                        StoryAnalyticsEvent.event_type
-                        == "restaurant_impression",
-                        1,
-                    ),
-                    else_=0,
-                )
+                restaurant_impression_case
             ).label(
                 "impressions"
             ),
 
             func.sum(
-                db.case(
-                    (
-                        StoryAnalyticsEvent.event_type
-                        == "restaurant_click",
-                        1,
-                    ),
-                    else_=0,
-                )
+                restaurant_click_case
             ).label(
                 "clicks"
             ),
@@ -367,6 +373,10 @@ def dashboard():
             StoryAnalyticsEvent.article_id
             == Article.id,
         )
+        .filter(
+            Article.status
+            == "published"
+        )
         .group_by(
             Article.id,
             Article.title,
@@ -374,15 +384,9 @@ def dashboard():
         )
         .order_by(
             func.sum(
-                db.case(
-                    (
-                        StoryAnalyticsEvent.event_type
-                        == "article_view",
-                        1,
-                    ),
-                    else_=0,
-                )
-            ).desc()
+                article_view_case
+            ).desc(),
+            Article.id.desc(),
         )
         .all()
     )
@@ -420,13 +424,26 @@ def dashboard():
             ctr = 0.0
 
         story_performance.append({
-            "id": row.id,
-            "title": row.title,
-            "slug": row.slug,
-            "views": views,
-            "impressions": impressions,
-            "clicks": clicks,
-            "ctr": ctr,
+            "id":
+                row.id,
+
+            "title":
+                row.title,
+
+            "slug":
+                row.slug,
+
+            "views":
+                views,
+
+            "impressions":
+                impressions,
+
+            "clicks":
+                clicks,
+
+            "ctr":
+                ctr,
         })
 
 
@@ -434,33 +451,37 @@ def dashboard():
     # RESTAURANT PERFORMANCE
     # ========================================================
 
+    restaurant_impression_case = case(
+        (
+            StoryAnalyticsEvent.event_type
+            == "restaurant_impression",
+            1,
+        ),
+        else_=0,
+    )
+
+    restaurant_click_case = case(
+        (
+            StoryAnalyticsEvent.event_type
+            == "restaurant_click",
+            1,
+        ),
+        else_=0,
+    )
+
     restaurant_rows = (
         db.session.query(
             StoryAnalyticsEvent
             .kalxa_restaurant_id,
 
             func.sum(
-                db.case(
-                    (
-                        StoryAnalyticsEvent.event_type
-                        == "restaurant_impression",
-                        1,
-                    ),
-                    else_=0,
-                )
+                restaurant_impression_case
             ).label(
                 "impressions"
             ),
 
             func.sum(
-                db.case(
-                    (
-                        StoryAnalyticsEvent.event_type
-                        == "restaurant_click",
-                        1,
-                    ),
-                    else_=0,
-                )
+                restaurant_click_case
             ).label(
                 "clicks"
             ),
@@ -476,15 +497,12 @@ def dashboard():
         )
         .order_by(
             func.sum(
-                db.case(
-                    (
-                        StoryAnalyticsEvent.event_type
-                        == "restaurant_click",
-                        1,
-                    ),
-                    else_=0,
-                )
-            ).desc()
+                restaurant_click_case
+            ).desc(),
+
+            StoryAnalyticsEvent
+            .kalxa_restaurant_id
+            .asc(),
         )
         .all()
     )
@@ -624,6 +642,7 @@ def dashboard():
     recent_article_ids = {
         event.article_id
         for event in recent_events
+        if event.article_id is not None
     }
 
     recent_article_lookup = {}
@@ -706,6 +725,10 @@ def dashboard():
                 "analytics restaurant data."
             )
 
+
+    # ========================================================
+    # BUILD RECENT ACTIVITY
+    # ========================================================
 
     recent_activity = []
 
@@ -912,8 +935,12 @@ def article_new():
             article
         )
 
-        # We need article.id before creating
-        # ArticleRestaurant records.
+        # ----------------------------------------------------
+        # FLUSH
+        #
+        # ArticleRestaurant needs article.id.
+        # ----------------------------------------------------
+
         db.session.flush()
 
         replace_restaurant_links(
@@ -1091,7 +1118,9 @@ def article_publish(article_id):
 
         abort(404)
 
-    article.status = "published"
+    article.status = (
+        "published"
+    )
 
     if article.published_at is None:
 
@@ -1139,7 +1168,9 @@ def article_archive(article_id):
 
         abort(404)
 
-    article.status = "archived"
+    article.status = (
+        "archived"
+    )
 
     db.session.commit()
 
@@ -1343,7 +1374,9 @@ def populate_article_from_form(
 
     if status not in allowed_statuses:
 
-        status = "draft"
+        status = (
+            "draft"
+        )
 
 
     # --------------------------------------------------------
@@ -1353,7 +1386,8 @@ def populate_article_from_form(
     existing_article = (
         Article.query
         .filter(
-            Article.slug == slug
+            Article.slug
+            == slug
         )
         .first()
     )
@@ -1377,9 +1411,13 @@ def populate_article_from_form(
     # ASSIGN
     # --------------------------------------------------------
 
-    article.title = title
+    article.title = (
+        title
+    )
 
-    article.slug = slug
+    article.slug = (
+        slug
+    )
 
     article.excerpt = (
         excerpt
@@ -1387,7 +1425,9 @@ def populate_article_from_form(
         None
     )
 
-    article.body = body
+    article.body = (
+        body
+    )
 
     article.cover_image_url = (
         cover_image_url
@@ -1399,7 +1439,9 @@ def populate_article_from_form(
         article_type
     )
 
-    article.status = status
+    article.status = (
+        status
+    )
 
     article.is_sponsored = (
         request.form.get(
@@ -1529,10 +1571,15 @@ def replace_restaurant_links(
 
         relation = ArticleRestaurant(
             article_id=article.id,
+
             kalxa_restaurant_id=(
                 restaurant_id
             ),
-            display_order=index,
+
+            display_order=(
+                index
+            ),
+
             is_primary=(
                 index == 0
             ),
