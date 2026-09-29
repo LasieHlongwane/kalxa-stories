@@ -216,7 +216,7 @@ Dashboard | Kalxa Stories
 
         border-collapse: collapse;
 
-        min-width: 680px;
+        min-width: 1050px;
 
     }
 
@@ -242,6 +242,8 @@ Dashboard | Kalxa Stories
         border-bottom:
             1px solid
             #d7dade;
+
+        white-space: nowrap;
 
     }
 
@@ -309,6 +311,33 @@ Dashboard | Kalxa Stories
     }
 
 
+    .conversion-count {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-width: 38px;
+
+        padding:
+            6px
+            9px;
+
+        border-radius: 999px;
+
+        background: #eaf8ef;
+
+        color: #176b39;
+
+        font-size: 12px;
+
+        font-weight: 900;
+
+    }
+
+
     .restaurant-name {
 
         font-weight: 800;
@@ -337,11 +366,18 @@ Dashboard | Kalxa Stories
 
         grid-template-columns:
             repeat(
-                3,
+                4,
                 minmax(0, 1fr)
             );
 
         gap: 12px;
+
+    }
+
+
+    .analytics-funnel.downstream {
+
+        margin-top: 12px;
 
     }
 
@@ -364,6 +400,21 @@ Dashboard | Kalxa Stories
             #d7dade;
 
         border-radius: 14px;
+
+    }
+
+
+    .funnel-step.intent {
+
+        background:
+            linear-gradient(
+                145deg,
+                #f2fff6,
+                #e8f7ed
+            );
+
+        border-color:
+            #cbe8d5;
 
     }
 
@@ -406,18 +457,20 @@ Dashboard | Kalxa Stories
 
         font-size: 11px;
 
+        line-height: 1.45;
+
     }
 
 
     /* =====================================================
-       STAGE 6 PLACEHOLDER
+       CONVERSION SUMMARY
     ===================================================== */
 
-    .conversion-preview {
+    .conversion-summary {
 
         margin-top: 16px;
 
-        padding: 18px;
+        padding: 20px;
 
         background:
             linear-gradient(
@@ -433,26 +486,73 @@ Dashboard | Kalxa Stories
     }
 
 
-    .conversion-preview strong {
+    .conversion-summary-title {
+
+        margin-bottom: 14px;
+
+        font-size: 13px;
+
+        font-weight: 900;
+
+    }
+
+
+    .conversion-summary-grid {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                5,
+                minmax(0, 1fr)
+            );
+
+        gap: 12px;
+
+    }
+
+
+    .conversion-summary-item {
+
+        padding: 13px;
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                .07
+            );
+
+        border-radius: 11px;
+
+    }
+
+
+    .conversion-summary-number {
 
         display: block;
 
         margin-bottom: 5px;
 
-        font-size: 13px;
+        font-size: 21px;
+
+        font-weight: 900;
 
     }
 
 
-    .conversion-preview p {
-
-        margin: 0;
+    .conversion-summary-label {
 
         color: #c8ccd2;
 
-        font-size: 12px;
+        font-size: 10px;
 
-        line-height: 1.6;
+        font-weight: 800;
+
+        text-transform: uppercase;
+
+        letter-spacing: .4px;
 
     }
 
@@ -596,6 +696,34 @@ Dashboard | Kalxa Stories
     ===================================================== */
 
     @media (
+        max-width: 1100px
+    ) {
+
+        .analytics-funnel {
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+        }
+
+
+        .conversion-summary-grid {
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+        }
+
+    }
+
+
+    @media (
         max-width: 950px
     ) {
 
@@ -606,14 +734,6 @@ Dashboard | Kalxa Stories
                     2,
                     1fr
                 );
-
-        }
-
-
-        .analytics-funnel {
-
-            grid-template-columns:
-                1fr;
 
         }
 
@@ -641,6 +761,22 @@ Dashboard | Kalxa Stories
     ) {
 
         .metrics {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .analytics-funnel {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .conversion-summary-grid {
 
             grid-template-columns:
                 1fr;
@@ -783,7 +919,7 @@ Dashboard | Kalxa Stories
 
 
 <!-- =====================================================
-     ANALYTICS HEADER
+     STORY ANALYTICS
 ====================================================== -->
 
 <div class="section-header">
@@ -795,18 +931,14 @@ Dashboard | Kalxa Stories
         </h2>
 
         <p>
-            Anonymous engagement across published Kalxa Stories.
+            Anonymous discovery and restaurant engagement
+            across Kalxa Stories.
         </p>
 
     </div>
 
 </div>
 
-
-
-<!-- =====================================================
-     ANALYTICS METRICS
-====================================================== -->
 
 <div class="metrics">
 
@@ -861,7 +993,7 @@ Dashboard | Kalxa Stories
         </div>
 
         <div class="metric-note">
-            Visits sent to Kalxa Ticketing
+            Clicks from Stories into Ticketing
         </div>
 
     </div>
@@ -880,7 +1012,7 @@ Dashboard | Kalxa Stories
         </div>
 
         <div class="metric-note">
-            Clicks ÷ impressions
+            Story clicks ÷ impressions
         </div>
 
     </div>
@@ -891,7 +1023,112 @@ Dashboard | Kalxa Stories
 
 
 <!-- =====================================================
-     CURRENT FUNNEL
+     TICKETING CONVERSION METRICS
+====================================================== -->
+
+<div class="section-header">
+
+    <div>
+
+        <h2>
+            Ticketing Conversions
+        </h2>
+
+        <p>
+            Downstream restaurant activity attributed back
+            to Kalxa Stories.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="metrics">
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Restaurant Views
+        </div>
+
+        <div class="metric-value">
+            {{ total_ticketing_restaurant_views }}
+        </div>
+
+        <div class="metric-note">
+
+            {{ "%.1f"|format(
+                ticketing_visit_rate
+            ) }}%
+
+            of Story restaurant clicks
+
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Experience Views
+        </div>
+
+        <div class="metric-value">
+            {{ total_experience_views }}
+        </div>
+
+        <div class="metric-note">
+            Customer experiences opened
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Meaningful Actions
+        </div>
+
+        <div class="metric-value">
+            {{ total_meaningful_actions }}
+        </div>
+
+        <div class="metric-note">
+            WhatsApp + calls + directions
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-label">
+            Action Rate
+        </div>
+
+        <div class="metric-value">
+            {{ "%.1f"|format(
+                meaningful_action_rate
+            ) }}%
+        </div>
+
+        <div class="metric-note">
+            Actions ÷ attributed restaurant views
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     COMPLETE CROSS-PLATFORM FUNNEL
 ====================================================== -->
 
 <div class="section-header">
@@ -903,8 +1140,8 @@ Dashboard | Kalxa Stories
         </h2>
 
         <p>
-            Current measured journey from editorial attention
-            into Kalxa Ticketing.
+            Anonymous journey from editorial discovery
+            through restaurant intent.
         </p>
 
     </div>
@@ -913,6 +1150,7 @@ Dashboard | Kalxa Stories
 
 
 <div class="panel">
+
 
     <div class="analytics-funnel">
 
@@ -928,7 +1166,7 @@ Dashboard | Kalxa Stories
             </span>
 
             <div class="funnel-note">
-                People opening published stories
+                Published stories opened
             </div>
 
         </div>
@@ -958,11 +1196,28 @@ Dashboard | Kalxa Stories
             </span>
 
             <span class="funnel-label">
-                Restaurant Visits
+                Restaurant Clicks
             </span>
 
             <div class="funnel-note">
-                Traffic sent into Kalxa Ticketing
+                Clicks leaving Stories for Ticketing
+            </div>
+
+        </div>
+
+
+        <div class="funnel-step">
+
+            <span class="funnel-number">
+                {{ total_ticketing_restaurant_views }}
+            </span>
+
+            <span class="funnel-label">
+                Restaurant Views
+            </span>
+
+            <div class="funnel-note">
+                Attributed Ticketing restaurant page views
             </div>
 
         </div>
@@ -971,20 +1226,159 @@ Dashboard | Kalxa Stories
     </div>
 
 
-    <div class="conversion-preview">
+    <div class="analytics-funnel downstream">
 
-        <strong>
-            Stage 6 · Cross-platform conversions
-        </strong>
 
-        <p>
-            The next analytics layer will continue this funnel
-            inside Kalxa Ticketing and attribute restaurant
-            actions such as experience views, WhatsApp clicks,
-            calls and directions back to the originating story.
-        </p>
+        <div class="funnel-step">
+
+            <span class="funnel-number">
+                {{ total_experience_views }}
+            </span>
+
+            <span class="funnel-label">
+                Experience Views
+            </span>
+
+            <div class="funnel-note">
+                Customer experiences opened
+            </div>
+
+        </div>
+
+
+        <div class="funnel-step intent">
+
+            <span class="funnel-number">
+                {{ total_whatsapp_clicks }}
+            </span>
+
+            <span class="funnel-label">
+                WhatsApp
+            </span>
+
+            <div class="funnel-note">
+                Attributed WhatsApp intent
+            </div>
+
+        </div>
+
+
+        <div class="funnel-step intent">
+
+            <span class="funnel-number">
+                {{ total_phone_clicks }}
+            </span>
+
+            <span class="funnel-label">
+                Calls
+            </span>
+
+            <div class="funnel-note">
+                Attributed phone intent
+            </div>
+
+        </div>
+
+
+        <div class="funnel-step intent">
+
+            <span class="funnel-number">
+                {{ total_directions_clicks }}
+            </span>
+
+            <span class="funnel-label">
+                Directions
+            </span>
+
+            <div class="funnel-note">
+                Attributed location intent
+            </div>
+
+        </div>
+
 
     </div>
+
+
+    <div class="conversion-summary">
+
+        <div class="conversion-summary-title">
+            Cross-platform conversion summary
+        </div>
+
+
+        <div class="conversion-summary-grid">
+
+
+            <div class="conversion-summary-item">
+
+                <span class="conversion-summary-number">
+                    {{ total_ticketing_restaurant_views }}
+                </span>
+
+                <span class="conversion-summary-label">
+                    Restaurant Views
+                </span>
+
+            </div>
+
+
+            <div class="conversion-summary-item">
+
+                <span class="conversion-summary-number">
+                    {{ total_experience_views }}
+                </span>
+
+                <span class="conversion-summary-label">
+                    Experience Views
+                </span>
+
+            </div>
+
+
+            <div class="conversion-summary-item">
+
+                <span class="conversion-summary-number">
+                    {{ total_whatsapp_clicks }}
+                </span>
+
+                <span class="conversion-summary-label">
+                    WhatsApp
+                </span>
+
+            </div>
+
+
+            <div class="conversion-summary-item">
+
+                <span class="conversion-summary-number">
+                    {{ total_phone_clicks + total_directions_clicks }}
+                </span>
+
+                <span class="conversion-summary-label">
+                    Calls + Directions
+                </span>
+
+            </div>
+
+
+            <div class="conversion-summary-item">
+
+                <span class="conversion-summary-number">
+                    {{ total_meaningful_actions }}
+                </span>
+
+                <span class="conversion-summary-label">
+                    Meaningful Actions
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
 
 </div>
 
@@ -1003,7 +1397,8 @@ Dashboard | Kalxa Stories
         </h2>
 
         <p>
-            See which published stories generate restaurant interest.
+            Discovery, restaurant traffic and downstream
+            conversions by published story.
         </p>
 
     </div>
@@ -1043,6 +1438,34 @@ Dashboard | Kalxa Stories
 
                         <th>
                             CTR
+                        </th>
+
+                        <th>
+                            Restaurant Views
+                        </th>
+
+                        <th>
+                            Experiences
+                        </th>
+
+                        <th>
+                            WhatsApp
+                        </th>
+
+                        <th>
+                            Calls
+                        </th>
+
+                        <th>
+                            Directions
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                        <th>
+                            Action Rate
                         </th>
 
                     </tr>
@@ -1101,6 +1524,53 @@ Dashboard | Kalxa Stories
 
                             </td>
 
+
+                            <td class="number-cell">
+                                {{ item.restaurant_views }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.experience_views }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.whatsapp_clicks }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.phone_clicks }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.directions_clicks }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="conversion-count">
+                                    {{ item.meaningful_actions }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="ctr">
+
+                                    {{ "%.1f"|format(
+                                        item.action_rate
+                                    ) }}%
+
+                                </span>
+
+                            </td>
+
                         </tr>
 
                     {% endfor %}
@@ -1141,7 +1611,8 @@ Dashboard | Kalxa Stories
         </h2>
 
         <p>
-            Engagement generated for restaurants through Kalxa Stories.
+            Story exposure and attributed restaurant intent
+            across Kalxa.
         </p>
 
     </div>
@@ -1176,11 +1647,39 @@ Dashboard | Kalxa Stories
                         </th>
 
                         <th>
-                            Visits
+                            Story Clicks
                         </th>
 
                         <th>
                             CTR
+                        </th>
+
+                        <th>
+                            Restaurant Views
+                        </th>
+
+                        <th>
+                            Experiences
+                        </th>
+
+                        <th>
+                            WhatsApp
+                        </th>
+
+                        <th>
+                            Calls
+                        </th>
+
+                        <th>
+                            Directions
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                        <th>
+                            Action Rate
                         </th>
 
                     </tr>
@@ -1242,6 +1741,53 @@ Dashboard | Kalxa Stories
 
                             </td>
 
+
+                            <td class="number-cell">
+                                {{ item.restaurant_views }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.experience_views }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.whatsapp_clicks }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.phone_clicks }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ item.directions_clicks }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="conversion-count">
+                                    {{ item.meaningful_actions }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="ctr">
+
+                                    {{ "%.1f"|format(
+                                        item.action_rate
+                                    ) }}%
+
+                                </span>
+
+                            </td>
+
                         </tr>
 
                     {% endfor %}
@@ -1278,11 +1824,12 @@ Dashboard | Kalxa Stories
     <div>
 
         <h2>
-            Recent Activity
+            Recent Story Activity
         </h2>
 
         <p>
-            Latest anonymous story and restaurant interactions.
+            Latest anonymous interactions recorded by
+            Kalxa Stories.
         </p>
 
     </div>
