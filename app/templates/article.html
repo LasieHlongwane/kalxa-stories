@@ -121,12 +121,13 @@
 
 
 <!-- ========================================================
-     BODY
+     ARTICLE BODY
 ========================================================= -->
 
 <section class="article-body-section">
 
     <div class="article-container">
+
 
         <div class="article-body">
 
@@ -135,121 +136,203 @@
         </div>
 
 
-       {% if featured_restaurants %}
 
-<div class="restaurant-story-box">
+        <!-- =================================================
+             FEATURED RESTAURANTS
+        ================================================== -->
 
+        {% if featured_restaurants %}
 
-    <div class="restaurant-story-label">
-        DISCOVER ON KALXA
-    </div>
-
-
-    <h3>
-        Restaurants featured in this story
-    </h3>
+        <div class="restaurant-story-box">
 
 
-    <p>
-        Explore these restaurants and their
-        experiences through Kalxa.
-    </p>
+            <!-- =============================================
+                 SECTION LABEL
+            ============================================== -->
+
+            <div class="restaurant-story-label">
+                DISCOVER ON KALXA
+            </div>
+
+
+            <h3>
+                Restaurants featured in this story
+            </h3>
+
+
+            <p>
+                Explore these restaurants and their
+                experiences through Kalxa.
+            </p>
 
 
 
-    <div class="featured-restaurant-list">
+            <!-- =============================================
+                 RESTAURANT LIST
+            ============================================== -->
+
+            <div class="featured-restaurant-list">
 
 
-        {% for restaurant
-            in featured_restaurants
-        %}
+                {% for restaurant in featured_restaurants %}
 
 
-        <div class="restaurant-reference">
+                <div class="restaurant-reference">
 
 
-            <div class="restaurant-reference-content">
-
-
-                <span
-                    class="restaurant-reference-label"
-                >
-                    Restaurant
-                </span>
-
-
-                <strong>
-                    {{ restaurant.business_name }}
-                </strong>
-
-
-                {% if restaurant.headline %}
+                    <!-- =====================================
+                         RESTAURANT INFORMATION
+                    ====================================== -->
 
                     <div
-                        class="restaurant-reference-headline"
+                        class="restaurant-reference-content"
                     >
-                        {{ restaurant.headline }}
+
+
+                        <span
+                            class="restaurant-reference-label"
+                        >
+                            Restaurant
+                        </span>
+
+
+                        <strong>
+
+                            {% if restaurant.business_name %}
+
+                                {{ restaurant.business_name }}
+
+                            {% elif restaurant.name %}
+
+                                {{ restaurant.name }}
+
+                            {% else %}
+
+                                Kalxa Restaurant
+
+                            {% endif %}
+
+                        </strong>
+
+
+
+                        <!-- ================================
+                             HEADLINE
+                        ================================= -->
+
+                        {% if restaurant.headline %}
+
+                        <div
+                            class="restaurant-reference-headline"
+                        >
+                            {{ restaurant.headline }}
+                        </div>
+
+                        {% endif %}
+
+
+
+                        <!-- ================================
+                             LOCATION
+                        ================================= -->
+
+                        {% if restaurant.area %}
+
+                        <div
+                            class="restaurant-reference-area"
+                        >
+                            📍 {{ restaurant.area }}
+                        </div>
+
+                        {% elif restaurant.address %}
+
+                        <div
+                            class="restaurant-reference-area"
+                        >
+                            📍 {{ restaurant.address }}
+                        </div>
+
+                        {% endif %}
+
+
+
+                        <!-- ================================
+                             PRICE
+                        ================================= -->
+
+                        {% if restaurant.price_text %}
+
+                        <div
+                            class="restaurant-reference-price"
+                        >
+                            {{ restaurant.price_text }}
+                        </div>
+
+                        {% endif %}
+
+
                     </div>
 
-                {% endif %}
 
 
-                {% if restaurant.area %}
+                    <!-- =====================================
+                         TRACKED RESTAURANT CTA
+                    ====================================== -->
+                    <!--
+                        IMPORTANT:
 
-                    <div
-                        class="restaurant-reference-area"
+                        Do NOT link directly to:
+
+                        restaurant.profile_url
+
+                        The visitor must first go through the
+                        Kalxa Stories restaurant_click route.
+
+                        Flow:
+
+                        Story
+                            ↓
+                        restaurant_click()
+                            ↓
+                        restaurant_click analytics event
+                            ↓
+                        signed kat token
+                            ↓
+                        Kalxa Ticketing
+                            ↓
+                        restaurant_view attribution
+                    ====================================== -->
+
+                    {% if restaurant.id %}
+
+                    <a
+                        class="restaurant-view-button"
+
+                        href="{{ url_for(
+                            'public.restaurant_click',
+                            slug=article.slug,
+                            restaurant_id=restaurant.id
+                        ) }}"
                     >
-                        📍 {{ restaurant.area }}
-                    </div>
+                        View Restaurant on Kalxa →
+                    </a>
 
-                {% elif restaurant.address %}
-
-                    <div
-                        class="restaurant-reference-area"
-                    >
-                        📍 {{ restaurant.address }}
-                    </div>
-
-                {% endif %}
+                    {% endif %}
 
 
-                {% if restaurant.price_text %}
+                </div>
 
-                    <div
-                        class="restaurant-reference-price"
-                    >
-                        {{ restaurant.price_text }}
-                    </div>
 
-                {% endif %}
+                {% endfor %}
 
 
             </div>
 
 
-
-            <a
-                class="restaurant-view-button"
-                href="{{ restaurant.profile_url }}"
-                target="_blank"
-                rel="noopener"
-            >
-                View Restaurant →
-            </a>
-
-
         </div>
 
+        {% endif %}
 
-        {% endfor %}
-
-
-    </div>
-
-
-</div>
-
-{% endif %}
 
     </div>
 
@@ -288,6 +371,10 @@
             <article class="story-card">
 
 
+                <!-- =========================================
+                     RELATED STORY IMAGE
+                ========================================== -->
+
                 <a
                     href="{{ url_for(
                         'public.article_detail',
@@ -297,6 +384,7 @@
 
                     <div class="story-image">
 
+
                         {% if related.cover_image_url %}
 
                         <img
@@ -305,9 +393,12 @@
                             loading="lazy"
                         >
 
+
                         {% else %}
 
-                        <div class="image-placeholder small">
+                        <div
+                            class="image-placeholder small"
+                        >
 
                             <span>
                                 K
@@ -317,12 +408,19 @@
 
                         {% endif %}
 
+
                     </div>
 
                 </a>
 
 
+
+                <!-- =========================================
+                     RELATED STORY CONTENT
+                ========================================== -->
+
                 <div class="story-card-content">
+
 
                     <div class="story-meta">
 
@@ -336,6 +434,7 @@
                         </span>
 
                     </div>
+
 
 
                     <h3>
@@ -352,8 +451,10 @@
                     </h3>
 
 
+
                     <a
                         class="read-link"
+
                         href="{{ url_for(
                             'public.article_detail',
                             slug=related.slug
@@ -361,6 +462,7 @@
                     >
                         Read story →
                     </a>
+
 
                 </div>
 
