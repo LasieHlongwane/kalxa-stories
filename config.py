@@ -103,6 +103,11 @@ class Config:
         "",
     )
 
+    KALXA_ATTRIBUTION_SECRET = os.getenv(
+        "KALXA_ATTRIBUTION_SECRET",
+        "",
+    )
+
 
     # --------------------------------------------------------
     # KALXA TICKETING
