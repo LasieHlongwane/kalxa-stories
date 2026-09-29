@@ -3,6 +3,12 @@ from datetime import (
     timedelta,
     timezone,
 )
+from urllib.parse import (
+    parse_qsl,
+    urlencode,
+    urlsplit,
+    urlunsplit,
+)
 from uuid import uuid4
 
 from flask import (
@@ -14,6 +20,7 @@ from flask import (
     request,
     session,
 )
+
 from app.extensions import db
 
 from app.models import (
@@ -50,13 +57,13 @@ ANALYTICS_DEDUPLICATION_MINUTES = 30
 
 def get_analytics_session_id():
     """
-    Return an anonymous browser/session identifier.
+    Return an anonymous Kalxa Stories browser/session ID.
 
     No name, email address, phone number or Kalxa account
     information is required.
 
-    Flask stores this identifier inside the visitor's
-    signed session cookie.
+    Flask stores this identifier inside the visitor's signed
+    session cookie.
     """
 
     session_id = session.get(
@@ -95,7 +102,9 @@ def recent_event_exists(
     """
 
     cutoff = (
-        datetime.now(timezone.utc)
+        datetime.now(
+            timezone.utc
+        )
         -
         timedelta(
             minutes=(
@@ -158,11 +167,12 @@ def record_analytics_event(
     Store one anonymous Kalxa Stories analytics event.
 
     Returns True when a new event is recorded.
+
     Returns False when the event is skipped or could not
     safely be recorded.
 
-    Analytics should never prevent the visitor from
-    reading a story or opening a restaurant.
+    Analytics must never prevent the visitor from reading
+    a story or opening a restaurant.
     """
 
     session_id = (
@@ -171,7 +181,8 @@ def record_analytics_event(
 
     if (
         deduplicate
-        and recent_event_exists(
+        and
+        recent_event_exists(
             article_id=article.id,
             event_type=event_type,
             session_id=session_id,
@@ -221,6 +232,89 @@ def record_analytics_event(
 
 
 # ============================================================
+# BUILD ATTRIBUTED TICKETING URL
+# ============================================================
+
+def build_attributed_ticketing_url(
+    profile_url,
+    article,
+    restaurant_id,
+    analytics_session_id,
+):
+    """
+    Add Kalxa Stories attribution parameters to a Ticketing
+    restaurant URL while preserving any query parameters that
+    may already exist.
+
+    Example:
+
+    /restaurant/2
+        ?source=stories
+        &article_id=7
+        &restaurant_id=2
+        &source_session=abc123
+    """
+
+    if not profile_url:
+
+        return None
+
+    try:
+
+        parsed_url = urlsplit(
+            profile_url
+        )
+
+        existing_query = dict(
+            parse_qsl(
+                parsed_url.query,
+                keep_blank_values=True,
+            )
+        )
+
+        existing_query.update({
+            "source":
+                "stories",
+
+            "article_id":
+                str(
+                    article.id
+                ),
+
+            "restaurant_id":
+                str(
+                    restaurant_id
+                ),
+
+            "source_session":
+                analytics_session_id,
+        })
+
+        updated_query = urlencode(
+            existing_query
+        )
+
+        return urlunsplit(
+            (
+                parsed_url.scheme,
+                parsed_url.netloc,
+                parsed_url.path,
+                updated_query,
+                parsed_url.fragment,
+            )
+        )
+
+    except Exception:
+
+        current_app.logger.exception(
+            "Unable to build attributed "
+            "Kalxa Ticketing URL."
+        )
+
+        return profile_url
+
+
+# ============================================================
 # HOME
 # ============================================================
 
@@ -257,7 +351,9 @@ def home():
         featured_article=(
             featured_article
         ),
-        articles=remaining_articles,
+        articles=(
+            remaining_articles
+        ),
     )
 
 
@@ -265,7 +361,9 @@ def home():
 # ALL STORIES
 # ============================================================
 
-@public_bp.route("/stories")
+@public_bp.route(
+    "/stories"
+)
 def stories():
 
     articles = (
@@ -293,7 +391,9 @@ def stories():
 @public_bp.route(
     "/stories/<string:slug>"
 )
-def article_detail(slug):
+def article_detail(
+    slug,
+):
 
     article = (
         Article.query
@@ -317,7 +417,8 @@ def article_detail(slug):
         article=article,
         event_type="article_view",
         metadata={
-            "source": "article_page",
+            "source":
+                "article_page",
         },
     )
 
@@ -354,12 +455,12 @@ def article_detail(slug):
     # RESTAURANT IMPRESSIONS
     # ========================================================
     #
-    # At this stage an impression means that the restaurant
-    # card was included on the rendered article page.
+    # For the current MVP an impression means that the
+    # restaurant card was included in the rendered article.
     #
-    # Later, JavaScript/IntersectionObserver can make this
-    # stricter by recording only cards actually visible in
-    # the visitor's viewport.
+    # Later this can be upgraded to IntersectionObserver
+    # tracking so an impression only counts once the card
+    # actually enters the visitor's viewport.
     # ========================================================
 
     for position, restaurant in enumerate(
@@ -386,10 +487,11 @@ def article_detail(slug):
                 restaurant_id
             ),
             metadata={
-                "position": position,
-                "source": (
-                    "article_restaurant_card"
-                ),
+                "position":
+                    position,
+
+                "source":
+                    "article_restaurant_card",
             },
         )
 
@@ -416,6 +518,10 @@ def article_detail(slug):
     )
 
 
+    # ========================================================
+    # RENDER
+    # ========================================================
+
     return render_template(
         "article.html",
         article=article,
@@ -431,6 +537,7 @@ def article_detail(slug):
 # ============================================================
 # TRACK RESTAURANT CLICK
 # ============================================================
+
 @public_bp.route(
     "/stories/<string:slug>/restaurants/<int:restaurant_id>"
 )
@@ -442,8 +549,11 @@ def restaurant_click(
     article = (
         Article.query
         .filter(
-            Article.slug == slug,
-            Article.status == "published",
+            Article.slug
+            == slug,
+
+            Article.status
+            == "published",
         )
         .first_or_404()
     )
@@ -454,17 +564,24 @@ def restaurant_click(
     # ========================================================
 
     linked_restaurant_ids = {
+
         relation.kalxa_restaurant_id
-        for relation in article.restaurants
+
+        for relation
+        in article.restaurants
+
     }
 
-    if restaurant_id not in linked_restaurant_ids:
+    if (
+        restaurant_id
+        not in linked_restaurant_ids
+    ):
 
         abort(404)
 
 
     # ========================================================
-    # GET LIVE RESTAURANT
+    # GET LIVE RESTAURANT FROM KALXA TICKETING
     # ========================================================
 
     restaurant = (
@@ -499,44 +616,58 @@ def restaurant_click(
 
 
     # ========================================================
-    # RECORD STORIES CLICK
+    # RECORD STORIES RESTAURANT CLICK
     # ========================================================
 
     record_analytics_event(
         article=article,
-        event_type="restaurant_click",
-        restaurant_id=restaurant_id,
+        event_type=(
+            "restaurant_click"
+        ),
+        restaurant_id=(
+            restaurant_id
+        ),
         metadata={
             "source":
                 "article_restaurant_card",
+
+            "destination":
+                "kalxa_ticketing",
         },
         deduplicate=False,
     )
 
 
     # ========================================================
-    # ADD ATTRIBUTION TO TICKETING URL
+    # BUILD ATTRIBUTED TICKETING URL
     # ========================================================
 
-    separator = (
-        "&"
-        if "?" in profile_url
-        else
-        "?"
-    )
-
     attributed_url = (
-        f"{profile_url}"
-        f"{separator}"
-        f"source=stories"
-        f"&article_id={article.id}"
-        f"&source_session={analytics_session_id}"
+        build_attributed_ticketing_url(
+            profile_url=profile_url,
+            article=article,
+            restaurant_id=(
+                restaurant_id
+            ),
+            analytics_session_id=(
+                analytics_session_id
+            ),
+        )
     )
 
+    if not attributed_url:
+
+        abort(404)
+
+
+    # ========================================================
+    # REDIRECT TO KALXA TICKETING
+    # ========================================================
 
     return redirect(
         attributed_url
     )
+
 
 # ============================================================
 # HEALTH
@@ -548,6 +679,9 @@ def restaurant_click(
 def health():
 
     return {
-        "status": "ok",
-        "service": "kalxa-stories",
+        "status":
+            "ok",
+
+        "service":
+            "kalxa-stories",
     }, 200
