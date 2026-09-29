@@ -431,69 +431,57 @@ def article_detail(slug):
 # ============================================================
 # TRACK RESTAURANT CLICK
 # ============================================================
-
 @public_bp.route(
-    (
-        "/stories/<string:slug>"
-        "/restaurants/<int:restaurant_id>"
-    )
+    "/stories/<string:slug>/restaurants/<int:restaurant_id>"
 )
 def restaurant_click(
     slug,
     restaurant_id,
 ):
-    """
-    Record a restaurant click and then redirect the visitor
-    to the restaurant's Kalxa Ticketing page.
-    """
 
     article = (
         Article.query
-        .filter_by(
-            slug=slug,
-            status="published",
+        .filter(
+            Article.slug == slug,
+            Article.status == "published",
         )
-        .first()
+        .first_or_404()
     )
 
-    if article is None:
-
-        abort(404)
-
 
     # ========================================================
-    # VERIFY RESTAURANT BELONGS TO ARTICLE
+    # VERIFY RESTAURANT BELONGS TO STORY
     # ========================================================
 
-    restaurant_ids = {
-
+    linked_restaurant_ids = {
         relation.kalxa_restaurant_id
-
-        for relation
-        in article.restaurants
-
+        for relation in article.restaurants
     }
 
-    if restaurant_id not in restaurant_ids:
+    if restaurant_id not in linked_restaurant_ids:
 
         abort(404)
 
 
     # ========================================================
-    # GET LIVE RESTAURANT DATA
+    # GET LIVE RESTAURANT
     # ========================================================
 
-    restaurant = get_restaurant(
-        restaurant_id
+    restaurant = (
+        get_restaurant(
+            restaurant_id
+        )
     )
 
-    if restaurant is None:
+    if not restaurant:
 
         abort(404)
 
 
-    profile_url = restaurant.get(
-        "profile_url"
+    profile_url = (
+        restaurant.get(
+            "profile_url"
+        )
     )
 
     if not profile_url:
@@ -502,7 +490,16 @@ def restaurant_click(
 
 
     # ========================================================
-    # RECORD CLICK
+    # ANONYMOUS STORIES SESSION
+    # ========================================================
+
+    analytics_session_id = (
+        get_analytics_session_id()
+    )
+
+
+    # ========================================================
+    # RECORD STORIES CLICK
     # ========================================================
 
     record_analytics_event(
@@ -510,27 +507,36 @@ def restaurant_click(
         event_type="restaurant_click",
         restaurant_id=restaurant_id,
         metadata={
-            "source": (
-                "article_restaurant_card"
-            ),
+            "source":
+                "article_restaurant_card",
         },
-
-        # A visitor intentionally clicking a restaurant
-        # several times can represent several genuine
-        # actions, so clicks are not deduplicated.
         deduplicate=False,
     )
 
 
     # ========================================================
-    # REDIRECT TO KALXA TICKETING
+    # ADD ATTRIBUTION TO TICKETING URL
     # ========================================================
 
-    return redirect(
-        profile_url,
-        code=302,
+    separator = (
+        "&"
+        if "?" in profile_url
+        else
+        "?"
     )
 
+    attributed_url = (
+        f"{profile_url}"
+        f"{separator}"
+        f"source=stories"
+        f"&article_id={article.id}"
+        f"&source_session={analytics_session_id}"
+    )
+
+
+    return redirect(
+        attributed_url
+    )
 
 # ============================================================
 # HEALTH
