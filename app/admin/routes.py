@@ -26,6 +26,7 @@ from app.models import (
 
 from app.kalxa.client import (
     get_restaurants_by_ids,
+    get_story_conversion_analytics,
     search_restaurants,
 )
 
@@ -240,7 +241,7 @@ def dashboard():
 
 
     # ========================================================
-    # OVERALL ANALYTICS
+    # OVERALL STORIES ANALYTICS
     # ========================================================
 
     total_story_views = (
@@ -391,6 +392,59 @@ def dashboard():
         .all()
     )
 
+
+    # ========================================================
+    # TICKETING CONVERSION ANALYTICS
+    # ========================================================
+    #
+    # Stories owns:
+    #
+    # article_view
+    # restaurant_impression
+    # restaurant_click
+    #
+    # Ticketing owns:
+    #
+    # restaurant_view
+    # experience_view
+    # whatsapp_click
+    # phone_click
+    # directions_click
+    #
+    # The private API returns aggregate data only.
+    # ========================================================
+
+    published_story_ids = [
+        row.id
+        for row in article_rows
+    ]
+
+    ticketing_conversion_analytics = {}
+
+    if published_story_ids:
+
+        try:
+
+            ticketing_conversion_analytics = (
+                get_story_conversion_analytics(
+                    published_story_ids
+                )
+            )
+
+        except Exception:
+
+            current_app.logger.exception(
+                "Unable to retrieve Ticketing "
+                "conversion analytics."
+            )
+
+            ticketing_conversion_analytics = {}
+
+
+    # ========================================================
+    # BUILD STORY PERFORMANCE
+    # ========================================================
+
     story_performance = []
 
     for row in article_rows:
@@ -423,6 +477,115 @@ def dashboard():
 
             ctr = 0.0
 
+
+        ticketing_story = (
+            ticketing_conversion_analytics
+            .get(
+                row.id,
+                {},
+            )
+        )
+
+        ticketing_totals = (
+            ticketing_story.get(
+                "totals",
+                {},
+            )
+            or
+            {}
+        )
+
+        restaurant_views = int(
+            ticketing_totals.get(
+                "restaurant_views",
+                0,
+            )
+            or 0
+        )
+
+        experience_views = int(
+            ticketing_totals.get(
+                "experience_views",
+                0,
+            )
+            or 0
+        )
+
+        whatsapp_clicks = int(
+            ticketing_totals.get(
+                "whatsapp_clicks",
+                0,
+            )
+            or 0
+        )
+
+        phone_clicks = int(
+            ticketing_totals.get(
+                "phone_clicks",
+                0,
+            )
+            or 0
+        )
+
+        directions_clicks = int(
+            ticketing_totals.get(
+                "directions_clicks",
+                0,
+            )
+            or 0
+        )
+
+        meaningful_actions = int(
+            ticketing_totals.get(
+                "meaningful_actions",
+                0,
+            )
+            or 0
+        )
+
+
+        # ----------------------------------------------------
+        # CLICK → RESTAURANT VIEW RATE
+        # ----------------------------------------------------
+
+        if clicks > 0:
+
+            restaurant_view_rate = round(
+                (
+                    restaurant_views
+                    /
+                    clicks
+                )
+                * 100,
+                1,
+            )
+
+        else:
+
+            restaurant_view_rate = 0.0
+
+
+        # ----------------------------------------------------
+        # RESTAURANT VIEW → MEANINGFUL ACTION RATE
+        # ----------------------------------------------------
+
+        if restaurant_views > 0:
+
+            action_rate = round(
+                (
+                    meaningful_actions
+                    /
+                    restaurant_views
+                )
+                * 100,
+                1,
+            )
+
+        else:
+
+            action_rate = 0.0
+
+
         story_performance.append({
             "id":
                 row.id,
@@ -444,7 +607,122 @@ def dashboard():
 
             "ctr":
                 ctr,
+
+            "restaurant_views":
+                restaurant_views,
+
+            "experience_views":
+                experience_views,
+
+            "whatsapp_clicks":
+                whatsapp_clicks,
+
+            "phone_clicks":
+                phone_clicks,
+
+            "directions_clicks":
+                directions_clicks,
+
+            "meaningful_actions":
+                meaningful_actions,
+
+            "restaurant_view_rate":
+                restaurant_view_rate,
+
+            "action_rate":
+                action_rate,
         })
+
+
+    # ========================================================
+    # OVERALL TICKETING CONVERSION TOTALS
+    # ========================================================
+
+    total_ticketing_restaurant_views = sum(
+        item[
+            "restaurant_views"
+        ]
+        for item
+        in story_performance
+    )
+
+    total_experience_views = sum(
+        item[
+            "experience_views"
+        ]
+        for item
+        in story_performance
+    )
+
+    total_whatsapp_clicks = sum(
+        item[
+            "whatsapp_clicks"
+        ]
+        for item
+        in story_performance
+    )
+
+    total_phone_clicks = sum(
+        item[
+            "phone_clicks"
+        ]
+        for item
+        in story_performance
+    )
+
+    total_directions_clicks = sum(
+        item[
+            "directions_clicks"
+        ]
+        for item
+        in story_performance
+    )
+
+    total_meaningful_actions = sum(
+        item[
+            "meaningful_actions"
+        ]
+        for item
+        in story_performance
+    )
+
+
+    # ========================================================
+    # OVERALL DOWNSTREAM CONVERSION RATES
+    # ========================================================
+
+    if total_restaurant_clicks > 0:
+
+        ticketing_visit_rate = round(
+            (
+                total_ticketing_restaurant_views
+                /
+                total_restaurant_clicks
+            )
+            * 100,
+            1,
+        )
+
+    else:
+
+        ticketing_visit_rate = 0.0
+
+
+    if total_ticketing_restaurant_views > 0:
+
+        meaningful_action_rate = round(
+            (
+                total_meaningful_actions
+                /
+                total_ticketing_restaurant_views
+            )
+            * 100,
+            1,
+        )
+
+    else:
+
+        meaningful_action_rate = 0.0
 
 
     # ========================================================
@@ -509,14 +787,157 @@ def dashboard():
 
 
     # ========================================================
+    # TICKETING TOTALS BY RESTAURANT
+    # ========================================================
+
+    ticketing_by_restaurant = {}
+
+    for story_data in (
+        ticketing_conversion_analytics
+        .values()
+    ):
+
+        restaurants = (
+            story_data.get(
+                "restaurants",
+                [],
+            )
+            or
+            []
+        )
+
+        for restaurant_data in restaurants:
+
+            restaurant_id = (
+                restaurant_data.get(
+                    "restaurant_id"
+                )
+            )
+
+            if restaurant_id is None:
+
+                continue
+
+            try:
+
+                restaurant_id = int(
+                    restaurant_id
+                )
+
+            except (
+                TypeError,
+                ValueError,
+            ):
+
+                continue
+
+            if (
+                restaurant_id
+                not in ticketing_by_restaurant
+            ):
+
+                ticketing_by_restaurant[
+                    restaurant_id
+                ] = {
+                    "restaurant_views":
+                        0,
+
+                    "experience_views":
+                        0,
+
+                    "whatsapp_clicks":
+                        0,
+
+                    "phone_clicks":
+                        0,
+
+                    "directions_clicks":
+                        0,
+
+                    "meaningful_actions":
+                        0,
+                }
+
+            totals = (
+                ticketing_by_restaurant[
+                    restaurant_id
+                ]
+            )
+
+            totals[
+                "restaurant_views"
+            ] += int(
+                restaurant_data.get(
+                    "restaurant_views",
+                    0,
+                )
+                or 0
+            )
+
+            totals[
+                "experience_views"
+            ] += int(
+                restaurant_data.get(
+                    "experience_views",
+                    0,
+                )
+                or 0
+            )
+
+            totals[
+                "whatsapp_clicks"
+            ] += int(
+                restaurant_data.get(
+                    "whatsapp_clicks",
+                    0,
+                )
+                or 0
+            )
+
+            totals[
+                "phone_clicks"
+            ] += int(
+                restaurant_data.get(
+                    "phone_clicks",
+                    0,
+                )
+                or 0
+            )
+
+            totals[
+                "directions_clicks"
+            ] += int(
+                restaurant_data.get(
+                    "directions_clicks",
+                    0,
+                )
+                or 0
+            )
+
+            totals[
+                "meaningful_actions"
+            ] += int(
+                restaurant_data.get(
+                    "meaningful_actions",
+                    0,
+                )
+                or 0
+            )
+
+
+    # ========================================================
     # FETCH LIVE RESTAURANT NAMES FROM TICKETING
     # ========================================================
 
-    restaurant_ids = [
+    restaurant_ids = {
         row.kalxa_restaurant_id
         for row in restaurant_rows
         if row.kalxa_restaurant_id is not None
-    ]
+    }
+
+    restaurant_ids.update(
+        ticketing_by_restaurant.keys()
+    )
 
     live_restaurants = []
 
@@ -526,7 +947,9 @@ def dashboard():
 
             live_restaurants = (
                 get_restaurants_by_ids(
-                    restaurant_ids
+                    sorted(
+                        restaurant_ids
+                    )
                 )
             )
 
@@ -551,7 +974,11 @@ def dashboard():
     }
 
 
-    restaurant_performance = []
+    # ========================================================
+    # STORIES RESTAURANT METRICS LOOKUP
+    # ========================================================
+
+    stories_restaurant_lookup = {}
 
     for row in restaurant_rows:
 
@@ -559,13 +986,119 @@ def dashboard():
             row.kalxa_restaurant_id
         )
 
+        stories_restaurant_lookup[
+            restaurant_id
+        ] = {
+            "impressions":
+                int(
+                    row.impressions
+                    or 0
+                ),
+
+            "clicks":
+                int(
+                    row.clicks
+                    or 0
+                ),
+        }
+
+
+    # ========================================================
+    # BUILD RESTAURANT PERFORMANCE
+    # ========================================================
+
+    all_performance_restaurant_ids = set(
+        stories_restaurant_lookup.keys()
+    )
+
+    all_performance_restaurant_ids.update(
+        ticketing_by_restaurant.keys()
+    )
+
+    restaurant_performance = []
+
+    for restaurant_id in sorted(
+        all_performance_restaurant_ids
+    ):
+
+        stories_metrics = (
+            stories_restaurant_lookup.get(
+                restaurant_id,
+                {},
+            )
+        )
+
+        ticketing_metrics = (
+            ticketing_by_restaurant.get(
+                restaurant_id,
+                {},
+            )
+        )
+
         impressions = int(
-            row.impressions or 0
+            stories_metrics.get(
+                "impressions",
+                0,
+            )
+            or 0
         )
 
         clicks = int(
-            row.clicks or 0
+            stories_metrics.get(
+                "clicks",
+                0,
+            )
+            or 0
         )
+
+        restaurant_views = int(
+            ticketing_metrics.get(
+                "restaurant_views",
+                0,
+            )
+            or 0
+        )
+
+        experience_views = int(
+            ticketing_metrics.get(
+                "experience_views",
+                0,
+            )
+            or 0
+        )
+
+        whatsapp_clicks = int(
+            ticketing_metrics.get(
+                "whatsapp_clicks",
+                0,
+            )
+            or 0
+        )
+
+        phone_clicks = int(
+            ticketing_metrics.get(
+                "phone_clicks",
+                0,
+            )
+            or 0
+        )
+
+        directions_clicks = int(
+            ticketing_metrics.get(
+                "directions_clicks",
+                0,
+            )
+            or 0
+        )
+
+        meaningful_actions = int(
+            ticketing_metrics.get(
+                "meaningful_actions",
+                0,
+            )
+            or 0
+        )
+
 
         if impressions > 0:
 
@@ -582,6 +1115,24 @@ def dashboard():
         else:
 
             ctr = 0.0
+
+
+        if restaurant_views > 0:
+
+            action_rate = round(
+                (
+                    meaningful_actions
+                    /
+                    restaurant_views
+                )
+                * 100,
+                1,
+            )
+
+        else:
+
+            action_rate = 0.0
+
 
         restaurant = (
             restaurant_lookup.get(
@@ -616,11 +1167,55 @@ def dashboard():
 
             "ctr":
                 ctr,
+
+            "restaurant_views":
+                restaurant_views,
+
+            "experience_views":
+                experience_views,
+
+            "whatsapp_clicks":
+                whatsapp_clicks,
+
+            "phone_clicks":
+                phone_clicks,
+
+            "directions_clicks":
+                directions_clicks,
+
+            "meaningful_actions":
+                meaningful_actions,
+
+            "action_rate":
+                action_rate,
         })
 
 
+    restaurant_performance.sort(
+        key=lambda item: (
+            -item[
+                "meaningful_actions"
+            ],
+            -item[
+                "restaurant_views"
+            ],
+            -item[
+                "clicks"
+            ],
+            item[
+                "restaurant_id"
+            ],
+        )
+    )
+
+
     # ========================================================
-    # RECENT ANALYTICS ACTIVITY
+    # RECENT STORIES ANALYTICS ACTIVITY
+    # ========================================================
+    #
+    # Ticketing deliberately exposes aggregate analytics only,
+    # so individual downstream Ticketing events are NOT added
+    # to this activity feed.
     # ========================================================
 
     recent_events = (
@@ -833,6 +1428,38 @@ def dashboard():
             restaurant_ctr
         ),
 
+        total_ticketing_restaurant_views=(
+            total_ticketing_restaurant_views
+        ),
+
+        total_experience_views=(
+            total_experience_views
+        ),
+
+        total_whatsapp_clicks=(
+            total_whatsapp_clicks
+        ),
+
+        total_phone_clicks=(
+            total_phone_clicks
+        ),
+
+        total_directions_clicks=(
+            total_directions_clicks
+        ),
+
+        total_meaningful_actions=(
+            total_meaningful_actions
+        ),
+
+        ticketing_visit_rate=(
+            ticketing_visit_rate
+        ),
+
+        meaningful_action_rate=(
+            meaningful_action_rate
+        ),
+
         story_performance=(
             story_performance
         ),
@@ -934,12 +1561,6 @@ def article_new():
         db.session.add(
             article
         )
-
-        # ----------------------------------------------------
-        # FLUSH
-        #
-        # ArticleRestaurant needs article.id.
-        # ----------------------------------------------------
 
         db.session.flush()
 
@@ -1490,14 +2111,6 @@ def replace_restaurant_links(
     article,
     raw_restaurant_ids,
 ):
-
-    # --------------------------------------------------------
-    # PARSE
-    #
-    # Example:
-    #
-    # 12, 18, 24
-    # --------------------------------------------------------
 
     restaurant_ids = []
 
