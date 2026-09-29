@@ -3,12 +3,14 @@ from datetime import (
     timedelta,
     timezone,
 )
+
 from urllib.parse import (
     parse_qsl,
     urlencode,
     urlsplit,
     urlunsplit,
 )
+
 from uuid import uuid4
 
 from flask import (
@@ -19,6 +21,10 @@ from flask import (
     render_template,
     request,
     session,
+)
+
+from itsdangerous import (
+    URLSafeTimedSerializer,
 )
 
 from app.extensions import db
@@ -52,6 +58,27 @@ ANALYTICS_DEDUPLICATION_MINUTES = 30
 
 
 # ============================================================
+# KALXA CROSS-APP ATTRIBUTION SETTINGS
+# ============================================================
+#
+# IMPORTANT:
+#
+# Kalxa Stories and Kalxa Ticketing MUST use the same:
+#
+# KALXA_ATTRIBUTION_SECRET
+#
+# The secret itself must live in the environment and must
+# never be committed to GitHub.
+#
+# The salt must also match the salt used by Ticketing.
+# ============================================================
+
+KALXA_ATTRIBUTION_SALT = (
+    "kalxa-restaurant-attribution"
+)
+
+
+# ============================================================
 # ANONYMOUS ANALYTICS SESSION
 # ============================================================
 
@@ -66,19 +93,25 @@ def get_analytics_session_id():
     session cookie.
     """
 
-    session_id = session.get(
-        ANALYTICS_SESSION_KEY
+    session_id = (
+        session.get(
+            ANALYTICS_SESSION_KEY
+        )
     )
+
 
     if not session_id:
 
-        session_id = uuid4().hex
+        session_id = (
+            uuid4().hex
+        )
 
         session[
             ANALYTICS_SESSION_KEY
         ] = session_id
 
         session.modified = True
+
 
     return session_id
 
@@ -113,8 +146,10 @@ def recent_event_exists(
         )
     )
 
+
     query = (
         StoryAnalyticsEvent.query
+
         .filter(
             StoryAnalyticsEvent.article_id
             == article_id,
@@ -130,21 +165,27 @@ def recent_event_exists(
         )
     )
 
+
     if restaurant_id is None:
 
-        query = query.filter(
-            StoryAnalyticsEvent
-            .kalxa_restaurant_id
-            .is_(None)
+        query = (
+            query.filter(
+                StoryAnalyticsEvent
+                .kalxa_restaurant_id
+                .is_(None)
+            )
         )
 
     else:
 
-        query = query.filter(
-            StoryAnalyticsEvent
-            .kalxa_restaurant_id
-            == restaurant_id
+        query = (
+            query.filter(
+                StoryAnalyticsEvent
+                .kalxa_restaurant_id
+                == restaurant_id
+            )
         )
+
 
     return (
         query.first()
@@ -179,35 +220,61 @@ def record_analytics_event(
         get_analytics_session_id()
     )
 
+
     if (
         deduplicate
         and
         recent_event_exists(
-            article_id=article.id,
-            event_type=event_type,
-            session_id=session_id,
-            restaurant_id=restaurant_id,
+            article_id=(
+                article.id
+            ),
+            event_type=(
+                event_type
+            ),
+            session_id=(
+                session_id
+            ),
+            restaurant_id=(
+                restaurant_id
+            ),
         )
     ):
 
         return False
 
-    event = StoryAnalyticsEvent(
-        article_id=article.id,
-        event_type=event_type,
-        kalxa_restaurant_id=(
-            restaurant_id
-        ),
-        session_id=session_id,
-        referrer=(
-            request.referrer
-            if request
-            else None
-        ),
-        event_metadata=(
-            metadata or {}
-        ),
+
+    event = (
+        StoryAnalyticsEvent(
+            article_id=(
+                article.id
+            ),
+
+            event_type=(
+                event_type
+            ),
+
+            kalxa_restaurant_id=(
+                restaurant_id
+            ),
+
+            session_id=(
+                session_id
+            ),
+
+            referrer=(
+                request.referrer
+                if request
+                else None
+            ),
+
+            event_metadata=(
+                metadata
+                or
+                {}
+            ),
+        )
     )
+
 
     try:
 
@@ -218,6 +285,7 @@ def record_analytics_event(
         db.session.commit()
 
         return True
+
 
     except Exception:
 
@@ -232,6 +300,122 @@ def record_analytics_event(
 
 
 # ============================================================
+# BUILD SIGNED ATTRIBUTION TOKEN
+# ============================================================
+
+def build_attribution_token(
+    article,
+    restaurant_id,
+    analytics_session_id,
+):
+    """
+    Create a signed Kalxa Stories attribution token.
+
+    Kalxa Ticketing verifies this token before accepting
+    Stories attribution.
+
+    The token contains only anonymous attribution data.
+
+    Payload example:
+
+        {
+            "source": "kalxa_stories",
+            "story_id": 7,
+            "restaurant_id": 2,
+            "source_session_id": "abc123..."
+        }
+
+    No customer name, email address, phone number or IP
+    address is included.
+    """
+
+    # ========================================================
+    # ATTRIBUTION SECRET
+    # ========================================================
+
+    secret = (
+        current_app.config
+        .get(
+            "KALXA_ATTRIBUTION_SECRET",
+            "",
+        )
+    )
+
+
+    if secret:
+
+        secret = (
+            str(
+                secret
+            )
+            .strip()
+        )
+
+
+    if not secret:
+
+        current_app.logger.error(
+            "KALXA_ATTRIBUTION_SECRET "
+            "is not configured."
+        )
+
+        return None
+
+
+    # ========================================================
+    # SERIALIZER
+    # ========================================================
+
+    serializer = (
+        URLSafeTimedSerializer(
+            secret,
+            salt=(
+                KALXA_ATTRIBUTION_SALT
+            ),
+        )
+    )
+
+
+    # ========================================================
+    # SIGNED PAYLOAD
+    # ========================================================
+
+    payload = {
+        "source":
+            "kalxa_stories",
+
+        "story_id":
+            article.id,
+
+        "restaurant_id":
+            restaurant_id,
+
+        "source_session_id":
+            analytics_session_id,
+    }
+
+
+    # ========================================================
+    # CREATE TOKEN
+    # ========================================================
+
+    try:
+
+        return serializer.dumps(
+            payload
+        )
+
+    except Exception:
+
+        current_app.logger.exception(
+            "Unable to create Kalxa Stories "
+            "attribution token."
+        )
+
+        return None
+
+
+# ============================================================
 # BUILD ATTRIBUTED TICKETING URL
 # ============================================================
 
@@ -242,28 +426,78 @@ def build_attributed_ticketing_url(
     analytics_session_id,
 ):
     """
-    Add Kalxa Stories attribution parameters to a Ticketing
-    restaurant URL while preserving any query parameters that
-    may already exist.
+    Add a signed Kalxa Stories attribution token to the
+    Ticketing restaurant URL.
+
+    Existing query parameters are preserved.
 
     Example:
 
-    /restaurant/2
-        ?source=stories
-        &article_id=7
-        &restaurant_id=2
-        &source_session=abc123
+        https://tickets.kalxa.co.za/restaurant/2
+            ?kat=<SIGNED_TOKEN>
+
+    If attribution cannot be generated, the visitor can
+    still reach the restaurant through the original
+    profile URL.
     """
 
     if not profile_url:
 
         return None
 
+
+    # ========================================================
+    # BUILD SIGNED TOKEN
+    # ========================================================
+
+    token = (
+        build_attribution_token(
+            article=(
+                article
+            ),
+
+            restaurant_id=(
+                restaurant_id
+            ),
+
+            analytics_session_id=(
+                analytics_session_id
+            ),
+        )
+    )
+
+
+    # ========================================================
+    # ATTRIBUTION FAILURE
+    # ========================================================
+    #
+    # Analytics must never prevent restaurant discovery.
+    #
+    # If signing fails, redirect to the normal restaurant
+    # profile without attribution.
+    # ========================================================
+
+    if not token:
+
+        return profile_url
+
+
     try:
 
-        parsed_url = urlsplit(
-            profile_url
+        # ====================================================
+        # PARSE PROFILE URL
+        # ====================================================
+
+        parsed_url = (
+            urlsplit(
+                profile_url
+            )
         )
+
+
+        # ====================================================
+        # PRESERVE EXISTING QUERY PARAMETERS
+        # ====================================================
 
         existing_query = dict(
             parse_qsl(
@@ -272,42 +506,80 @@ def build_attributed_ticketing_url(
             )
         )
 
-        existing_query.update({
-            "source":
-                "stories",
 
-            "article_id":
-                str(
-                    article.id
-                ),
+        # ====================================================
+        # REMOVE LEGACY UNSIGNED ATTRIBUTION
+        # ====================================================
+        #
+        # These parameters were used by the earlier Stage 6
+        # implementation.
+        #
+        # They are removed so the signed token becomes the
+        # single source of truth.
+        # ====================================================
 
-            "restaurant_id":
-                str(
-                    restaurant_id
-                ),
-
-            "source_session":
-                analytics_session_id,
-        })
-
-        updated_query = urlencode(
-            existing_query
+        existing_query.pop(
+            "source",
+            None,
         )
 
-        return urlunsplit(
-            (
-                parsed_url.scheme,
-                parsed_url.netloc,
-                parsed_url.path,
-                updated_query,
-                parsed_url.fragment,
+        existing_query.pop(
+            "article_id",
+            None,
+        )
+
+        existing_query.pop(
+            "restaurant_id",
+            None,
+        )
+
+        existing_query.pop(
+            "source_session",
+            None,
+        )
+
+
+        # ====================================================
+        # ADD SIGNED ATTRIBUTION
+        # ====================================================
+
+        existing_query[
+            "kat"
+        ] = token
+
+
+        # ====================================================
+        # REBUILD QUERY
+        # ====================================================
+
+        updated_query = (
+            urlencode(
+                existing_query
             )
         )
+
+
+        # ====================================================
+        # REBUILD URL
+        # ====================================================
+
+        return (
+            urlunsplit(
+                (
+                    parsed_url.scheme,
+                    parsed_url.netloc,
+                    parsed_url.path,
+                    updated_query,
+                    parsed_url.fragment,
+                )
+            )
+        )
+
 
     except Exception:
 
         current_app.logger.exception(
-            "Unable to build attributed "
+            "Unable to build signed "
             "Kalxa Ticketing URL."
         )
 
@@ -323,16 +595,25 @@ def home():
 
     articles = (
         Article.query
+
         .filter_by(
-            status="published"
+            status=(
+                "published"
+            )
         )
+
         .order_by(
             Article.published_at.desc(),
             Article.created_at.desc(),
         )
-        .limit(12)
+
+        .limit(
+            12
+        )
+
         .all()
     )
+
 
     featured_article = (
         articles[0]
@@ -340,17 +621,23 @@ def home():
         else None
     )
 
+
     remaining_articles = (
         articles[1:]
-        if len(articles) > 1
+        if len(
+            articles
+        ) > 1
         else []
     )
 
+
     return render_template(
         "home.html",
+
         featured_article=(
             featured_article
         ),
+
         articles=(
             remaining_articles
         ),
@@ -368,19 +655,28 @@ def stories():
 
     articles = (
         Article.query
+
         .filter_by(
-            status="published"
+            status=(
+                "published"
+            )
         )
+
         .order_by(
             Article.published_at.desc(),
             Article.created_at.desc(),
         )
+
         .all()
     )
 
+
     return render_template(
         "stories.html",
-        articles=articles,
+
+        articles=(
+            articles
+        ),
     )
 
 
@@ -397,16 +693,26 @@ def article_detail(
 
     article = (
         Article.query
+
         .filter_by(
-            slug=slug,
-            status="published",
+            slug=(
+                slug
+            ),
+
+            status=(
+                "published"
+            ),
         )
+
         .first()
     )
 
+
     if article is None:
 
-        abort(404)
+        abort(
+            404
+        )
 
 
     # ========================================================
@@ -414,8 +720,14 @@ def article_detail(
     # ========================================================
 
     record_analytics_event(
-        article=article,
-        event_type="article_view",
+        article=(
+            article
+        ),
+
+        event_type=(
+            "article_view"
+        ),
+
         metadata={
             "source":
                 "article_page",
@@ -427,10 +739,13 @@ def article_detail(
     # KALXA TICKETING RESTAURANTS
     # ========================================================
 
-    relations = sorted(
-        article.restaurants,
-        key=lambda relation:
-            relation.display_order,
+    relations = (
+        sorted(
+            article.restaurants,
+
+            key=lambda relation:
+                relation.display_order,
+        )
     )
 
 
@@ -474,18 +789,25 @@ def article_detail(
             )
         )
 
+
         if restaurant_id is None:
 
             continue
 
+
         record_analytics_event(
-            article=article,
+            article=(
+                article
+            ),
+
             event_type=(
                 "restaurant_impression"
             ),
+
             restaurant_id=(
                 restaurant_id
             ),
+
             metadata={
                 "position":
                     position,
@@ -502,6 +824,7 @@ def article_detail(
 
     related_articles = (
         Article.query
+
         .filter(
             Article.status
             == "published",
@@ -509,11 +832,16 @@ def article_detail(
             Article.id
             != article.id,
         )
+
         .order_by(
             Article.published_at.desc(),
             Article.created_at.desc(),
         )
-        .limit(3)
+
+        .limit(
+            3
+        )
+
         .all()
     )
 
@@ -524,10 +852,15 @@ def article_detail(
 
     return render_template(
         "article.html",
-        article=article,
+
+        article=(
+            article
+        ),
+
         featured_restaurants=(
             featured_restaurants
         ),
+
         related_articles=(
             related_articles
         ),
@@ -546,8 +879,13 @@ def restaurant_click(
     restaurant_id,
 ):
 
+    # ========================================================
+    # STORY
+    # ========================================================
+
     article = (
         Article.query
+
         .filter(
             Article.slug
             == slug,
@@ -555,6 +893,7 @@ def restaurant_click(
             Article.status
             == "published",
         )
+
         .first_or_404()
     )
 
@@ -572,12 +911,15 @@ def restaurant_click(
 
     }
 
+
     if (
         restaurant_id
         not in linked_restaurant_ids
     ):
 
-        abort(404)
+        abort(
+            404
+        )
 
 
     # ========================================================
@@ -590,9 +932,12 @@ def restaurant_click(
         )
     )
 
+
     if not restaurant:
 
-        abort(404)
+        abort(
+            404
+        )
 
 
     profile_url = (
@@ -601,9 +946,12 @@ def restaurant_click(
         )
     )
 
+
     if not profile_url:
 
-        abort(404)
+        abort(
+            404
+        )
 
 
     # ========================================================
@@ -620,13 +968,18 @@ def restaurant_click(
     # ========================================================
 
     record_analytics_event(
-        article=article,
+        article=(
+            article
+        ),
+
         event_type=(
             "restaurant_click"
         ),
+
         restaurant_id=(
             restaurant_id
         ),
+
         metadata={
             "source":
                 "article_restaurant_card",
@@ -634,30 +987,50 @@ def restaurant_click(
             "destination":
                 "kalxa_ticketing",
         },
+
         deduplicate=False,
     )
 
 
     # ========================================================
-    # BUILD ATTRIBUTED TICKETING URL
+    # BUILD SIGNED TICKETING URL
+    # ========================================================
+    #
+    # Example:
+    #
+    # https://tickets.kalxa.co.za/restaurant/2
+    #     ?kat=<SIGNED_TOKEN>
+    #
+    # Kalxa Ticketing verifies this token using the same
+    # KALXA_ATTRIBUTION_SECRET.
     # ========================================================
 
     attributed_url = (
         build_attributed_ticketing_url(
-            profile_url=profile_url,
-            article=article,
+            profile_url=(
+                profile_url
+            ),
+
+            article=(
+                article
+            ),
+
             restaurant_id=(
                 restaurant_id
             ),
+
             analytics_session_id=(
                 analytics_session_id
             ),
         )
     )
 
+
     if not attributed_url:
 
-        abort(404)
+        abort(
+            404
+        )
 
 
     # ========================================================
