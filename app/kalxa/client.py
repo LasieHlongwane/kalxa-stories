@@ -13,6 +13,10 @@ RESTAURANTS_ENDPOINT = (
     "/api/public/restaurants"
 )
 
+INTERNAL_RESTAURANT_ANALYTICS_ENDPOINT = (
+    "/api/internal/restaurant-analytics"
+)
+
 
 # ============================================================
 # BASE URL
@@ -46,6 +50,41 @@ def get_ticketing_base_url():
 
 
 # ============================================================
+# INTERNAL API KEY
+# ============================================================
+
+def get_internal_api_key():
+    """
+    Return the private Kalxa service-to-service API key.
+
+    This key is used only when Kalxa Stories communicates
+    with private Kalxa Ticketing endpoints.
+
+    It must never be exposed to:
+    - browser JavaScript
+    - Jinja templates
+    - public API responses
+    - URLs
+    """
+
+    api_key = current_app.config.get(
+        "KALXA_INTERNAL_API_KEY",
+        "",
+    )
+
+    if not api_key:
+
+        current_app.logger.error(
+            "KALXA_INTERNAL_API_KEY "
+            "is not configured."
+        )
+
+        return ""
+
+    return api_key.strip()
+
+
+# ============================================================
 # BUILD API URL
 # ============================================================
 
@@ -65,6 +104,54 @@ def build_api_url(
         f"{base_url}/"
         f"{path.lstrip('/')}"
     )
+
+
+# ============================================================
+# PUBLIC REQUEST HEADERS
+# ============================================================
+
+def get_public_headers():
+    """
+    Headers used for public Kalxa Ticketing API requests.
+    """
+
+    return {
+        "Accept":
+            "application/json",
+
+        "User-Agent":
+            "Kalxa-Stories/1.0",
+    }
+
+
+# ============================================================
+# INTERNAL REQUEST HEADERS
+# ============================================================
+
+def get_internal_headers():
+    """
+    Headers used for private Kalxa service-to-service
+    API requests.
+
+    Returns None when the internal API key is unavailable.
+    """
+
+    api_key = get_internal_api_key()
+
+    if not api_key:
+
+        return None
+
+    return {
+        "Accept":
+            "application/json",
+
+        "User-Agent":
+            "Kalxa-Stories/1.0",
+
+        "X-Kalxa-Internal-Key":
+            api_key,
+    }
 
 
 # ============================================================
@@ -116,12 +203,7 @@ def search_restaurants(
             url,
             params=params,
             timeout=DEFAULT_TIMEOUT,
-            headers={
-                "Accept": "application/json",
-                "User-Agent": (
-                    "Kalxa-Stories/1.0"
-                ),
-            },
+            headers=get_public_headers(),
         )
 
         current_app.logger.info(
@@ -279,12 +361,7 @@ def get_restaurant(
         response = requests.get(
             url,
             timeout=DEFAULT_TIMEOUT,
-            headers={
-                "Accept": "application/json",
-                "User-Agent": (
-                    "Kalxa-Stories/1.0"
-                ),
-            },
+            headers=get_public_headers(),
         )
 
         if response.status_code == 404:
@@ -426,6 +503,587 @@ def get_restaurants_by_ids(
             )
 
     return restaurants
+
+
+# ============================================================
+# NORMALIZE STORY IDS
+# ============================================================
+
+def normalize_story_ids(
+    story_ids,
+):
+    """
+    Normalize story IDs before sending them to the private
+    Ticketing analytics API.
+
+    Invalid IDs are ignored.
+
+    Duplicate IDs are removed while preserving order.
+
+    Maximum:
+        100 story IDs per request.
+    """
+
+    normalized_ids = []
+
+    seen = set()
+
+    for story_id in (
+        story_ids or []
+    ):
+
+        try:
+
+            story_id = int(
+                story_id
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            continue
+
+        if story_id <= 0:
+
+            continue
+
+        if story_id in seen:
+
+            continue
+
+        seen.add(
+            story_id
+        )
+
+        normalized_ids.append(
+            story_id
+        )
+
+        if len(
+            normalized_ids
+        ) >= 100:
+
+            break
+
+    return normalized_ids
+
+
+# ============================================================
+# EMPTY STORY CONVERSION ANALYTICS
+# ============================================================
+
+def empty_story_conversion_analytics(
+    story_id,
+):
+    """
+    Return a predictable zero-value analytics structure.
+
+    This allows the dashboard to render normally even when
+    Ticketing is temporarily unavailable.
+    """
+
+    return {
+        "story_id":
+            story_id,
+
+        "totals": {
+            "restaurant_views":
+                0,
+
+            "experience_views":
+                0,
+
+            "whatsapp_clicks":
+                0,
+
+            "phone_clicks":
+                0,
+
+            "directions_clicks":
+                0,
+
+            "meaningful_actions":
+                0,
+        },
+
+        "restaurants":
+            [],
+    }
+
+
+# ============================================================
+# GET STORY CONVERSION ANALYTICS
+# ============================================================
+
+def get_story_conversion_analytics(
+    story_ids,
+):
+    """
+    Retrieve aggregated downstream conversion analytics
+    from Kalxa Ticketing.
+
+    Example:
+
+        get_story_conversion_analytics(
+            [1, 2, 3]
+        )
+
+    Ticketing may return:
+
+        restaurant_view
+        experience_view
+        whatsapp_click
+        phone_click
+        directions_click
+
+    The private Ticketing endpoint returns aggregates only.
+
+    Raw anonymous session IDs are never returned to Stories.
+
+    Return format:
+
+        {
+            1: {
+                "story_id": 1,
+                "totals": {...},
+                "restaurants": [...]
+            },
+
+            2: {
+                ...
+            }
+        }
+
+    The dictionary is keyed by integer story ID so dashboard
+    code can efficiently perform:
+
+        analytics.get(article.id)
+    """
+
+    normalized_story_ids = (
+        normalize_story_ids(
+            story_ids
+        )
+    )
+
+    if not normalized_story_ids:
+
+        return {}
+
+    # --------------------------------------------------------
+    # DEFAULT ZERO RESULTS
+    # --------------------------------------------------------
+    #
+    # We create these before calling Ticketing.
+    #
+    # Therefore if Ticketing is unavailable, Stories can still
+    # render its dashboard without crashing.
+    # --------------------------------------------------------
+
+    results = {
+        story_id:
+            empty_story_conversion_analytics(
+                story_id
+            )
+
+        for story_id
+        in normalized_story_ids
+    }
+
+    # --------------------------------------------------------
+    # URL
+    # --------------------------------------------------------
+
+    url = build_api_url(
+        INTERNAL_RESTAURANT_ANALYTICS_ENDPOINT
+    )
+
+    if not url:
+
+        return results
+
+    # --------------------------------------------------------
+    # INTERNAL HEADERS
+    # --------------------------------------------------------
+
+    headers = get_internal_headers()
+
+    if not headers:
+
+        current_app.logger.error(
+            "Unable to request Ticketing conversion "
+            "analytics because the internal API key "
+            "is unavailable."
+        )
+
+        return results
+
+    # --------------------------------------------------------
+    # REQUEST PARAMETERS
+    # --------------------------------------------------------
+
+    params = {
+        "story_ids":
+            ",".join(
+                str(
+                    story_id
+                )
+                for story_id
+                in normalized_story_ids
+            )
+    }
+
+    current_app.logger.info(
+        "Requesting Kalxa Ticketing conversion "
+        "analytics for %s story/stories.",
+        len(
+            normalized_story_ids
+        ),
+    )
+
+    try:
+
+        response = requests.get(
+            url,
+            params=params,
+            timeout=DEFAULT_TIMEOUT,
+            headers=headers,
+        )
+
+        current_app.logger.info(
+            "Kalxa Ticketing internal analytics "
+            "API returned status %s.",
+            response.status_code,
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        # ----------------------------------------------------
+        # VALIDATE ROOT RESPONSE
+        # ----------------------------------------------------
+
+        if not isinstance(
+            data,
+            dict,
+        ):
+
+            current_app.logger.error(
+                "Unexpected Kalxa Ticketing analytics "
+                "response type: %s",
+                type(data).__name__,
+            )
+
+            return results
+
+        if data.get(
+            "ok"
+        ) is not True:
+
+            current_app.logger.error(
+                "Kalxa Ticketing analytics API "
+                "returned ok=false."
+            )
+
+            return results
+
+        stories = data.get(
+            "stories",
+            [],
+        )
+
+        if not isinstance(
+            stories,
+            list,
+        ):
+
+            current_app.logger.error(
+                "Kalxa Ticketing analytics response "
+                "'stories' is not a list."
+            )
+
+            return results
+
+        # ----------------------------------------------------
+        # NORMALIZE RESPONSE
+        # ----------------------------------------------------
+
+        for story in stories:
+
+            if not isinstance(
+                story,
+                dict,
+            ):
+
+                continue
+
+            try:
+
+                story_id = int(
+                    story.get(
+                        "story_id"
+                    )
+                )
+
+            except (
+                TypeError,
+                ValueError,
+            ):
+
+                continue
+
+            if (
+                story_id
+                not in results
+            ):
+
+                continue
+
+            totals = story.get(
+                "totals",
+                {},
+            )
+
+            if not isinstance(
+                totals,
+                dict,
+            ):
+
+                totals = {}
+
+            restaurants = story.get(
+                "restaurants",
+                [],
+            )
+
+            if not isinstance(
+                restaurants,
+                list,
+            ):
+
+                restaurants = []
+
+            # ------------------------------------------------
+            # NORMALIZE RESTAURANT ANALYTICS
+            # ------------------------------------------------
+
+            normalized_restaurants = []
+
+            for restaurant in restaurants:
+
+                if not isinstance(
+                    restaurant,
+                    dict,
+                ):
+
+                    continue
+
+                try:
+
+                    restaurant_id = int(
+                        restaurant.get(
+                            "restaurant_id"
+                        )
+                    )
+
+                except (
+                    TypeError,
+                    ValueError,
+                ):
+
+                    continue
+
+                normalized_restaurants.append(
+                    {
+                        "restaurant_id":
+                            restaurant_id,
+
+                        "restaurant_views":
+                            safe_int(
+                                restaurant.get(
+                                    "restaurant_views"
+                                )
+                            ),
+
+                        "experience_views":
+                            safe_int(
+                                restaurant.get(
+                                    "experience_views"
+                                )
+                            ),
+
+                        "whatsapp_clicks":
+                            safe_int(
+                                restaurant.get(
+                                    "whatsapp_clicks"
+                                )
+                            ),
+
+                        "phone_clicks":
+                            safe_int(
+                                restaurant.get(
+                                    "phone_clicks"
+                                )
+                            ),
+
+                        "directions_clicks":
+                            safe_int(
+                                restaurant.get(
+                                    "directions_clicks"
+                                )
+                            ),
+
+                        "meaningful_actions":
+                            safe_int(
+                                restaurant.get(
+                                    "meaningful_actions"
+                                )
+                            ),
+
+                        "unique_sessions":
+                            safe_int(
+                                restaurant.get(
+                                    "unique_sessions"
+                                )
+                            ),
+                    }
+                )
+
+            results[
+                story_id
+            ] = {
+                "story_id":
+                    story_id,
+
+                "totals": {
+                    "restaurant_views":
+                        safe_int(
+                            totals.get(
+                                "restaurant_views"
+                            )
+                        ),
+
+                    "experience_views":
+                        safe_int(
+                            totals.get(
+                                "experience_views"
+                            )
+                        ),
+
+                    "whatsapp_clicks":
+                        safe_int(
+                            totals.get(
+                                "whatsapp_clicks"
+                            )
+                        ),
+
+                    "phone_clicks":
+                        safe_int(
+                            totals.get(
+                                "phone_clicks"
+                            )
+                        ),
+
+                    "directions_clicks":
+                        safe_int(
+                            totals.get(
+                                "directions_clicks"
+                            )
+                        ),
+
+                    "meaningful_actions":
+                        safe_int(
+                            totals.get(
+                                "meaningful_actions"
+                            )
+                        ),
+                },
+
+                "restaurants":
+                    normalized_restaurants,
+            }
+
+        return results
+
+    except requests.Timeout:
+
+        current_app.logger.exception(
+            "Kalxa Ticketing conversion analytics "
+            "request timed out."
+        )
+
+        return results
+
+    except requests.ConnectionError:
+
+        current_app.logger.exception(
+            "Unable to connect to Kalxa Ticketing "
+            "conversion analytics API."
+        )
+
+        return results
+
+    except requests.HTTPError:
+
+        current_app.logger.exception(
+            "Kalxa Ticketing conversion analytics "
+            "API returned an HTTP error."
+        )
+
+        return results
+
+    except requests.RequestException:
+
+        current_app.logger.exception(
+            "Unable to retrieve Kalxa Ticketing "
+            "conversion analytics."
+        )
+
+        return results
+
+    except ValueError:
+
+        current_app.logger.exception(
+            "Kalxa Ticketing conversion analytics "
+            "API returned invalid JSON."
+        )
+
+        return results
+
+
+# ============================================================
+# SAFE INTEGER
+# ============================================================
+
+def safe_int(
+    value,
+):
+    """
+    Convert an analytics value to a non-negative integer.
+
+    Invalid or negative values become zero.
+    """
+
+    try:
+
+        value = int(
+            value or 0
+        )
+
+    except (
+        TypeError,
+        ValueError,
+    ):
+
+        return 0
+
+    return max(
+        value,
+        0,
+    )
 
 
 # ============================================================
