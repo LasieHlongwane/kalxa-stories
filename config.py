@@ -108,6 +108,11 @@ class Config:
         "",
     )
 
+    KALXA_INTERNAL_API_KEY = os.getenv(
+        "KALXA_INTERNAL_API_KEY",
+        "",
+    )
+
 
     # --------------------------------------------------------
     # KALXA TICKETING
