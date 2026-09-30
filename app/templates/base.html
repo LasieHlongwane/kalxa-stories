@@ -13,7 +13,12 @@
 
     <meta
         name="theme-color"
-        content="#111111"
+        content="#0b0c0e"
+    >
+
+    <meta
+        name="color-scheme"
+        content="light"
     >
 
     <title>
@@ -27,7 +32,6 @@
         content="{% block meta_description %}Discover restaurant stories, food guides and local experiences on Kalxa.{% endblock %}"
     >
 
-
     <link
         rel="stylesheet"
         href="{{ url_for(
@@ -35,6 +39,1170 @@
             filename='css/style.css'
         ) }}"
     >
+
+
+    {% block extra_head %}
+    {% endblock %}
+
+
+    <style>
+
+        /* =====================================================
+           PUBLIC EDITORIAL SHELL
+        ====================================================== */
+
+        :root {
+
+            --kalxa-black: #0b0c0e;
+            --kalxa-charcoal: #17191d;
+
+            --kalxa-text: #17191d;
+            --kalxa-text-soft: #555b64;
+            --kalxa-muted: #858a92;
+
+            --kalxa-cream: #fff8ec;
+            --kalxa-cream-soft: #fffdf8;
+
+            --kalxa-surface: #ffffff;
+            --kalxa-surface-soft: #f5f5f3;
+
+            --kalxa-border: #e2e0da;
+            --kalxa-border-soft: #eeece7;
+
+            --kalxa-accent: #e86d32;
+            --kalxa-accent-soft: #fff0e8;
+
+            --kalxa-green: #1f7047;
+            --kalxa-green-soft: #eaf6ef;
+
+            --kalxa-max-width: 1240px;
+
+            --kalxa-shadow:
+                0 18px 50px
+                rgba(15, 17, 20, .08);
+
+            --kalxa-shadow-hover:
+                0 24px 70px
+                rgba(15, 17, 20, .13);
+
+        }
+
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+
+        html {
+
+            scroll-behavior: smooth;
+
+        }
+
+
+        body {
+
+            margin: 0;
+
+            background:
+                var(--kalxa-cream-soft);
+
+            color:
+                var(--kalxa-text);
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            -webkit-font-smoothing:
+                antialiased;
+
+            text-rendering:
+                optimizeLegibility;
+
+        }
+
+
+        body,
+        button,
+        input,
+        textarea,
+        select {
+
+            font: inherit;
+
+        }
+
+
+        img {
+
+            max-width: 100%;
+
+        }
+
+
+        a {
+
+            color: inherit;
+            text-decoration: none;
+
+        }
+
+
+        button,
+        a {
+
+            -webkit-tap-highlight-color:
+                transparent;
+
+        }
+
+
+        main {
+
+            min-height:
+                calc(100vh - 220px);
+
+        }
+
+
+        .page-container {
+
+            width:
+                min(
+                    calc(100% - 40px),
+                    var(--kalxa-max-width)
+                );
+
+            margin:
+                0 auto;
+
+        }
+
+
+        /* =====================================================
+           HEADER
+        ====================================================== */
+
+        .site-header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+            border-bottom:
+                1px solid
+                rgba(20, 20, 20, .07);
+
+            background:
+                rgba(255, 253, 248, .93);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+        }
+
+
+        .header-inner {
+
+            width:
+                min(
+                    calc(100% - 40px),
+                    var(--kalxa-max-width)
+                );
+
+            min-height: 74px;
+
+            margin:
+                0 auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            gap: 30px;
+
+        }
+
+
+        .brand {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            flex: 0 0 auto;
+
+        }
+
+
+        .brand-name {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 37px;
+
+            padding:
+                0 13px;
+
+            border-radius:
+                10px;
+
+            background:
+                var(--kalxa-black);
+
+            color:
+                white;
+
+            font-size: 19px;
+
+            font-weight: 950;
+
+            letter-spacing:
+                -.8px;
+
+        }
+
+
+        .brand-section {
+
+            font-size: 17px;
+
+            font-weight: 850;
+
+            letter-spacing:
+                -.45px;
+
+        }
+
+
+        .main-nav {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+        }
+
+
+        .main-nav a {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding:
+                0 16px;
+
+            border-radius:
+                999px;
+
+            color:
+                var(--kalxa-text-soft);
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            transition:
+                background .18s ease,
+                color .18s ease,
+                transform .18s ease;
+
+        }
+
+
+        .main-nav a:hover {
+
+            background:
+                #f0eee8;
+
+            color:
+                var(--kalxa-black);
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* =====================================================
+           COMMON EDITORIAL ELEMENTS
+        ====================================================== */
+
+        .hero-label {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 18px;
+
+            color:
+                var(--kalxa-accent);
+
+            font-size: 11px;
+
+            font-weight: 950;
+
+            letter-spacing:
+                1.6px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .hero-label::before {
+
+            content: "";
+
+            width: 24px;
+
+            height: 2px;
+
+            border-radius:
+                999px;
+
+            background:
+                currentColor;
+
+        }
+
+
+        .section {
+
+            padding:
+                46px 0;
+
+        }
+
+
+        .section-heading {
+
+            margin-bottom: 23px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .section-heading > span {
+
+            font-size: 12px;
+
+            font-weight: 950;
+
+            letter-spacing:
+                1px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .section-heading > a {
+
+            color:
+                var(--kalxa-text-soft);
+
+            font-size: 12px;
+
+            font-weight: 850;
+
+            transition:
+                color .18s ease;
+
+        }
+
+
+        .section-heading > a:hover {
+
+            color:
+                var(--kalxa-black);
+
+        }
+
+
+        .story-meta {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color:
+                var(--kalxa-muted);
+
+            font-size: 10px;
+
+            font-weight: 900;
+
+            letter-spacing:
+                .7px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .sponsored-label {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            min-height: 25px;
+
+            padding:
+                0 9px;
+
+            border-radius:
+                999px;
+
+            background:
+                var(--kalxa-accent-soft);
+
+            color:
+                #a9471d;
+
+            font-size: 9px;
+
+            font-weight: 950;
+
+            letter-spacing:
+                .7px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .read-link {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color:
+                var(--kalxa-black);
+
+            font-size: 12px;
+
+            font-weight: 900;
+
+            transition:
+                gap .18s ease,
+                opacity .18s ease;
+
+        }
+
+
+        .read-link:hover {
+
+            gap: 11px;
+
+            opacity: .72;
+
+        }
+
+
+        /* =====================================================
+           STORY CARDS
+        ====================================================== */
+
+        .story-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    minmax(0, 1fr)
+                );
+
+            gap: 24px;
+
+        }
+
+
+        .story-card {
+
+            min-width: 0;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--kalxa-border-soft);
+
+            border-radius:
+                22px;
+
+            background:
+                var(--kalxa-surface);
+
+            box-shadow:
+                0 8px 30px
+                rgba(20, 20, 20, .04);
+
+            transition:
+                transform .22s ease,
+                box-shadow .22s ease,
+                border-color .22s ease;
+
+        }
+
+
+        .story-card:hover {
+
+            transform:
+                translateY(-5px);
+
+            border-color:
+                #d9d6ce;
+
+            box-shadow:
+                var(--kalxa-shadow);
+
+        }
+
+
+        .story-image-link {
+
+            display: block;
+
+        }
+
+
+        .story-image {
+
+            position: relative;
+
+            overflow: hidden;
+
+            aspect-ratio:
+                4 / 3;
+
+            background:
+                #eceae4;
+
+        }
+
+
+        .story-image img {
+
+            width: 100%;
+
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+
+            transition:
+                transform .45s
+                cubic-bezier(
+                    .2,
+                    .7,
+                    .2,
+                    1
+                );
+
+        }
+
+
+        .story-card:hover
+        .story-image img {
+
+            transform:
+                scale(1.035);
+
+        }
+
+
+        .story-image-count {
+
+            position: absolute;
+
+            right: 12px;
+
+            bottom: 12px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 28px;
+
+            padding:
+                0 10px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, .24);
+
+            border-radius:
+                999px;
+
+            background:
+                rgba(11, 12, 14, .76);
+
+            color: white;
+
+            backdrop-filter:
+                blur(8px);
+
+            font-size: 10px;
+
+            font-weight: 900;
+
+        }
+
+
+        .story-card-content {
+
+            padding:
+                20px 20px 22px;
+
+        }
+
+
+        .story-card-content h2,
+        .story-card-content h3 {
+
+            margin:
+                11px 0 10px;
+
+            color:
+                var(--kalxa-black);
+
+            font-size:
+                clamp(
+                    19px,
+                    2vw,
+                    24px
+                );
+
+            line-height: 1.12;
+
+            letter-spacing:
+                -.65px;
+
+        }
+
+
+        .story-card-content h3 {
+
+            font-size: 20px;
+
+        }
+
+
+        .story-card-content h2 a,
+        .story-card-content h3 a {
+
+            transition:
+                opacity .18s ease;
+
+        }
+
+
+        .story-card-content h2 a:hover,
+        .story-card-content h3 a:hover {
+
+            opacity: .67;
+
+        }
+
+
+        .story-card-content p {
+
+            margin:
+                0 0 17px;
+
+            color:
+                var(--kalxa-text-soft);
+
+            font-size: 13px;
+
+            line-height: 1.65;
+
+            display:
+                -webkit-box;
+
+            -webkit-line-clamp: 3;
+
+            -webkit-box-orient:
+                vertical;
+
+            overflow: hidden;
+
+        }
+
+
+        /* =====================================================
+           IMAGE PLACEHOLDER
+        ====================================================== */
+
+        .image-placeholder {
+
+            width: 100%;
+
+            height: 100%;
+
+            min-height: 250px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #17191d,
+                    #30343a
+                );
+
+        }
+
+
+        .image-placeholder span {
+
+            width: 72px;
+
+            height: 72px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, .18);
+
+            border-radius: 50%;
+
+            color: white;
+
+            font-size: 31px;
+
+            font-weight: 950;
+
+            letter-spacing:
+                -1.5px;
+
+        }
+
+
+        .image-placeholder.small {
+
+            min-height: 100%;
+
+        }
+
+
+        .image-placeholder.small span {
+
+            width: 55px;
+
+            height: 55px;
+
+            font-size: 24px;
+
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ====================================================== */
+
+        .empty-state {
+
+            max-width: 620px;
+
+            margin:
+                35px auto;
+
+            padding:
+                60px 30px;
+
+            border:
+                1px solid
+                var(--kalxa-border);
+
+            border-radius:
+                24px;
+
+            background:
+                white;
+
+            text-align: center;
+
+        }
+
+
+        .empty-icon {
+
+            width: 58px;
+
+            height: 58px;
+
+            margin:
+                0 auto 17px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                var(--kalxa-black);
+
+            color: white;
+
+            font-size: 23px;
+
+            font-weight: 950;
+
+        }
+
+
+        .empty-state h2 {
+
+            margin:
+                0 0 9px;
+
+            font-size: 25px;
+
+            letter-spacing:
+                -.7px;
+
+        }
+
+
+        .empty-state p {
+
+            max-width: 430px;
+
+            margin:
+                0 auto;
+
+            color:
+                var(--kalxa-text-soft);
+
+            font-size: 13px;
+
+            line-height: 1.7;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ====================================================== */
+
+        .site-footer {
+
+            margin-top: 40px;
+
+            padding:
+                55px 0;
+
+            background:
+                var(--kalxa-black);
+
+            color: white;
+
+        }
+
+
+        .footer-inner {
+
+            width:
+                min(
+                    calc(100% - 40px),
+                    var(--kalxa-max-width)
+                );
+
+            margin:
+                0 auto;
+
+            display: flex;
+
+            align-items: flex-end;
+
+            justify-content:
+                space-between;
+
+            gap: 30px;
+
+        }
+
+
+        .footer-brand {
+
+            margin-bottom: 8px;
+
+            font-size: 20px;
+
+            font-weight: 950;
+
+            letter-spacing:
+                -.65px;
+
+        }
+
+
+        .footer-inner p {
+
+            max-width: 410px;
+
+            margin: 0;
+
+            color:
+                rgba(255, 255, 255, .62);
+
+            font-size: 12px;
+
+            line-height: 1.65;
+
+        }
+
+
+        .footer-small {
+
+            color:
+                rgba(255, 255, 255, .48);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (
+            max-width: 950px
+        ) {
+
+            .story-grid {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+
+            }
+
+        }
+
+
+        @media (
+            max-width: 650px
+        ) {
+
+            .page-container,
+            .header-inner,
+            .footer-inner {
+
+                width:
+                    min(
+                        calc(100% - 28px),
+                        var(--kalxa-max-width)
+                    );
+
+            }
+
+
+            .header-inner {
+
+                min-height: 66px;
+
+            }
+
+
+            .brand {
+
+                gap: 7px;
+
+            }
+
+
+            .brand-name {
+
+                min-height: 34px;
+
+                padding:
+                    0 11px;
+
+                font-size: 17px;
+
+            }
+
+
+            .brand-section {
+
+                font-size: 15px;
+
+            }
+
+
+            .main-nav {
+
+                gap: 2px;
+
+            }
+
+
+            .main-nav a {
+
+                min-height: 38px;
+
+                padding:
+                    0 10px;
+
+                font-size: 11px;
+
+            }
+
+
+            .section {
+
+                padding:
+                    34px 0;
+
+            }
+
+
+            .story-grid {
+
+                grid-template-columns:
+                    1fr;
+
+                gap: 18px;
+
+            }
+
+
+            .story-card {
+
+                border-radius:
+                    18px;
+
+            }
+
+
+            .story-card-content {
+
+                padding:
+                    18px;
+
+            }
+
+
+            .footer-inner {
+
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+
+            }
+
+        }
+
+
+        @media (
+            prefers-reduced-motion:
+            reduce
+        ) {
+
+            html {
+
+                scroll-behavior: auto;
+
+            }
+
+
+            *,
+            *::before,
+            *::after {
+
+                transition-duration:
+                    .01ms !important;
+
+                animation-duration:
+                    .01ms !important;
+
+                animation-iteration-count:
+                    1 !important;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -53,6 +1221,7 @@
         <a
             href="{{ url_for('public.home') }}"
             class="brand"
+            aria-label="Kalxa Stories home"
         >
 
             <span class="brand-name">
@@ -66,7 +1235,10 @@
         </a>
 
 
-        <nav class="main-nav">
+        <nav
+            class="main-nav"
+            aria-label="Main navigation"
+        >
 
             <a
                 href="{{ url_for('public.home') }}"
@@ -117,21 +1289,23 @@
 
             <p>
                 Discover the people, food and experiences
-                around you.
+                shaping the places around you.
             </p>
 
         </div>
 
 
         <div class="footer-small">
-
             Restaurant discovery by Kalxa.
-
         </div>
 
     </div>
 
 </footer>
+
+
+{% block scripts %}
+{% endblock %}
 
 
 </body>
