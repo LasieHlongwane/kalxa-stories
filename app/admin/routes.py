@@ -42,7 +42,6 @@ admin_bp = Blueprint(
 )
 
 
-
 # ============================================================
 # STORY MEDIA
 # ============================================================
@@ -179,6 +178,8 @@ def delete_cloudinary_story_image(
             "Cloudinary image public_id=%s",
             public_id,
         )
+
+
 # ============================================================
 # AUTHENTICATION DECORATOR
 # ============================================================
@@ -536,23 +537,6 @@ def dashboard():
 
     # ========================================================
     # TICKETING CONVERSION ANALYTICS
-    # ========================================================
-    #
-    # Stories owns:
-    #
-    # article_view
-    # restaurant_impression
-    # restaurant_click
-    #
-    # Ticketing owns:
-    #
-    # restaurant_view
-    # experience_view
-    # whatsapp_click
-    # phone_click
-    # directions_click
-    #
-    # The private API returns aggregate data only.
     # ========================================================
 
     published_story_ids = [
@@ -1353,11 +1337,6 @@ def dashboard():
     # ========================================================
     # RECENT STORIES ANALYTICS ACTIVITY
     # ========================================================
-    #
-    # Ticketing deliberately exposes aggregate analytics only,
-    # so individual downstream Ticketing events are NOT added
-    # to this activity feed.
-    # ========================================================
 
     recent_events = (
         StoryAnalyticsEvent.query
@@ -1665,10 +1644,6 @@ def articles():
 # CREATE ARTICLE
 # ============================================================
 
-# ============================================================
-# CREATE ARTICLE
-# ============================================================
-
 @admin_bp.route(
     "/articles/new",
     methods=[
@@ -1683,13 +1658,11 @@ def article_new():
 
         article = Article()
 
-
         success = (
             populate_article_from_form(
                 article
             )
         )
-
 
         if not success:
 
@@ -1708,8 +1681,17 @@ def article_new():
                 page_mode="new",
             )
 
-
         try:
+
+            # =================================================
+            # CREATE ARTICLE FIRST
+            # =================================================
+            #
+            # Images are deliberately NOT processed here.
+            #
+            # The article must first exist and receive a
+            # permanent database ID.
+            # =================================================
 
             db.session.add(
                 article
@@ -1734,39 +1716,7 @@ def article_new():
             )
 
 
-            # =================================================
-            # STORY IMAGES
-            # =================================================
-
-            images_success = (
-                upload_article_images(
-                    article
-                )
-            )
-
-
-            if not images_success:
-
-                db.session.rollback()
-
-                return render_template(
-                    "admin/article_form.html",
-
-                    article=article,
-
-                    restaurant_ids=(
-                        request.form.get(
-                            "restaurant_ids",
-                            "",
-                        )
-                    ),
-
-                    page_mode="new",
-                )
-
-
             db.session.commit()
-
 
         except Exception:
 
@@ -1798,10 +1748,21 @@ def article_new():
 
 
         flash(
-            "Article created.",
+            (
+                "Article created. "
+                "You can now add story images."
+            ),
             "success",
         )
 
+
+        # =====================================================
+        # REDIRECT TO EDITOR
+        # =====================================================
+        #
+        # The image uploader is available only after the
+        # article has a permanent ID.
+        # =====================================================
 
         return redirect(
             url_for(
@@ -1821,120 +1782,7 @@ def article_new():
         page_mode="new",
     )
 
-# ============================================================
-# DELETE ARTICLE IMAGE
-# ============================================================
 
-@admin_bp.route(
-    (
-        "/articles/<int:article_id>"
-        "/images/<int:image_id>/delete"
-    ),
-    methods=["POST"],
-)
-@admin_required
-def article_image_delete(
-    article_id,
-    image_id,
-):
-
-    article = (
-        db.session.get(
-            Article,
-            article_id,
-        )
-    )
-
-    if article is None:
-
-        abort(404)
-
-
-    image = (
-        ArticleImage.query
-        .filter_by(
-            id=image_id,
-            article_id=article.id,
-        )
-        .first()
-    )
-
-
-    if image is None:
-
-        abort(404)
-
-
-    public_id = (
-        image.cloudinary_public_id
-    )
-
-
-    db.session.delete(
-        image
-    )
-
-    db.session.flush()
-
-
-    # ========================================================
-    # REORDER REMAINING IMAGES
-    # ========================================================
-
-    remaining_images = (
-        ArticleImage.query
-        .filter(
-            ArticleImage.article_id
-            == article.id,
-
-            ArticleImage.id
-            != image.id,
-        )
-        .order_by(
-            ArticleImage.display_order.asc(),
-            ArticleImage.id.asc(),
-        )
-        .all()
-    )
-
-
-    for index, remaining_image in enumerate(
-        remaining_images
-    ):
-
-        remaining_image.display_order = (
-            index
-        )
-
-
-    db.session.commit()
-
-
-    # ========================================================
-    # REMOVE CLOUDINARY ASSET
-    # ========================================================
-
-    delete_cloudinary_story_image(
-        public_id
-    )
-
-
-    flash(
-        "Story image removed.",
-        "success",
-    )
-
-
-    return redirect(
-        url_for(
-            "admin.article_edit",
-            article_id=article.id,
-        )
-    )
-
-# ============================================================
-# EDIT ARTICLE
-# ============================================================
 # ============================================================
 # EDIT ARTICLE
 # ============================================================
@@ -1958,7 +1806,6 @@ def article_edit(
         )
     )
 
-
     if article is None:
 
         abort(404)
@@ -1971,7 +1818,6 @@ def article_edit(
                 article
             )
         )
-
 
         if not success:
 
@@ -1993,6 +1839,10 @@ def article_edit(
 
         try:
 
+            # =================================================
+            # RESTAURANTS
+            # =================================================
+
             replace_restaurant_links(
                 article=article,
 
@@ -2005,32 +1855,20 @@ def article_edit(
             )
 
 
-            images_success = (
-                upload_article_images(
-                    article
-                )
-            )
-
-
-            if not images_success:
-
-                db.session.rollback()
-
-                return render_template(
-                    "admin/article_form.html",
-
-                    article=article,
-
-                    restaurant_ids=(
-                        request.form.get(
-                            "restaurant_ids",
-                            "",
-                        )
-                    ),
-
-                    page_mode="edit",
-                )
-
+            # =================================================
+            # IMPORTANT
+            # =================================================
+            #
+            # No image files are processed by this request.
+            #
+            # Image uploading has its own endpoint:
+            #
+            # POST
+            # /admin/articles/<id>/images/upload
+            #
+            # This keeps article saving independent from
+            # browser file handles.
+            # =================================================
 
             db.session.commit()
 
@@ -2103,6 +1941,595 @@ def article_edit(
     )
 
 
+# ============================================================
+# UPLOAD ARTICLE IMAGES
+# ============================================================
+
+@admin_bp.route(
+    "/articles/<int:article_id>/images/upload",
+    methods=["POST"],
+)
+@admin_required
+def article_images_upload(
+    article_id,
+):
+
+    article = (
+        db.session.get(
+            Article,
+            article_id,
+        )
+    )
+
+    if article is None:
+
+        abort(404)
+
+
+    # ========================================================
+    # RECEIVE IMAGE FILES
+    # ========================================================
+
+    uploaded_files = [
+        uploaded_file
+
+        for uploaded_file
+        in request.files.getlist(
+            "story_images"
+        )
+
+        if (
+            uploaded_file
+            and
+            uploaded_file.filename
+        )
+    ]
+
+
+    if not uploaded_files:
+
+        flash(
+            "Choose at least one story image.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
+
+
+    # ========================================================
+    # CLOUDINARY CONFIGURATION
+    # ========================================================
+
+    if not cloudinary_story_images_configured():
+
+        flash(
+            "Story image storage is not configured.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
+
+
+    # ========================================================
+    # CURRENT IMAGE COUNT
+    # ========================================================
+
+    existing_count = (
+        ArticleImage.query
+        .filter_by(
+            article_id=article.id
+        )
+        .count()
+    )
+
+    available_slots = (
+        STORY_MAX_IMAGES
+        -
+        existing_count
+    )
+
+
+    if available_slots <= 0:
+
+        flash(
+            "This story already has the maximum of 3 images.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
+
+
+    if len(uploaded_files) > available_slots:
+
+        flash(
+            (
+                "Each story can contain a maximum "
+                "of 3 images. "
+                f"You can currently add "
+                f"{available_slots} more."
+            ),
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
+
+
+    # ========================================================
+    # VALIDATE ALL FILES BEFORE CLOUDINARY UPLOAD
+    # ========================================================
+
+    for uploaded_file in uploaded_files:
+
+        if not allowed_story_image_filename(
+            uploaded_file.filename
+        ):
+
+            flash(
+                (
+                    "Story images must be JPG, JPEG, "
+                    "PNG or WebP."
+                ),
+                "error",
+            )
+
+            return redirect(
+                url_for(
+                    "admin.article_edit",
+                    article_id=article.id,
+                )
+            )
+
+
+        try:
+
+            file_size = (
+                get_uploaded_file_size(
+                    uploaded_file
+                )
+            )
+
+        except Exception:
+
+            current_app.logger.exception(
+                "Unable to determine uploaded "
+                "story image size."
+            )
+
+            flash(
+                (
+                    "Kalxa could not read one of the "
+                    "selected images. Please choose "
+                    "the image again."
+                ),
+                "error",
+            )
+
+            return redirect(
+                url_for(
+                    "admin.article_edit",
+                    article_id=article.id,
+                )
+            )
+
+
+        if file_size <= 0:
+
+            flash(
+                (
+                    "One of the selected images is empty "
+                    "or could not be read."
+                ),
+                "error",
+            )
+
+            return redirect(
+                url_for(
+                    "admin.article_edit",
+                    article_id=article.id,
+                )
+            )
+
+
+        if (
+            file_size
+            >
+            STORY_IMAGE_MAX_FILE_BYTES
+        ):
+
+            flash(
+                (
+                    "Each story image must be "
+                    "8 MB or smaller."
+                ),
+                "error",
+            )
+
+            return redirect(
+                url_for(
+                    "admin.article_edit",
+                    article_id=article.id,
+                )
+            )
+
+
+    # ========================================================
+    # UPLOAD TO CLOUDINARY
+    # ========================================================
+
+    uploaded_public_ids = []
+
+    try:
+
+        next_order = (
+            db.session.query(
+                func.max(
+                    ArticleImage.display_order
+                )
+            )
+            .filter(
+                ArticleImage.article_id
+                == article.id
+            )
+            .scalar()
+        )
+
+        if next_order is None:
+
+            next_order = 0
+
+        else:
+
+            next_order = (
+                int(next_order)
+                + 1
+            )
+
+
+        for uploaded_file in uploaded_files:
+
+            # ------------------------------------------------
+            # RESET FILE STREAM
+            # ------------------------------------------------
+            #
+            # get_uploaded_file_size() reads the stream to
+            # determine its size and resets it. Reset once more
+            # immediately before Cloudinary for safety.
+            # ------------------------------------------------
+
+            uploaded_file.stream.seek(
+                0
+            )
+
+
+            upload_result = (
+                cloudinary.uploader.upload(
+                    uploaded_file,
+
+                    resource_type="image",
+
+                    folder=(
+                        "kalxa/"
+                        "stories/"
+                        f"{article.id}/"
+                        "images"
+                    ),
+
+                    use_filename=True,
+                    unique_filename=True,
+                    overwrite=False,
+                )
+            )
+
+
+            public_id = (
+                upload_result.get(
+                    "public_id"
+                )
+            )
+
+            secure_url = (
+                upload_result.get(
+                    "secure_url"
+                )
+            )
+
+
+            if (
+                not public_id
+                or
+                not secure_url
+            ):
+
+                raise RuntimeError(
+                    "Cloudinary did not return "
+                    "the uploaded story image."
+                )
+
+
+            uploaded_public_ids.append(
+                public_id
+            )
+
+
+            image = ArticleImage(
+                article_id=article.id,
+
+                cloudinary_public_id=(
+                    public_id
+                ),
+
+                image_url=(
+                    secure_url
+                ),
+
+                display_order=(
+                    next_order
+                ),
+
+                width=(
+                    upload_result.get(
+                        "width"
+                    )
+                ),
+
+                height=(
+                    upload_result.get(
+                        "height"
+                    )
+                ),
+
+                file_bytes=(
+                    upload_result.get(
+                        "bytes"
+                    )
+                ),
+            )
+
+
+            db.session.add(
+                image
+            )
+
+            next_order += 1
+
+
+        db.session.commit()
+
+
+    except Exception:
+
+        db.session.rollback()
+
+
+        # ====================================================
+        # CLEAN UP CLOUDINARY ASSETS
+        # ====================================================
+        #
+        # If Cloudinary successfully accepted one image but a
+        # later upload/database operation failed, remove the
+        # already-uploaded assets.
+        # ====================================================
+
+        for public_id in (
+            uploaded_public_ids
+        ):
+
+            delete_cloudinary_story_image(
+                public_id
+            )
+
+
+        current_app.logger.exception(
+            "Unable to upload Kalxa Stories images."
+        )
+
+
+        flash(
+            (
+                "Kalxa could not upload the story "
+                "images. Please choose them again "
+                "and retry."
+            ),
+            "error",
+        )
+
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
+
+
+    # ========================================================
+    # SUCCESS
+    # ========================================================
+
+    uploaded_count = len(
+        uploaded_files
+    )
+
+
+    if uploaded_count == 1:
+
+        flash(
+            "Story image uploaded.",
+            "success",
+        )
+
+    else:
+
+        flash(
+            f"{uploaded_count} story images uploaded.",
+            "success",
+        )
+
+
+    return redirect(
+        url_for(
+            "admin.article_edit",
+            article_id=article.id,
+        )
+    )
+
+
+# ============================================================
+# DELETE ARTICLE IMAGE
+# ============================================================
+
+@admin_bp.route(
+    (
+        "/articles/<int:article_id>"
+        "/images/<int:image_id>/delete"
+    ),
+    methods=["POST"],
+)
+@admin_required
+def article_image_delete(
+    article_id,
+    image_id,
+):
+
+    article = (
+        db.session.get(
+            Article,
+            article_id,
+        )
+    )
+
+    if article is None:
+
+        abort(404)
+
+
+    image = (
+        ArticleImage.query
+        .filter_by(
+            id=image_id,
+            article_id=article.id,
+        )
+        .first()
+    )
+
+
+    if image is None:
+
+        abort(404)
+
+
+    public_id = (
+        image.cloudinary_public_id
+    )
+
+
+    try:
+
+        db.session.delete(
+            image
+        )
+
+        db.session.flush()
+
+
+        # ====================================================
+        # REORDER REMAINING IMAGES
+        # ====================================================
+
+        remaining_images = (
+            ArticleImage.query
+            .filter(
+                ArticleImage.article_id
+                == article.id
+            )
+            .order_by(
+                ArticleImage.display_order.asc(),
+                ArticleImage.id.asc(),
+            )
+            .all()
+        )
+
+
+        for index, remaining_image in enumerate(
+            remaining_images
+        ):
+
+            remaining_image.display_order = (
+                index
+            )
+
+
+        db.session.commit()
+
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to remove story image "
+            "from database."
+        )
+
+        flash(
+            "Unable to remove the story image.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
+
+
+    # ========================================================
+    # REMOVE CLOUDINARY ASSET
+    # ========================================================
+    #
+    # Database deletion has already succeeded.
+    # Cloudinary cleanup is intentionally best-effort.
+    # ========================================================
+
+    delete_cloudinary_story_image(
+        public_id
+    )
+
+
+    flash(
+        "Story image removed.",
+        "success",
+    )
+
+
+    return redirect(
+        url_for(
+            "admin.article_edit",
+            article_id=article.id,
+        )
+    )
+
 
 # ============================================================
 # RESTAURANT SEARCH
@@ -2123,11 +2550,22 @@ def restaurant_search():
         .strip()
     )
 
-    restaurants = (
-        search_restaurants(
-            search
+    try:
+
+        restaurants = (
+            search_restaurants(
+                search
+            )
         )
-    )
+
+    except Exception:
+
+        current_app.logger.exception(
+            "Unable to search Kalxa restaurants."
+        )
+
+        restaurants = []
+
 
     return jsonify({
         "restaurants":
@@ -2228,7 +2666,7 @@ def article_archive(article_id):
 
 
 # ============================================================
-# DELETE
+# DELETE ARTICLE
 # ============================================================
 
 @admin_bp.route(
@@ -2249,11 +2687,65 @@ def article_delete(article_id):
 
         abort(404)
 
-    db.session.delete(
-        article
-    )
 
-    db.session.commit()
+    # ========================================================
+    # SAVE CLOUDINARY IDS BEFORE DATABASE DELETE
+    # ========================================================
+
+    image_public_ids = [
+        image.cloudinary_public_id
+
+        for image in article.images
+
+        if image.cloudinary_public_id
+    ]
+
+
+    try:
+
+        db.session.delete(
+            article
+        )
+
+        db.session.commit()
+
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to delete story."
+        )
+
+        flash(
+            "Unable to delete the article.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
+
+
+    # ========================================================
+    # REMOVE CLOUDINARY ASSETS
+    # ========================================================
+    #
+    # ArticleImage records are deleted through the Article
+    # relationship cascade. Cloudinary files are external,
+    # therefore they must be cleaned up separately.
+    # ========================================================
+
+    for public_id in image_public_ids:
+
+        delete_cloudinary_story_image(
+            public_id
+        )
+
 
     flash(
         "Article deleted.",
@@ -2311,8 +2803,6 @@ def populate_article_from_form(
         )
         .strip()
     )
-
-
 
     article_type = (
         request.form
@@ -2461,8 +2951,6 @@ def populate_article_from_form(
         body
     )
 
- 
-
     article.article_type = (
         article_type
     )
@@ -2509,68 +2997,47 @@ def populate_article_from_form(
 
     return True
 
+
 # ============================================================
-# STORY IMAGE UPLOADS
+# STORY IMAGE UPLOAD HELPER
 # ============================================================
 
 def upload_article_images(
     article,
+    uploaded_files,
 ):
     """
-    Upload new story images.
+    Upload already-validated story images to Cloudinary.
+
+    IMPORTANT:
+        This helper does NOT commit or rollback.
+
+        The calling route owns the database transaction.
 
     Maximum:
-        3 images TOTAL per article.
-
-    Existing images count toward the limit.
+        3 images total per article.
 
     Returns:
-        True  -> success
-        False -> validation/upload failed
+        List of Cloudinary public IDs uploaded during this
+        operation. The caller can use these for cleanup if a
+        later database operation fails.
     """
-
-    uploaded_files = [
-        uploaded_file
-
-        for uploaded_file
-        in request.files.getlist(
-            "story_images"
-        )
-
-        if (
-            uploaded_file
-            and
-            uploaded_file.filename
-        )
-    ]
-
-
-    if not uploaded_files:
-
-        return True
-
-
-    # ========================================================
-    # CLOUDINARY CONFIGURATION
-    # ========================================================
 
     if not cloudinary_story_images_configured():
 
-        flash(
-            "Story image storage is not configured.",
-            "error",
+        raise RuntimeError(
+            "Story image storage is not configured."
         )
 
-        return False
 
-
-    # ========================================================
-    # MAXIMUM THREE
-    # ========================================================
-
-    existing_count = len(
-        article.images
+    existing_count = (
+        ArticleImage.query
+        .filter_by(
+            article_id=article.id
+        )
+        .count()
     )
+
 
     available_slots = (
         STORY_MAX_IMAGES
@@ -2581,205 +3048,145 @@ def upload_article_images(
 
     if len(uploaded_files) > available_slots:
 
-        flash(
+        raise ValueError(
             (
                 "Each story can contain a maximum "
-                "of 3 images. "
-                f"This story currently has "
-                f"{existing_count}."
-            ),
-            "error",
+                "of 3 images."
+            )
         )
 
-        return False
+
+    next_order = (
+        db.session.query(
+            func.max(
+                ArticleImage.display_order
+            )
+        )
+        .filter(
+            ArticleImage.article_id
+            == article.id
+        )
+        .scalar()
+    )
 
 
-    # ========================================================
-    # VALIDATE BEFORE UPLOAD
-    # ========================================================
+    if next_order is None:
+
+        next_order = 0
+
+    else:
+
+        next_order = (
+            int(next_order)
+            + 1
+        )
+
+
+    uploaded_public_ids = []
+
 
     for uploaded_file in uploaded_files:
 
-        if not allowed_story_image_filename(
-            uploaded_file.filename
-        ):
+        uploaded_file.stream.seek(
+            0
+        )
 
-            flash(
-                (
-                    "Story images must be JPG, JPEG, "
-                    "PNG or WebP."
+
+        upload_result = (
+            cloudinary.uploader.upload(
+                uploaded_file,
+
+                resource_type="image",
+
+                folder=(
+                    "kalxa/"
+                    "stories/"
+                    f"{article.id}/"
+                    "images"
                 ),
-                "error",
+
+                use_filename=True,
+                unique_filename=True,
+                overwrite=False,
             )
+        )
 
-            return False
 
+        public_id = (
+            upload_result.get(
+                "public_id"
+            )
+        )
 
-        file_size = (
-            get_uploaded_file_size(
-                uploaded_file
+        secure_url = (
+            upload_result.get(
+                "secure_url"
             )
         )
 
 
         if (
-            file_size
-            >
-            STORY_IMAGE_MAX_FILE_BYTES
+            not public_id
+            or
+            not secure_url
         ):
 
-            flash(
-                (
-                    "Each story image must be "
-                    "8 MB or smaller."
-                ),
-                "error",
+            raise RuntimeError(
+                "Cloudinary did not return "
+                "the uploaded story image."
             )
 
-            return False
 
-
-    # ========================================================
-    # UPLOAD
-    # ========================================================
-
-    uploaded_public_ids = []
-
-    try:
-
-        next_order = (
-            existing_count
+        uploaded_public_ids.append(
+            public_id
         )
 
 
-        for uploaded_file in uploaded_files:
+        image = ArticleImage(
+            article_id=article.id,
 
-            upload_result = (
-                cloudinary.uploader.upload(
-                    uploaded_file,
-
-                    resource_type="image",
-
-                    folder=(
-                        "kalxa/"
-                        "stories/"
-                        f"{article.id}/"
-                        "images"
-                    ),
-
-                    use_filename=True,
-                    unique_filename=True,
-                    overwrite=False,
-                )
-            )
-
-
-            public_id = (
-                upload_result.get(
-                    "public_id"
-                )
-            )
-
-            secure_url = (
-                upload_result.get(
-                    "secure_url"
-                )
-            )
-
-
-            if (
-                not public_id
-                or
-                not secure_url
-            ):
-
-                raise RuntimeError(
-                    "Cloudinary did not return "
-                    "the uploaded story image."
-                )
-
-
-            uploaded_public_ids.append(
+            cloudinary_public_id=(
                 public_id
-            )
-
-
-            image = ArticleImage(
-                article_id=article.id,
-
-                cloudinary_public_id=(
-                    public_id
-                ),
-
-                image_url=(
-                    secure_url
-                ),
-
-                display_order=(
-                    next_order
-                ),
-
-                width=(
-                    upload_result.get(
-                        "width"
-                    )
-                ),
-
-                height=(
-                    upload_result.get(
-                        "height"
-                    )
-                ),
-
-                file_bytes=(
-                    upload_result.get(
-                        "bytes"
-                    )
-                ),
-            )
-
-
-            db.session.add(
-                image
-            )
-
-            next_order += 1
-
-
-        db.session.flush()
-
-        return True
-
-
-    except Exception:
-
-        db.session.rollback()
-
-
-        for public_id in (
-            uploaded_public_ids
-        ):
-
-            delete_cloudinary_story_image(
-                public_id
-            )
-
-
-        current_app.logger.exception(
-            "Unable to upload Kalxa Stories images."
-        )
-
-
-        flash(
-            (
-                "Kalxa could not upload the story "
-                "images. Please try again."
             ),
-            "error",
+
+            image_url=(
+                secure_url
+            ),
+
+            display_order=(
+                next_order
+            ),
+
+            width=(
+                upload_result.get(
+                    "width"
+                )
+            ),
+
+            height=(
+                upload_result.get(
+                    "height"
+                )
+            ),
+
+            file_bytes=(
+                upload_result.get(
+                    "bytes"
+                )
+            ),
         )
 
-        return False
 
+        db.session.add(
+            image
+        )
+
+        next_order += 1
+
+
+    db.session.flush()
+
+    return uploaded_public_ids
 
 
 # ============================================================
