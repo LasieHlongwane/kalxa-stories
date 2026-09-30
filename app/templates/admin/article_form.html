@@ -1,18 +1,16 @@
 {% extends "admin/base.html" %}
 
-
 {% block title %}
 
 {% if page_mode == "new" %}
-    New Story
+New Story
 {% else %}
-    Edit Story
+Edit Story
 {% endif %}
 
 | Kalxa
 
 {% endblock %}
-
 
 {% block extra_head %}
 
@@ -651,11 +649,15 @@
 
 
     .image-upload-status {
+        min-width: 0;
+
         color: #777c84;
 
         font-size: 11px;
 
         line-height: 1.45;
+
+        overflow-wrap: anywhere;
     }
 
 
@@ -674,80 +676,39 @@
     }
 
 
-    /* =====================================================
-       NEW IMAGE PREVIEW
-    ====================================================== */
-
-    .new-image-preview {
-        display: grid;
-
-        grid-template-columns:
-            repeat(
-                3,
-                minmax(0, 1fr)
-            );
-
-        gap: 10px;
+    .selected-file-summary {
+        display: none;
 
         margin-top: 12px;
-    }
 
+        padding: 12px 14px;
 
-    .new-image-preview:empty {
-        display: none;
-    }
-
-
-    .new-image-preview-item {
-        position: relative;
-
-        overflow: hidden;
-
-        aspect-ratio:
-            4 / 3;
+        border:
+            1px solid
+            #e1e3e6;
 
         border-radius: 10px;
 
-        background: #eceef1;
+        background: #f7f8f9;
+
+        color: #555b63;
+
+        font-size: 11px;
+
+        line-height: 1.55;
+
+        overflow-wrap: anywhere;
     }
 
 
-    .new-image-preview-item img {
-        width: 100%;
-        height: 100%;
-
+    .selected-file-summary.visible {
         display: block;
-
-        object-fit: cover;
     }
 
 
-    .new-image-preview-label {
-        position: absolute;
-
-        left: 8px;
-        bottom: 8px;
-
-        padding:
-            4px
-            7px;
-
-        border-radius: 999px;
-
-        background:
-            rgba(
-                17,
-                19,
-                24,
-                .85
-            );
-
-        color: white;
-
-        font-size: 9px;
-        font-weight: 900;
-    }
-
+    /* =====================================================
+       MEDIA FULL
+    ====================================================== */
 
     .media-full-message {
         padding: 15px;
@@ -904,8 +865,7 @@
         max-width: 650px
     ) {
 
-        .story-media-grid,
-        .new-image-preview {
+        .story-media-grid {
             grid-template-columns:
                 repeat(
                     2,
@@ -938,387 +898,826 @@
 
     }
 
-</style>
-
-{% endblock %}
-
-
+</style>{% endblock %}
 
 {% block content %}
 
-
 <!-- =========================================================
      PAGE HEADER
-========================================================== -->
+========================================================== --><div class="page-header"><div>
 
-<div class="page-header">
+    <h1>
 
-    <div>
+        {% if page_mode == "new" %}
 
-        <h1>
+            New Story
 
-            {% if page_mode == "new" %}
+        {% else %}
 
-                New Story
+            Edit Story
 
-            {% else %}
+        {% endif %}
 
-                Edit Story
-
-            {% endif %}
-
-        </h1>
+    </h1>
 
 
-        <p>
-            Restaurant editorial and sponsored content.
-        </p>
-
-    </div>
+    <p>
+        Restaurant editorial and sponsored content.
+    </p>
 
 </div>
 
-
-
-<!-- =========================================================
+</div><!-- =========================================================
      EDITOR LAYOUT
-========================================================== -->
+========================================================== --><div class="editor-layout"><!-- =====================================================
+     MAIN EDITOR
+====================================================== -->
 
-<div class="editor-layout">
+<div>
 
 
-    <!-- =====================================================
-         MAIN EDITOR
-    ====================================================== -->
+    <!-- =================================================
+         MAIN STORY FORM
+    ================================================== -->
 
-    <div>
+    <form
+        id="story-form"
+        method="POST"
+    >
 
 
-        <!-- =================================================
-             MAIN STORY FORM
-        ================================================== -->
+        <!-- =============================================
+             STORY
+        ============================================== -->
 
-        <form
-            id="story-form"
-            method="POST"
-        >
+        <div class="form-section">
 
+            <h2>
+                Story
+            </h2>
 
-            <!-- =============================================
-                 STORY
-            ============================================== -->
 
-            <div class="form-section">
+            <div class="field">
 
-                <h2>
-                    Story
-                </h2>
-
-
-                <div class="field">
-
-                    <label for="story-title">
-                        Title
-                    </label>
-
-                    <input
-                        id="story-title"
-                        type="text"
-                        name="title"
-                        value="{{
-                            request.form.get(
-                                'title',
-                                article.title
-                                if article
-                                else ''
-                            )
-                        }}"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="field">
-
-                    <label for="story-slug">
-                        URL Slug
-                    </label>
-
-                    <input
-                        id="story-slug"
-                        type="text"
-                        name="slug"
-                        placeholder="inside-mnandi-kitchen"
-                        value="{{
-                            request.form.get(
-                                'slug',
-                                article.slug
-                                if article
-                                else ''
-                            )
-                        }}"
-                        required
-                    >
-
-                    <div class="help">
-                        Example:
-                        inside-mnandi-kitchen
-                    </div>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label for="story-excerpt">
-                        Excerpt
-                    </label>
-
-                    <textarea
-                        id="story-excerpt"
-                        name="excerpt"
-                        placeholder="Short introduction shown on story cards."
-                    >{{ request.form.get(
-                        'excerpt',
-                        article.excerpt
-                        if article
-                        and article.excerpt
-                        else ''
-                    ) }}</textarea>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label for="story-body">
-                        Article Body
-                    </label>
-
-                    <textarea
-                        id="story-body"
-                        class="body-editor"
-                        name="body"
-                        required
-                    >{{ request.form.get(
-                        'body',
-                        article.body
-                        if article
-                        else ''
-                    ) }}</textarea>
-
-                    <div class="help">
-                        HTML is currently supported.
-                        Example:
-                        &lt;p&gt;Story text&lt;/p&gt;
-                        &lt;h2&gt;Heading&lt;/h2&gt;
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 KALXA RESTAURANTS
-            ============================================== -->
-
-            <div class="form-section">
-
-                <h2>
-                    Kalxa Restaurants
-                </h2>
-
-
-                <!-- =========================================
-                     SEARCH
-                ========================================== -->
-
-                <div class="field">
-
-                    <label for="restaurant-search">
-                        Search Kalxa Ticketing
-                    </label>
-
-
-                    <div class="restaurant-search-row">
-
-                        <input
-                            id="restaurant-search"
-                            type="text"
-                            placeholder="Search restaurant name or area"
-                            autocomplete="off"
-                        >
-
-
-                        <button
-                            id="restaurant-search-button"
-                            class="button"
-                            type="button"
-                        >
-                            Search
-                        </button>
-
-                    </div>
-
-
-                    <div class="help">
-                        Restaurants come directly from
-                        Kalxa Ticketing.
-                    </div>
-
-                </div>
-
-
-
-                <!-- =========================================
-                     RESULTS
-                ========================================== -->
-
-                <div
-                    id="restaurant-search-status"
-                    class="restaurant-search-status"
-                ></div>
-
-
-                <div
-                    id="restaurant-search-results"
-                    class="restaurant-search-results"
-                ></div>
-
-
-
-                <!-- =========================================
-                     SELECTED
-                ========================================== -->
-
-                <div class="selected-restaurants-heading">
-                    Selected Restaurants
-                </div>
-
-
-                <div
-                    id="selected-restaurants"
-                    class="selected-restaurants"
-                ></div>
-
+                <label for="story-title">
+                    Title
+                </label>
 
                 <input
-                    id="restaurant_ids"
-                    type="hidden"
-                    name="restaurant_ids"
-                    value="{{ restaurant_ids }}"
+                    id="story-title"
+                    type="text"
+                    name="title"
+                    value="{{
+                        request.form.get(
+                            'title',
+                            article.title
+                            if article
+                            else ''
+                        )
+                    }}"
+                    required
                 >
 
             </div>
 
 
+            <div class="field">
 
-            <!-- =============================================
-                 SEO
-            ============================================== -->
+                <label for="story-slug">
+                    URL Slug
+                </label>
 
-            <div class="form-section">
+                <input
+                    id="story-slug"
+                    type="text"
+                    name="slug"
+                    placeholder="inside-mnandi-kitchen"
+                    value="{{
+                        request.form.get(
+                            'slug',
+                            article.slug
+                            if article
+                            else ''
+                        )
+                    }}"
+                    required
+                >
 
-                <h2>
-                    Search
-                </h2>
-
-
-                <div class="field">
-
-                    <label for="meta-title">
-                        SEO Title
-                    </label>
-
-                    <input
-                        id="meta-title"
-                        type="text"
-                        name="meta_title"
-                        value="{{
-                            request.form.get(
-                                'meta_title',
-                                article.meta_title
-                                if article
-                                and article.meta_title
-                                else ''
-                            )
-                        }}"
-                    >
-
-                </div>
-
-
-                <div class="field">
-
-                    <label for="meta-description">
-                        SEO Description
-                    </label>
-
-                    <textarea
-                        id="meta-description"
-                        name="meta_description"
-                    >{{ request.form.get(
-                        'meta_description',
-                        article.meta_description
-                        if article
-                        and article.meta_description
-                        else ''
-                    ) }}</textarea>
-
+                <div class="help">
+                    Example:
+                    inside-mnandi-kitchen
                 </div>
 
             </div>
 
 
-            <!-- =============================================
-                 VALUES CONTROLLED FROM SIDEBAR
-            ============================================== -->
+            <div class="field">
 
-            {% set current_type =
-                request.form.get(
-                    'article_type',
-                    article.article_type
+                <label for="story-excerpt">
+                    Excerpt
+                </label>
+
+                <textarea
+                    id="story-excerpt"
+                    name="excerpt"
+                    placeholder="Short introduction shown on story cards."
+                >{{ request.form.get(
+                    'excerpt',
+                    article.excerpt
                     if article
-                    else 'restaurant_story'
-                )
-            %}
+                    and article.excerpt
+                    else ''
+                ) }}</textarea>
+
+            </div>
 
 
-            {% set current_status =
-                request.form.get(
-                    'status',
-                    article.status
+            <div class="field">
+
+                <label for="story-body">
+                    Article Body
+                </label>
+
+                <textarea
+                    id="story-body"
+                    class="body-editor"
+                    name="body"
+                    required
+                >{{ request.form.get(
+                    'body',
+                    article.body
                     if article
-                    else 'draft'
-                )
-            %}
+                    else ''
+                ) }}</textarea>
+
+                <div class="help">
+                    HTML is currently supported.
+                    Example:
+                    &lt;p&gt;Story text&lt;/p&gt;
+                    &lt;h2&gt;Heading&lt;/h2&gt;
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =============================================
+             KALXA RESTAURANTS
+        ============================================== -->
+
+        <div class="form-section">
+
+            <h2>
+                Kalxa Restaurants
+            </h2>
+
+
+            <div class="field">
+
+                <label for="restaurant-search">
+                    Search Kalxa Ticketing
+                </label>
+
+
+                <div class="restaurant-search-row">
+
+                    <input
+                        id="restaurant-search"
+                        type="text"
+                        placeholder="Search restaurant name or area"
+                        autocomplete="off"
+                    >
+
+
+                    <button
+                        id="restaurant-search-button"
+                        class="button"
+                        type="button"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="help">
+                    Restaurants come directly from
+                    Kalxa Ticketing.
+                </div>
+
+            </div>
+
+
+            <div
+                id="restaurant-search-status"
+                class="restaurant-search-status"
+            ></div>
+
+
+            <div
+                id="restaurant-search-results"
+                class="restaurant-search-results"
+            ></div>
+
+
+            <div class="selected-restaurants-heading">
+                Selected Restaurants
+            </div>
+
+
+            <div
+                id="selected-restaurants"
+                class="selected-restaurants"
+            ></div>
 
 
             <input
-                id="story-type-value"
+                id="restaurant_ids"
                 type="hidden"
-                name="article_type"
-                value="{{ current_type }}"
+                name="restaurant_ids"
+                value="{{ restaurant_ids }}"
+            >
+
+        </div>
+
+
+
+        <!-- =============================================
+             SEO
+        ============================================== -->
+
+        <div class="form-section">
+
+            <h2>
+                Search
+            </h2>
+
+
+            <div class="field">
+
+                <label for="meta-title">
+                    SEO Title
+                </label>
+
+                <input
+                    id="meta-title"
+                    type="text"
+                    name="meta_title"
+                    value="{{
+                        request.form.get(
+                            'meta_title',
+                            article.meta_title
+                            if article
+                            and article.meta_title
+                            else ''
+                        )
+                    }}"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="meta-description">
+                    SEO Description
+                </label>
+
+                <textarea
+                    id="meta-description"
+                    name="meta_description"
+                >{{ request.form.get(
+                    'meta_description',
+                    article.meta_description
+                    if article
+                    and article.meta_description
+                    else ''
+                ) }}</textarea>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =============================================
+             SIDEBAR CONTROL VALUES
+        ============================================== -->
+
+        {% set current_type =
+            request.form.get(
+                'article_type',
+                article.article_type
+                if article
+                else 'restaurant_story'
+            )
+        %}
+
+
+        {% set current_status =
+            request.form.get(
+                'status',
+                article.status
+                if article
+                else 'draft'
+            )
+        %}
+
+
+        <input
+            id="story-type-value"
+            type="hidden"
+            name="article_type"
+            value="{{ current_type }}"
+        >
+
+
+        <input
+            id="story-status-value"
+            type="hidden"
+            name="status"
+            value="{{ current_status }}"
+        >
+
+
+        <input
+            id="story-sponsored-value"
+            type="hidden"
+            name="is_sponsored"
+            value="{%
+                if
+                    request.form.get(
+                        'is_sponsored'
+                    )
+                    or
+                    (
+                        not request.form
+                        and
+                        article
+                        and
+                        article.is_sponsored
+                    )
+                %}on{% endif %}"
+        >
+
+
+    </form>
+
+
+
+    <!-- =================================================
+         STORY MEDIA
+    ================================================== -->
+
+    <div class="form-section">
+
+
+        {% set image_count =
+            article.images | length
+            if article
+            else 0
+        %}
+
+
+        <div class="media-section-header">
+
+            <div>
+
+                <h2>
+                    Story Images
+                </h2>
+
+                <p class="media-section-copy">
+                    Add up to three images.
+                    Image 1 becomes the main story cover.
+                </p>
+
+            </div>
+
+
+            <span class="media-limit">
+                {{ image_count }}/3
+            </span>
+
+        </div>
+
+
+
+        <!-- =============================================
+             NEW STORY - SAVE FIRST
+        ============================================== -->
+
+        {% if not article %}
+
+        <div class="media-save-first">
+
+            <div class="media-save-first-icon">
+                1
+            </div>
+
+
+            <div class="media-save-first-copy">
+
+                <strong>
+                    Create the story before adding images
+                </strong>
+
+                <p>
+                    Save the story first so Kalxa can give
+                    it a permanent ID. You will then be
+                    redirected back here where you can
+                    upload up to three images separately.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+
+            <!-- =========================================
+                 EXISTING GALLERY IMAGES
+            ========================================== -->
+
+            {% if article.images %}
+
+            <div class="story-media-grid">
+
+
+                {% for image in article.images %}
+
+                <div class="story-media-item">
+
+
+                    <div class="story-media-preview">
+
+                        <img
+                            src="{{ image.image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
+
+
+                        {% if loop.first %}
+
+                        <span class="cover-badge">
+                            Cover
+                        </span>
+
+                        {% else %}
+
+                        <span class="image-number">
+                            Image {{ loop.index }}
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="story-media-actions">
+
+                        <span>
+                            Image {{ loop.index }}
+                        </span>
+
+
+                        <form
+                            class="story-media-delete-form"
+                            method="POST"
+                            action="{{ url_for(
+                                'admin.article_image_delete',
+                                article_id=article.id,
+                                image_id=image.id
+                            ) }}"
+                            onsubmit="
+                                return confirm(
+                                    'Remove this image?'
+                                );
+                            "
+                        >
+
+                            <button
+                                class="media-remove-button"
+                                type="submit"
+                            >
+                                Remove
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- =========================================
+                 LEGACY COVER
+            ========================================== -->
+
+            {% if
+                article.cover_image_url
+                and
+                not article.images
+            %}
+
+            <div class="legacy-cover-notice">
+
+                <strong>
+                    Existing cover image
+                </strong>
+
+                <p>
+                    This story uses the previous image
+                    system. It will continue displaying
+                    normally. Uploading a new image will
+                    switch the story to the new gallery
+                    system.
+                </p>
+
+
+                <img
+                    src="{{ article.cover_image_url }}"
+                    alt="{{ article.title }}"
+                >
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- =========================================
+                 SEPARATE IMAGE UPLOAD FORM
+            ========================================== -->
+
+            {% if image_count < 3 %}
+
+            <form
+                id="story-image-upload-form"
+                class="story-image-upload-form"
+                method="POST"
+                enctype="multipart/form-data"
+                action="{{ url_for(
+                    'admin.article_images_upload',
+                    article_id=article.id
+                ) }}"
             >
 
 
-            <input
-                id="story-status-value"
-                type="hidden"
-                name="status"
-                value="{{ current_status }}"
+                <div
+                    id="story-upload-zone"
+                    class="story-upload-zone"
+                >
+
+                    <div class="upload-icon">
+                        +
+                    </div>
+
+
+                    <div class="upload-copy">
+
+                        <strong>
+                            Choose story images
+                        </strong>
+
+                        <span>
+                            JPG, PNG or WebP ·
+                            maximum 8 MB each
+                        </span>
+
+                    </div>
+
+
+                    <input
+                        id="story_images"
+                        type="file"
+                        name="story_images"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                    >
+
+                </div>
+
+
+                <!--
+                    IMPORTANT:
+
+                    There is deliberately NO browser-side
+                    image preview here.
+
+                    The selected files are not read with
+                    FileReader, createObjectURL, canvas,
+                    fetch, or any other JavaScript API.
+
+                    They remain attached directly to the
+                    native file input until the browser
+                    submits this multipart form.
+                -->
+
+
+                <div
+                    id="selected-file-summary"
+                    class="selected-file-summary"
+                ></div>
+
+
+                <div class="image-upload-actions">
+
+                    <div
+                        id="image-upload-status"
+                        class="image-upload-status"
+                    >
+                        You can add
+                        {{ 3 - image_count }}
+                        more
+                        {% if 3 - image_count == 1 %}
+                            image.
+                        {% else %}
+                            images.
+                        {% endif %}
+                    </div>
+
+
+                    <button
+                        id="upload-story-images-button"
+                        class="button image-upload-button"
+                        type="submit"
+                        disabled
+                    >
+                        Upload Images
+                    </button>
+
+                </div>
+
+
+                <div class="help">
+                    Choose the images and upload them
+                    immediately. Images are uploaded
+                    separately from the article.
+                </div>
+
+
+            </form>
+
+
+            {% else %}
+
+            <div class="media-full-message">
+
+                This story already has the maximum
+                of three images.
+
+                Remove an image before uploading
+                another one.
+
+            </div>
+
+            {% endif %}
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     SIDEBAR
+====================================================== -->
+
+<aside class="side-panel">
+
+
+    <div class="form-section">
+
+        <h2>
+            Publish
+        </h2>
+
+
+        <div class="field">
+
+            <label for="sidebar-story-type">
+                Story Type
+            </label>
+
+
+            <select
+                id="sidebar-story-type"
             >
 
+                {% for value, label in [
+                    (
+                        "restaurant_story",
+                        "Restaurant Story"
+                    ),
+                    (
+                        "food_guide",
+                        "Food Guide"
+                    ),
+                    (
+                        "sponsored",
+                        "Sponsored Story"
+                    ),
+                    (
+                        "new_restaurant",
+                        "New Restaurant"
+                    ),
+                    (
+                        "experience",
+                        "Experience"
+                    )
+                ] %}
 
-            <input
-                id="story-sponsored-value"
-                type="hidden"
-                name="is_sponsored"
-                value="{%
-                    if
+                <option
+                    value="{{ value }}"
+                    {% if current_type == value %}
+                        selected
+                    {% endif %}
+                >
+                    {{ label }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+
+        <div class="field">
+
+            <label for="sidebar-story-status">
+                Status
+            </label>
+
+
+            <select
+                id="sidebar-story-status"
+            >
+
+                <option
+                    value="draft"
+                    {% if current_status == "draft" %}
+                        selected
+                    {% endif %}
+                >
+                    Draft
+                </option>
+
+
+                <option
+                    value="published"
+                    {% if current_status == "published" %}
+                        selected
+                    {% endif %}
+                >
+                    Published
+                </option>
+
+
+                <option
+                    value="archived"
+                    {% if current_status == "archived" %}
+                        selected
+                    {% endif %}
+                >
+                    Archived
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <div class="field">
+
+            <div class="checkbox-row">
+
+                <input
+                    id="sidebar-is-sponsored"
+                    type="checkbox"
+
+                    {% if
                         request.form.get(
                             'is_sponsored'
                         )
@@ -1330,587 +1729,108 @@
                             and
                             article.is_sponsored
                         )
-                    %}on{% endif %}"
-            >
-
-
-        </form>
-
-
-
-        <!-- =================================================
-             STORY MEDIA
-        ================================================== -->
-
-        <div class="form-section">
-
-
-            {% set image_count =
-                article.images | length
-                if article
-                else 0
-            %}
-
-
-            <div class="media-section-header">
-
-                <div>
-
-                    <h2>
-                        Story Images
-                    </h2>
-
-                    <p class="media-section-copy">
-                        Add up to three images.
-                        Image 1 becomes the main story cover.
-                    </p>
-
-                </div>
-
-
-                <span class="media-limit">
-                    {{ image_count }}/3
-                </span>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 NEW STORY - SAVE FIRST
-            ============================================== -->
-
-            {% if not article %}
-
-            <div class="media-save-first">
-
-                <div class="media-save-first-icon">
-                    1
-                </div>
-
-
-                <div class="media-save-first-copy">
-
-                    <strong>
-                        Create the story before adding images
-                    </strong>
-
-                    <p>
-                        Save the story first so Kalxa can give
-                        it a permanent ID. You will then be
-                        redirected back here where you can
-                        upload up to three images separately.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            {% else %}
-
-
-                <!-- =========================================
-                     EXISTING GALLERY IMAGES
-                ========================================== -->
-
-                {% if article.images %}
-
-                <div class="story-media-grid">
-
-
-                    {% for image in article.images %}
-
-                    <div class="story-media-item">
-
-
-                        <div class="story-media-preview">
-
-                            <img
-                                src="{{ image.image_url }}"
-                                alt="{{ article.title }}"
-                                loading="lazy"
-                            >
-
-
-                            {% if loop.first %}
-
-                            <span class="cover-badge">
-                                Cover
-                            </span>
-
-                            {% else %}
-
-                            <span class="image-number">
-                                Image {{ loop.index }}
-                            </span>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="story-media-actions">
-
-                            <span>
-                                Image {{ loop.index }}
-                            </span>
-
-
-                            <form
-                                class="story-media-delete-form"
-                                method="POST"
-                                action="{{ url_for(
-                                    'admin.article_image_delete',
-                                    article_id=article.id,
-                                    image_id=image.id
-                                ) }}"
-                                onsubmit="
-                                    return confirm(
-                                        'Remove this image?'
-                                    );
-                                "
-                            >
-
-                                <button
-                                    class="media-remove-button"
-                                    type="submit"
-                                >
-                                    Remove
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </div>
-
-                    {% endfor %}
-
-
-                </div>
-
-                {% endif %}
-
-
-
-                <!-- =========================================
-                     LEGACY COVER IMAGE
-                ========================================== -->
-
-                {% if
-                    article.cover_image_url
-                    and
-                    not article.images
-                %}
-
-                <div class="legacy-cover-notice">
-
-                    <strong>
-                        Existing cover image
-                    </strong>
-
-                    <p>
-                        This story uses the previous image
-                        system. It will continue displaying
-                        normally. Uploading a new image will
-                        switch the story to the new gallery
-                        system.
-                    </p>
-
-
-                    <img
-                        src="{{ article.cover_image_url }}"
-                        alt="{{ article.title }}"
-                    >
-
-                </div>
-
-                {% endif %}
-
-
-
-                <!-- =========================================
-                     SEPARATE IMAGE UPLOAD FORM
-                ========================================== -->
-
-                {% if image_count < 3 %}
-
-                <form
-                    id="story-image-upload-form"
-                    class="story-image-upload-form"
-                    method="POST"
-                    enctype="multipart/form-data"
-                    action="{{ url_for(
-                        'admin.article_images_upload',
-                        article_id=article.id
-                    ) }}"
+                    %}
+                        checked
+                    {% endif %}
                 >
 
 
-                    <div
-                        id="story-upload-zone"
-                        class="story-upload-zone"
-                    >
+                <label
+                    for="sidebar-is-sponsored"
+                >
+                    Sponsored story
+                </label>
 
-                        <div class="upload-icon">
-                            +
-                        </div>
+            </div>
 
-
-                        <div class="upload-copy">
-
-                            <strong>
-                                Choose story images
-                            </strong>
-
-                            <span>
-                                JPG, PNG or WebP ·
-                                maximum 8 MB each
-                            </span>
-
-                        </div>
+        </div>
 
 
-                        <input
-                            id="story_images"
-                            type="file"
-                            name="story_images"
-                            accept="image/jpeg,image/png,image/webp"
-                            multiple
-                        >
 
-                    </div>
+        <div class="side-actions">
 
+            <button
+                id="story-save-button"
+                class="button"
+                type="submit"
+                form="story-form"
+            >
 
-                    <div
-                        id="story-image-preview"
-                        class="new-image-preview"
-                    ></div>
+                {% if page_mode == "new" %}
 
-
-                    <div class="image-upload-actions">
-
-                        <div
-                            id="image-upload-status"
-                            class="image-upload-status"
-                        >
-                            You can add
-                            {{ 3 - image_count }}
-                            more
-                            {% if 3 - image_count == 1 %}
-                                image.
-                            {% else %}
-                                images.
-                            {% endif %}
-                        </div>
-
-
-                        <button
-                            id="upload-story-images-button"
-                            class="button image-upload-button"
-                            type="submit"
-                            disabled
-                        >
-                            Upload Images
-                        </button>
-
-                    </div>
-
-
-                    <div class="help">
-                        Images are uploaded separately from
-                        the article. Saving or publishing the
-                        story will not resend these files.
-                    </div>
-
-
-                </form>
-
+                    Create Story
 
                 {% else %}
 
-                <div class="media-full-message">
-
-                    This story already has the maximum
-                    of three images.
-
-                    Remove an image before uploading
-                    another one.
-
-                </div>
+                    Save Changes
 
                 {% endif %}
 
+            </button>
+
+
+            {% if
+                article
+                and
+                article.status == "published"
+            %}
+
+            <a
+                class="button secondary"
+                target="_blank"
+                rel="noopener"
+                href="{{ url_for(
+                    'public.article_detail',
+                    slug=article.slug
+                ) }}"
+            >
+                View Story
+            </a>
 
             {% endif %}
 
+        </div>
+
+
+
+        {% if article %}
+
+        <div class="danger-zone">
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'admin.article_delete',
+                    article_id=article.id
+                ) }}"
+                onsubmit="
+                    return confirm(
+                        'Delete this story permanently?'
+                    );
+                "
+            >
+
+                <button
+                    class="button danger"
+                    type="submit"
+                    style="width: 100%;"
+                >
+                    Delete Story
+                </button>
+
+            </form>
 
         </div>
+
+        {% endif %}
 
 
     </div>
 
 
+</aside>
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
-
-    <aside class="side-panel">
-
-
-        <div class="form-section">
-
-            <h2>
-                Publish
-            </h2>
-
-
-            <!-- =============================================
-                 STORY TYPE
-            ============================================== -->
-
-            <div class="field">
-
-                <label for="sidebar-story-type">
-                    Story Type
-                </label>
-
-
-                <select
-                    id="sidebar-story-type"
-                >
-
-                    {% for value, label in [
-                        (
-                            "restaurant_story",
-                            "Restaurant Story"
-                        ),
-                        (
-                            "food_guide",
-                            "Food Guide"
-                        ),
-                        (
-                            "sponsored",
-                            "Sponsored Story"
-                        ),
-                        (
-                            "new_restaurant",
-                            "New Restaurant"
-                        ),
-                        (
-                            "experience",
-                            "Experience"
-                        )
-                    ] %}
-
-                    <option
-                        value="{{ value }}"
-                        {% if current_type == value %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ label }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 STATUS
-            ============================================== -->
-
-            <div class="field">
-
-                <label for="sidebar-story-status">
-                    Status
-                </label>
-
-
-                <select
-                    id="sidebar-story-status"
-                >
-
-                    <option
-                        value="draft"
-                        {% if current_status == "draft" %}
-                            selected
-                        {% endif %}
-                    >
-                        Draft
-                    </option>
-
-
-                    <option
-                        value="published"
-                        {% if current_status == "published" %}
-                            selected
-                        {% endif %}
-                    >
-                        Published
-                    </option>
-
-
-                    <option
-                        value="archived"
-                        {% if current_status == "archived" %}
-                            selected
-                        {% endif %}
-                    >
-                        Archived
-                    </option>
-
-                </select>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 SPONSORED
-            ============================================== -->
-
-            <div class="field">
-
-                <div class="checkbox-row">
-
-                    <input
-                        id="sidebar-is-sponsored"
-                        type="checkbox"
-
-                        {% if
-                            request.form.get(
-                                'is_sponsored'
-                            )
-                            or
-                            (
-                                not request.form
-                                and
-                                article
-                                and
-                                article.is_sponsored
-                            )
-                        %}
-                            checked
-                        {% endif %}
-                    >
-
-
-                    <label
-                        for="sidebar-is-sponsored"
-                    >
-                        Sponsored story
-                    </label>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =============================================
-                 ACTIONS
-            ============================================== -->
-
-            <div class="side-actions">
-
-                <button
-                    id="story-save-button"
-                    class="button"
-                    type="submit"
-                    form="story-form"
-                >
-
-                    {% if page_mode == "new" %}
-
-                        Create Story
-
-                    {% else %}
-
-                        Save Changes
-
-                    {% endif %}
-
-                </button>
-
-
-                {% if
-                    article
-                    and
-                    article.status == "published"
-                %}
-
-                <a
-                    class="button secondary"
-                    target="_blank"
-                    rel="noopener"
-                    href="{{ url_for(
-                        'public.article_detail',
-                        slug=article.slug
-                    ) }}"
-                >
-                    View Story
-                </a>
-
-                {% endif %}
-
-            </div>
-
-
-
-            <!-- =============================================
-                 DELETE STORY
-            ============================================== -->
-
-            {% if article %}
-
-            <div class="danger-zone">
-
-                <form
-                    method="POST"
-                    action="{{ url_for(
-                        'admin.article_delete',
-                        article_id=article.id
-                    ) }}"
-                    onsubmit="
-                        return confirm(
-                            'Delete this story permanently?'
-                        );
-                    "
-                >
-
-                    <button
-                        class="button danger"
-                        type="submit"
-                        style="width: 100%;"
-                    >
-                        Delete Story
-                    </button>
-
-                </form>
-
-            </div>
-
-            {% endif %}
-
-
-        </div>
-
-
-    </aside>
-
-
-</div>
-
-
-
-<script>
+</div><script>
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -2088,13 +2008,15 @@ document.addEventListener(
 
 
         const initialIds =
-            hiddenInput.value
-                .split(",")
-                .map(
-                    value =>
-                        value.trim()
-                )
-                .filter(Boolean);
+            hiddenInput
+                ? hiddenInput.value
+                    .split(",")
+                    .map(
+                        value =>
+                            value.trim()
+                    )
+                    .filter(Boolean)
+                : [];
 
 
         for (
@@ -2119,9 +2041,17 @@ document.addEventListener(
         }
 
 
-        renderSelected();
+        if (
+            selectedContainer
+            &&
+            hiddenInput
+        ) {
 
-        hydrateExistingRestaurants();
+            renderSelected();
+
+            hydrateExistingRestaurants();
+
+        }
 
 
 
@@ -2130,6 +2060,13 @@ document.addEventListener(
         // ====================================================
 
         function updateHiddenInput() {
+
+            if (!hiddenInput) {
+
+                return;
+
+            }
+
 
             hiddenInput.value =
                 Array.from(
@@ -2190,6 +2127,13 @@ document.addEventListener(
         // ====================================================
 
         function renderSelected() {
+
+            if (!selectedContainer) {
+
+                return;
+
+            }
+
 
             selectedContainer.innerHTML =
                 "";
@@ -2374,6 +2318,19 @@ document.addEventListener(
 
         async function searchRestaurants() {
 
+            if (
+                !searchInput
+                ||
+                !statusContainer
+                ||
+                !resultsContainer
+            ) {
+
+                return;
+
+            }
+
+
             const query =
                 searchInput.value.trim();
 
@@ -2460,6 +2417,13 @@ document.addEventListener(
         function renderResults(
             restaurants
         ) {
+
+            if (!resultsContainer) {
+
+                return;
+
+            }
+
 
             resultsContainer.innerHTML =
                 "";
@@ -2743,18 +2707,26 @@ document.addEventListener(
 
 
         // ====================================================
-        // SEPARATE STORY IMAGE UPLOAD
+        // STORY IMAGE UPLOAD
+        // ====================================================
+        //
+        // IMPORTANT:
+        //
+        // We deliberately do NOT use:
+        //
+        // FileReader
+        // readAsDataURL
+        // URL.createObjectURL
+        // Canvas
+        // fetch(file)
+        //
+        // The selected File objects stay untouched in the
+        // native input until the browser submits the form.
         // ====================================================
 
         const storyImageInput =
             document.getElementById(
                 "story_images"
-            );
-
-
-        const storyImagePreview =
-            document.getElementById(
-                "story-image-preview"
             );
 
 
@@ -2776,30 +2748,26 @@ document.addEventListener(
             );
 
 
+        const selectedFileSummary =
+            document.getElementById(
+                "selected-file-summary"
+            );
+
+
         const imageUploadForm =
             document.getElementById(
                 "story-image-upload-form"
             );
 
 
-        if (
-            storyImageInput
-            &&
-            storyImagePreview
-        ) {
+        if (storyImageInput) {
 
             storyImageInput.addEventListener(
                 "change",
                 function () {
 
-                    storyImagePreview.innerHTML =
-                        "";
-
-
                     const files =
-                        Array.from(
-                            storyImageInput.files
-                        );
+                        storyImageInput.files;
 
 
                     const existingCount =
@@ -2815,23 +2783,13 @@ document.addEventListener(
                         );
 
 
-                    if (
-                        storyUploadZone
-                    ) {
-
-                        storyUploadZone.classList.toggle(
-                            "has-files",
-                            files.length > 0
-                        );
-
-                    }
-
-
                     // =========================================
                     // NO FILES
                     // =========================================
 
                     if (
+                        !files
+                        ||
                         files.length === 0
                     ) {
 
@@ -2839,6 +2797,31 @@ document.addEventListener(
 
                             uploadButton.disabled =
                                 true;
+
+                        }
+
+
+                        if (storyUploadZone) {
+
+                            storyUploadZone
+                                .classList
+                                .remove(
+                                    "has-files"
+                                );
+
+                        }
+
+
+                        if (selectedFileSummary) {
+
+                            selectedFileSummary
+                                .classList
+                                .remove(
+                                    "visible"
+                                );
+
+                            selectedFileSummary.textContent =
+                                "";
 
                         }
 
@@ -2899,9 +2882,7 @@ document.addEventListener(
                         }
 
 
-                        if (
-                            storyUploadZone
-                        ) {
+                        if (storyUploadZone) {
 
                             storyUploadZone
                                 .classList
@@ -2912,137 +2893,45 @@ document.addEventListener(
                         }
 
 
+                        if (selectedFileSummary) {
+
+                            selectedFileSummary
+                                .classList
+                                .remove(
+                                    "visible"
+                                );
+
+                            selectedFileSummary.textContent =
+                                "";
+
+                        }
+
+
                         return;
 
                     }
 
 
                     // =========================================
-                    // VALIDATE FILES
+                    // FILES SELECTED
+                    // =========================================
+                    //
+                    // Only metadata already exposed by the
+                    // native input is used here.
+                    //
+                    // The actual file contents are NOT read.
                     // =========================================
 
-                    const allowedTypes =
-                        new Set([
-                            "image/jpeg",
-                            "image/png",
-                            "image/webp"
-                        ]);
+                    if (storyUploadZone) {
 
-
-                    const maximumBytes =
-                        8
-                        *
-                        1024
-                        *
-                        1024;
-
-
-                    for (
-                        const file
-                        of files
-                    ) {
-
-                        if (
-                            !allowedTypes.has(
-                                file.type
-                            )
-                        ) {
-
-                            alert(
-                                (
-                                    file.name
-                                    +
-                                    " is not a supported image."
-                                )
+                        storyUploadZone
+                            .classList
+                            .add(
+                                "has-files"
                             );
-
-
-                            storyImageInput.value =
-                                "";
-
-                            storyImagePreview.innerHTML =
-                                "";
-
-
-                            if (uploadButton) {
-
-                                uploadButton.disabled =
-                                    true;
-
-                            }
-
-
-                            if (
-                                storyUploadZone
-                            ) {
-
-                                storyUploadZone
-                                    .classList
-                                    .remove(
-                                        "has-files"
-                                    );
-
-                            }
-
-
-                            return;
-
-                        }
-
-
-                        if (
-                            file.size
-                            >
-                            maximumBytes
-                        ) {
-
-                            alert(
-                                (
-                                    file.name
-                                    +
-                                    " is larger than 8 MB."
-                                )
-                            );
-
-
-                            storyImageInput.value =
-                                "";
-
-                            storyImagePreview.innerHTML =
-                                "";
-
-
-                            if (uploadButton) {
-
-                                uploadButton.disabled =
-                                    true;
-
-                            }
-
-
-                            if (
-                                storyUploadZone
-                            ) {
-
-                                storyUploadZone
-                                    .classList
-                                    .remove(
-                                        "has-files"
-                                    );
-
-                            }
-
-
-                            return;
-
-                        }
 
                     }
 
-
-                    // =========================================
-                    // ENABLE UPLOAD BUTTON
-                    // =========================================
 
                     if (uploadButton) {
 
@@ -3060,108 +2949,45 @@ document.addEventListener(
                                 +
                                 (
                                     files.length === 1
-                                        ? " image selected."
-                                        : " images selected."
+                                        ? " image selected. "
+                                        : " images selected. "
                                 )
                                 +
-                                " Press Upload Images."
+                                "Upload immediately."
                             );
 
                     }
 
 
-                    // =========================================
-                    // PREVIEW FILES
-                    // =========================================
+                    if (selectedFileSummary) {
 
-                    files.forEach(
-                        function (
-                            file,
-                            index
-                        ) {
+                        const names =
+                            Array.from(files)
+                                .map(
+                                    function (file) {
 
-                            const reader =
-                                new FileReader();
+                                        return file.name;
 
-
-                            reader.onload =
-                                function (event) {
-
-                                    const wrapper =
-                                        document.createElement(
-                                            "div"
-                                        );
+                                    }
+                                )
+                                .join(", ");
 
 
-                                    wrapper.className =
-                                        "new-image-preview-item";
-
-
-                                    const image =
-                                        document.createElement(
-                                            "img"
-                                        );
-
-
-                                    image.src =
-                                        event.target.result;
-
-
-                                    image.alt =
-                                        "Story image preview";
-
-
-                                    const label =
-                                        document.createElement(
-                                            "span"
-                                        );
-
-
-                                    label.className =
-                                        "new-image-preview-label";
-
-
-                                    const finalPosition =
-                                        existingCount
-                                        +
-                                        index
-                                        +
-                                        1;
-
-
-                                    label.textContent =
-                                        finalPosition === 1
-                                            ? "Cover"
-                                            : (
-                                                "Image "
-                                                +
-                                                finalPosition
-                                            );
-
-
-                                    wrapper.appendChild(
-                                        image
-                                    );
-
-
-                                    wrapper.appendChild(
-                                        label
-                                    );
-
-
-                                    storyImagePreview.appendChild(
-                                        wrapper
-                                    );
-
-                                };
-
-
-                            reader.readAsDataURL(
-                                file
+                        selectedFileSummary.textContent =
+                            (
+                                "Selected: "
+                                +
+                                names
                             );
 
-                        }
-                    );
+
+                        selectedFileSummary
+                            .classList
+                            .add(
+                                "visible"
+                            );
+
+                    }
 
                 }
             );
@@ -3171,7 +2997,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // IMAGE UPLOAD SUBMISSION STATE
+        // IMAGE UPLOAD SUBMISSION
         // ====================================================
 
         if (
@@ -3182,17 +3008,45 @@ document.addEventListener(
 
             imageUploadForm.addEventListener(
                 "submit",
-                function () {
+                function (event) {
 
                     if (
                         !storyImageInput
                         ||
+                        !storyImageInput.files
+                        ||
                         storyImageInput.files.length === 0
                     ) {
+
+                        event.preventDefault();
+
+
+                        alert(
+                            "Choose at least one image first."
+                        );
+
 
                         return;
 
                     }
+
+
+                    // =========================================
+                    // DO NOT MANIPULATE THE FILE INPUT
+                    // =========================================
+                    //
+                    // Do not:
+                    //
+                    // - clear it
+                    // - clone it
+                    // - replace it
+                    // - move it
+                    // - create FormData manually
+                    // - read the selected files
+                    //
+                    // Allow the browser to perform its normal
+                    // multipart/form-data submission.
+                    // =========================================
 
 
                     uploadButton.disabled =
@@ -3207,7 +3061,7 @@ document.addEventListener(
 
                         uploadStatus.textContent =
                             (
-                                "Uploading images to "
+                                "Uploading directly to "
                                 +
                                 "Kalxa Stories..."
                             );
@@ -3222,7 +3076,4 @@ document.addEventListener(
     }
 );
 
-</script>
-
-
-{% endblock %}
+</script>{% endblock %}
