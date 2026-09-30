@@ -2,18 +2,15 @@
 
 
 {% block title %}
-
 {% if article.meta_title %}
     {{ article.meta_title }}
 {% else %}
     {{ article.title }} | Kalxa Stories
 {% endif %}
-
 {% endblock %}
 
 
 {% block meta_description %}
-
 {% if article.meta_description %}
     {{ article.meta_description }}
 {% elif article.excerpt %}
@@ -21,38 +18,33 @@
 {% else %}
     Discover this restaurant story on Kalxa.
 {% endif %}
-
 {% endblock %}
 
 
-
 {% block content %}
+
+
+<div
+    class="reading-progress"
+    id="reading-progress"
+></div>
 
 
 <article class="article-page">
 
 
 <!-- ========================================================
-     ARTICLE HEADER
+     HERO
 ========================================================= -->
 
-<section class="article-header">
+<section class="article-hero">
 
     <div class="article-container">
 
 
-        <div class="story-meta">
+        <div class="article-kicker">
 
-            {% if article.is_sponsored %}
-
-                <span class="sponsored-label">
-                    Sponsored
-                </span>
-
-            {% endif %}
-
-
-            <span>
+            <span class="article-type">
 
                 {{ article.article_type
                     .replace("_", " ")
@@ -61,10 +53,19 @@
 
             </span>
 
+
+            {% if article.is_sponsored %}
+
+            <span class="sponsored-label">
+                Sponsored
+            </span>
+
+            {% endif %}
+
         </div>
 
 
-        <h1>
+        <h1 class="article-title">
             {{ article.title }}
         </h1>
 
@@ -78,17 +79,50 @@
         {% endif %}
 
 
-        {% if article.published_at %}
+        <div class="article-byline">
 
-        <div class="article-date">
 
-            {{ article.published_at.strftime(
-                "%d %B %Y"
-            ) }}
+            <div class="kalxa-author-mark">
+                K
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Kalxa Stories
+                </strong>
+
+
+                <div class="article-byline-meta">
+
+                    {% if article.published_at %}
+
+                        {{ article.published_at.strftime(
+                            "%d %B %Y"
+                        ) }}
+
+                    {% endif %}
+
+
+                    {% if reading_minutes %}
+
+                        <span>
+                            ·
+                        </span>
+
+                        <span>
+                            {{ reading_minutes }} min read
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
 
         </div>
-
-        {% endif %}
 
 
     </div>
@@ -98,19 +132,42 @@
 
 
 <!-- ========================================================
-     COVER IMAGE
+     HERO IMAGE
 ========================================================= -->
 
-{% if article.cover_image_url %}
+{% set hero_image =
+    article.display_cover_image_url
+%}
+
+
+{% if hero_image %}
 
 <section class="article-cover">
 
     <div class="article-image-container">
 
-        <img
-            src="{{ article.cover_image_url }}"
-            alt="{{ article.title }}"
+        <button
+            class="article-image-button"
+            type="button"
+            data-story-image="{{ hero_image }}"
+            aria-label="View image"
         >
+
+            <img
+                src="{{ hero_image }}"
+                alt="{{ article.title }}"
+            >
+
+        </button>
+
+
+        {% if article.images and article.images[0].caption %}
+
+        <div class="image-caption">
+            {{ article.images[0].caption }}
+        </div>
+
+        {% endif %}
 
     </div>
 
@@ -138,65 +195,122 @@
 
 
         <!-- =================================================
+             SUPPORTING STORY IMAGES
+        ================================================== -->
+
+        {% if article.images | length > 1 %}
+
+        <div class="article-supporting-images">
+
+
+            {% for image in article.images[1:] %}
+
+            <figure class="article-supporting-image">
+
+                <button
+                    class="article-image-button"
+                    type="button"
+                    data-story-image="{{ image.image_url }}"
+                    aria-label="View story image"
+                >
+
+                    <img
+                        src="{{ image.image_url }}"
+                        alt="{{ article.title }}"
+                        loading="lazy"
+                    >
+
+                </button>
+
+
+                {% if image.caption %}
+
+                <figcaption>
+                    {{ image.caption }}
+                </figcaption>
+
+                {% endif %}
+
+            </figure>
+
+            {% endfor %}
+
+
+        </div>
+
+        {% endif %}
+
+
+
+        <!-- =================================================
+             DIVIDER
+        ================================================== -->
+
+        <div class="story-divider">
+
+            <span>
+                K
+            </span>
+
+        </div>
+
+
+
+        <!-- =================================================
              FEATURED RESTAURANTS
         ================================================== -->
 
         {% if featured_restaurants %}
 
-        <div class="restaurant-story-box">
+        <section class="restaurant-discovery">
 
 
-            <!-- =============================================
-                 SECTION LABEL
-            ============================================== -->
+            <div class="discovery-heading">
 
-            <div class="restaurant-story-label">
-                DISCOVER ON KALXA
+                <div>
+
+                    <span class="discovery-eyebrow">
+                        DISCOVER ON KALXA
+                    </span>
+
+                    <h2>
+                        Places from this story
+                    </h2>
+
+                    <p>
+                        Continue from the story into the
+                        restaurants, experiences and useful
+                        actions available on Kalxa.
+                    </p>
+
+                </div>
+
             </div>
 
 
-            <h3>
-                Restaurants featured in this story
-            </h3>
-
-
-            <p>
-                Explore these restaurants and their
-                experiences through Kalxa.
-            </p>
-
-
-
-            <!-- =============================================
-                 RESTAURANT LIST
-            ============================================== -->
 
             <div class="featured-restaurant-list">
 
 
                 {% for restaurant in featured_restaurants %}
 
-
-                <div class="restaurant-reference">
-
-
-                    <!-- =====================================
-                         RESTAURANT INFORMATION
-                    ====================================== -->
-
-                    <div
-                        class="restaurant-reference-content"
-                    >
+                <article class="restaurant-reference">
 
 
-                        <span
-                            class="restaurant-reference-label"
-                        >
-                            Restaurant
+                    <div class="restaurant-reference-number">
+                        {{ "%02d"|format(loop.index) }}
+                    </div>
+
+
+                    <div class="restaurant-reference-content">
+
+
+                        <span class="restaurant-reference-label">
+                            Featured restaurant
                         </span>
 
 
-                        <strong>
+                        <h3>
 
                             {% if restaurant.business_name %}
 
@@ -212,96 +326,51 @@
 
                             {% endif %}
 
-                        </strong>
+                        </h3>
 
-
-
-                        <!-- ================================
-                             HEADLINE
-                        ================================= -->
 
                         {% if restaurant.headline %}
 
-                        <div
-                            class="restaurant-reference-headline"
-                        >
+                        <p class="restaurant-reference-headline">
                             {{ restaurant.headline }}
-                        </div>
+                        </p>
 
                         {% endif %}
 
 
+                        <div class="restaurant-details">
 
-                        <!-- ================================
-                             LOCATION
-                        ================================= -->
 
-                        {% if restaurant.area %}
+                            {% if restaurant.area %}
 
-                        <div
-                            class="restaurant-reference-area"
-                        >
-                            📍 {{ restaurant.area }}
+                            <span>
+                                📍 {{ restaurant.area }}
+                            </span>
+
+                            {% elif restaurant.address %}
+
+                            <span>
+                                📍 {{ restaurant.address }}
+                            </span>
+
+                            {% endif %}
+
+
+                            {% if restaurant.price_text %}
+
+                            <span>
+                                {{ restaurant.price_text }}
+                            </span>
+
+                            {% endif %}
+
+
                         </div>
-
-                        {% elif restaurant.address %}
-
-                        <div
-                            class="restaurant-reference-area"
-                        >
-                            📍 {{ restaurant.address }}
-                        </div>
-
-                        {% endif %}
-
-
-
-                        <!-- ================================
-                             PRICE
-                        ================================= -->
-
-                        {% if restaurant.price_text %}
-
-                        <div
-                            class="restaurant-reference-price"
-                        >
-                            {{ restaurant.price_text }}
-                        </div>
-
-                        {% endif %}
 
 
                     </div>
 
 
-
-                    <!-- =====================================
-                         TRACKED RESTAURANT CTA
-                    ====================================== -->
-                    <!--
-                        IMPORTANT:
-
-                        Do NOT link directly to:
-
-                        restaurant.profile_url
-
-                        The visitor must first go through the
-                        Kalxa Stories restaurant_click route.
-
-                        Flow:
-
-                        Story
-                            ↓
-                        restaurant_click()
-                            ↓
-                        restaurant_click analytics event
-                            ↓
-                        signed kat token
-                            ↓
-                        Kalxa Ticketing
-                            ↓
-                        restaurant_view attribution
-                    ====================================== -->
 
                     {% if restaurant.id %}
 
@@ -314,14 +383,21 @@
                             restaurant_id=restaurant.id
                         ) }}"
                     >
-                        View Restaurant on Kalxa →
+
+                        <span>
+                            View Restaurant
+                        </span>
+
+                        <span class="restaurant-arrow">
+                            →
+                        </span>
+
                     </a>
 
                     {% endif %}
 
 
-                </div>
-
+                </article>
 
                 {% endfor %}
 
@@ -329,7 +405,7 @@
             </div>
 
 
-        </div>
+        </section>
 
         {% endif %}
 
@@ -354,13 +430,32 @@
     <div class="page-container">
 
 
-        <div class="section-heading">
+        <div class="related-heading">
 
-            <span>
-                Keep discovering
-            </span>
+            <div>
+
+                <span class="related-eyebrow">
+                    KEEP DISCOVERING
+                </span>
+
+                <h2>
+                    More from Kalxa Stories
+                </h2>
+
+            </div>
+
+
+            <a
+                class="view-all-stories"
+                href="{{ url_for(
+                    'public.stories'
+                ) }}"
+            >
+                View all stories →
+            </a>
 
         </div>
+
 
 
         <div class="story-grid">
@@ -371,11 +466,9 @@
             <article class="story-card">
 
 
-                <!-- =========================================
-                     RELATED STORY IMAGE
-                ========================================== -->
-
                 <a
+                    class="story-card-image-link"
+
                     href="{{ url_for(
                         'public.article_detail',
                         slug=related.slug
@@ -385,10 +478,10 @@
                     <div class="story-image">
 
 
-                        {% if related.cover_image_url %}
+                        {% if related.display_cover_image_url %}
 
                         <img
-                            src="{{ related.cover_image_url }}"
+                            src="{{ related.display_cover_image_url }}"
                             alt="{{ related.title }}"
                             loading="lazy"
                         >
@@ -396,9 +489,7 @@
 
                         {% else %}
 
-                        <div
-                            class="image-placeholder small"
-                        >
+                        <div class="image-placeholder small">
 
                             <span>
                                 K
@@ -409,22 +500,10 @@
                         {% endif %}
 
 
-                    </div>
-
-                </a>
+                        <div class="story-image-overlay"></div>
 
 
-
-                <!-- =========================================
-                     RELATED STORY CONTENT
-                ========================================== -->
-
-                <div class="story-card-content">
-
-
-                    <div class="story-meta">
-
-                        <span>
+                        <span class="story-card-type">
 
                             {{ related.article_type
                                 .replace("_", " ")
@@ -433,8 +512,14 @@
 
                         </span>
 
+
                     </div>
 
+                </a>
+
+
+
+                <div class="story-card-content">
 
 
                     <h3>
@@ -451,6 +536,14 @@
                     </h3>
 
 
+                    {% if related.excerpt %}
+
+                    <p>
+                        {{ related.excerpt }}
+                    </p>
+
+                    {% endif %}
+
 
                     <a
                         class="read-link"
@@ -460,7 +553,8 @@
                             slug=related.slug
                         ) }}"
                     >
-                        Read story →
+                        Read story
+                        <span>→</span>
                     </a>
 
 
@@ -480,6 +574,1449 @@
 </section>
 
 {% endif %}
+
+
+
+<!-- ========================================================
+     IMAGE VIEWER
+========================================================= -->
+
+<div
+    class="story-lightbox"
+    id="story-lightbox"
+    aria-hidden="true"
+>
+
+    <button
+        class="story-lightbox-close"
+        id="story-lightbox-close"
+        type="button"
+        aria-label="Close image"
+    >
+        ×
+    </button>
+
+
+    <img
+        id="story-lightbox-image"
+        src=""
+        alt="Story image"
+    >
+
+</div>
+
+
+
+<style>
+
+/* =========================================================
+   ARTICLE
+========================================================= */
+
+.article-page {
+
+    background: #fff;
+
+}
+
+
+.article-container {
+
+    width: min(
+        760px,
+        calc(100% - 40px)
+    );
+
+    margin:
+        0
+        auto;
+
+}
+
+
+.article-hero {
+
+    padding:
+        80px
+        0
+        48px;
+
+}
+
+
+.article-kicker {
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 22px;
+
+}
+
+
+.article-type,
+.sponsored-label {
+
+    display: inline-flex;
+
+    padding:
+        7px
+        10px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: .8px;
+
+    text-transform: uppercase;
+
+}
+
+
+.article-type {
+
+    background: #111318;
+    color: white;
+
+}
+
+
+.sponsored-label {
+
+    background: #fff0c7;
+    color: #745300;
+
+}
+
+
+.article-title {
+
+    max-width: 850px;
+
+    margin:
+        0
+        0
+        22px;
+
+    font-size:
+        clamp(
+            42px,
+            7vw,
+            72px
+        );
+
+    line-height: .98;
+
+    letter-spacing: -3px;
+
+}
+
+
+.article-excerpt {
+
+    max-width: 700px;
+
+    margin:
+        0
+        0
+        30px;
+
+    color: #555b63;
+
+    font-size:
+        clamp(
+            18px,
+            2.4vw,
+            22px
+        );
+
+    line-height: 1.55;
+
+}
+
+
+.article-byline {
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+}
+
+
+.kalxa-author-mark {
+
+    width: 39px;
+    height: 39px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #111318;
+    color: white;
+
+    font-weight: 900;
+
+}
+
+
+.article-byline strong {
+
+    display: block;
+
+    font-size: 12px;
+
+}
+
+
+.article-byline-meta {
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-top: 3px;
+
+    color: #858a91;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   COVER
+========================================================= */
+
+.article-cover {
+
+    width: min(
+        1120px,
+        calc(100% - 32px)
+    );
+
+    margin:
+        0
+        auto;
+
+}
+
+
+.article-image-container {
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+}
+
+
+.article-image-button {
+
+    width: 100%;
+
+    display: block;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    cursor: zoom-in;
+
+}
+
+
+.article-image-container img {
+
+    width: 100%;
+
+    max-height: 680px;
+
+    display: block;
+
+    object-fit: cover;
+
+}
+
+
+.image-caption {
+
+    padding:
+        10px
+        2px;
+
+    color: #858a91;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.article-body-section {
+
+    padding:
+        60px
+        0
+        80px;
+
+}
+
+
+.article-body {
+
+    color: #282b30;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 19px;
+
+    line-height: 1.85;
+
+}
+
+
+.article-body p {
+
+    margin:
+        0
+        0
+        28px;
+
+}
+
+
+.article-body h2 {
+
+    margin:
+        55px
+        0
+        18px;
+
+    color: #111318;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 30px;
+
+    line-height: 1.15;
+
+    letter-spacing: -1px;
+
+}
+
+
+.article-body h3 {
+
+    margin:
+        38px
+        0
+        15px;
+
+    color: #111318;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+}
+
+
+.article-body blockquote {
+
+    margin:
+        42px
+        0;
+
+    padding:
+        8px
+        0
+        8px
+        25px;
+
+    border-left:
+        4px solid
+        #111318;
+
+    color: #111318;
+
+    font-size: 25px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   SUPPORTING IMAGES
+========================================================= */
+
+.article-supporting-images {
+
+    display: grid;
+
+    gap: 28px;
+
+    margin:
+        50px
+        0;
+
+}
+
+
+.article-supporting-image {
+
+    margin: 0;
+
+}
+
+
+.article-supporting-image img {
+
+    width: 100%;
+
+    max-height: 580px;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 18px;
+
+}
+
+
+.article-supporting-image figcaption {
+
+    margin-top: 9px;
+
+    color: #858a91;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.story-divider {
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin:
+        65px
+        0;
+
+}
+
+
+.story-divider::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    height: 1px;
+
+    background: #e5e7ea;
+
+}
+
+
+.story-divider span {
+
+    position: relative;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #111318;
+    color: white;
+
+    font-weight: 900;
+
+}
+
+
+/* =========================================================
+   RESTAURANTS
+========================================================= */
+
+.restaurant-discovery {
+
+    margin-top: 30px;
+
+}
+
+
+.discovery-eyebrow,
+.related-eyebrow {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #7c8189;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: 1.4px;
+
+}
+
+
+.discovery-heading h2,
+.related-heading h2 {
+
+    margin:
+        0
+        0
+        9px;
+
+    font-size: 30px;
+
+    letter-spacing: -1px;
+
+}
+
+
+.discovery-heading p {
+
+    max-width: 560px;
+
+    margin:
+        0
+        0
+        28px;
+
+    color: #70757d;
+
+    line-height: 1.6;
+
+}
+
+
+.featured-restaurant-list {
+
+    display: grid;
+
+    gap: 12px;
+
+}
+
+
+.restaurant-reference {
+
+    display: grid;
+
+    grid-template-columns:
+        48px
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 22px;
+
+    border:
+        1px solid
+        #e0e2e5;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f8f8f7
+        );
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+.restaurant-reference:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0
+        15px
+        35px
+        rgba(
+            0,
+            0,
+            0,
+            .07
+        );
+
+}
+
+
+.restaurant-reference-number {
+
+    color: #b1b5ba;
+
+    font-size: 13px;
+    font-weight: 900;
+
+}
+
+
+.restaurant-reference-label {
+
+    color: #8b9097;
+
+    font-size: 9px;
+    font-weight: 900;
+
+    letter-spacing: .8px;
+
+    text-transform: uppercase;
+
+}
+
+
+.restaurant-reference h3 {
+
+    margin:
+        5px
+        0
+        6px;
+
+    font-size: 20px;
+
+}
+
+
+.restaurant-reference-headline {
+
+    margin:
+        0
+        0
+        8px;
+
+    color: #60656c;
+
+    font-size: 13px;
+
+}
+
+
+.restaurant-details {
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap:
+        7px
+        14px;
+
+    color: #767b83;
+
+    font-size: 11px;
+
+}
+
+
+.restaurant-view-button {
+
+    min-height: 44px;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        0
+        16px;
+
+    border-radius: 11px;
+
+    background: #111318;
+    color: white;
+
+    font-size: 12px;
+    font-weight: 900;
+
+}
+
+
+.restaurant-arrow {
+
+    font-size: 18px;
+
+    transition:
+        transform .18s ease;
+
+}
+
+
+.restaurant-view-button:hover
+.restaurant-arrow {
+
+    transform:
+        translateX(3px);
+
+}
+
+
+/* =========================================================
+   RELATED
+========================================================= */
+
+.related-section {
+
+    padding:
+        75px
+        0
+        95px;
+
+    background: #f2f1ed;
+
+}
+
+
+.related-heading {
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.view-all-stories {
+
+    color: #555a61;
+
+    font-size: 12px;
+    font-weight: 800;
+
+}
+
+
+.story-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 18px;
+
+}
+
+
+.story-card {
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background: white;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.story-card:hover {
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0
+        18px
+        45px
+        rgba(
+            0,
+            0,
+            0,
+            .08
+        );
+
+}
+
+
+.story-image {
+
+    position: relative;
+
+    aspect-ratio: 16 / 10;
+
+    overflow: hidden;
+
+    background: #dfe1e3;
+
+}
+
+
+.story-image img {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform .35s ease;
+
+}
+
+
+.story-card:hover
+.story-image img {
+
+    transform:
+        scale(1.035);
+
+}
+
+
+.story-image-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(
+                0,
+                0,
+                0,
+                .45
+            ),
+            transparent 55%
+        );
+
+}
+
+
+.story-card-type {
+
+    position: absolute;
+
+    left: 13px;
+    bottom: 12px;
+
+    color: white;
+
+    font-size: 9px;
+    font-weight: 900;
+
+    letter-spacing: .7px;
+
+    text-transform: uppercase;
+
+}
+
+
+.story-card-content {
+
+    padding: 20px;
+
+}
+
+
+.story-card-content h3 {
+
+    margin:
+        0
+        0
+        10px;
+
+    font-size: 20px;
+
+    line-height: 1.25;
+
+    letter-spacing: -.5px;
+
+}
+
+
+.story-card-content p {
+
+    margin:
+        0
+        0
+        17px;
+
+    color: #747980;
+
+    font-size: 12px;
+
+    line-height: 1.55;
+
+}
+
+
+.read-link {
+
+    display: inline-flex;
+
+    gap: 8px;
+
+    font-size: 12px;
+    font-weight: 900;
+
+}
+
+
+/* =========================================================
+   READING PROGRESS
+========================================================= */
+
+.reading-progress {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    z-index: 999;
+
+    width: 0;
+    height: 3px;
+
+    background: #111318;
+
+}
+
+
+/* =========================================================
+   LIGHTBOX
+========================================================= */
+
+.story-lightbox {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 2000;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    background:
+        rgba(
+            7,
+            8,
+            10,
+            .94
+        );
+
+}
+
+
+.story-lightbox.open {
+
+    display: flex;
+
+}
+
+
+.story-lightbox img {
+
+    max-width: min(
+        1100px,
+        96vw
+    );
+
+    max-height: 88vh;
+
+    object-fit: contain;
+
+}
+
+
+.story-lightbox-close {
+
+    position: absolute;
+
+    top: 18px;
+    right: 20px;
+
+    width: 44px;
+    height: 44px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .12
+        );
+
+    color: white;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (
+    max-width: 800px
+) {
+
+    .article-hero {
+
+        padding:
+            55px
+            0
+            35px;
+
+    }
+
+
+    .article-title {
+
+        font-size:
+            clamp(
+                38px,
+                11vw,
+                58px
+            );
+
+        letter-spacing: -2px;
+
+    }
+
+
+    .article-cover {
+
+        width:
+            calc(
+                100% - 20px
+            );
+
+    }
+
+
+    .article-image-container {
+
+        border-radius: 17px;
+
+    }
+
+
+    .article-body-section {
+
+        padding-top: 42px;
+
+    }
+
+
+    .article-body {
+
+        font-size: 18px;
+
+    }
+
+
+    .restaurant-reference {
+
+        grid-template-columns:
+            38px
+            minmax(0, 1fr);
+
+    }
+
+
+    .restaurant-view-button {
+
+        grid-column:
+            1 / -1;
+
+        justify-content:
+            space-between;
+
+    }
+
+
+    .story-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .related-heading {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+    }
+
+}
+
+
+@media (
+    max-width: 480px
+) {
+
+    .article-container {
+
+        width:
+            calc(
+                100% - 30px
+            );
+
+    }
+
+
+    .article-title {
+
+        font-size: 40px;
+
+    }
+
+
+    .article-excerpt {
+
+        font-size: 17px;
+
+    }
+
+
+    .article-body {
+
+        font-size: 17px;
+
+        line-height: 1.78;
+
+    }
+
+
+    .article-body h2 {
+
+        font-size: 26px;
+
+    }
+
+
+    .restaurant-reference {
+
+        padding: 17px;
+
+    }
+
+}
+
+</style>
+
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        // ====================================================
+        // READING PROGRESS
+        // ====================================================
+
+        const progress =
+            document.getElementById(
+                "reading-progress"
+            );
+
+
+        function updateReadingProgress() {
+
+            if (!progress) {
+                return;
+            }
+
+
+            const scrollTop =
+                window.scrollY
+                ||
+                document.documentElement.scrollTop;
+
+
+            const documentHeight =
+                document.documentElement.scrollHeight
+                -
+                window.innerHeight;
+
+
+            const percentage =
+                documentHeight > 0
+                    ?
+                    (
+                        scrollTop
+                        /
+                        documentHeight
+                    )
+                    * 100
+                    :
+                    0;
+
+
+            progress.style.width =
+                Math.min(
+                    100,
+                    Math.max(
+                        0,
+                        percentage
+                    )
+                )
+                +
+                "%";
+
+        }
+
+
+        window.addEventListener(
+            "scroll",
+            updateReadingProgress,
+            {
+                passive: true
+            }
+        );
+
+
+        updateReadingProgress();
+
+
+
+        // ====================================================
+        // IMAGE LIGHTBOX
+        // ====================================================
+
+        const lightbox =
+            document.getElementById(
+                "story-lightbox"
+            );
+
+        const lightboxImage =
+            document.getElementById(
+                "story-lightbox-image"
+            );
+
+        const closeButton =
+            document.getElementById(
+                "story-lightbox-close"
+            );
+
+
+        function closeLightbox() {
+
+            if (!lightbox) {
+                return;
+            }
+
+
+            lightbox.classList.remove(
+                "open"
+            );
+
+            lightbox.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            document.body.style.overflow =
+                "";
+
+        }
+
+
+        document
+            .querySelectorAll(
+                "[data-story-image]"
+            )
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            if (
+                                !lightbox
+                                ||
+                                !lightboxImage
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            const imageUrl =
+                                button.getAttribute(
+                                    "data-story-image"
+                                );
+
+
+                            if (!imageUrl) {
+
+                                return;
+
+                            }
+
+
+                            lightboxImage.src =
+                                imageUrl;
+
+
+                            lightbox.classList.add(
+                                "open"
+                            );
+
+
+                            lightbox.setAttribute(
+                                "aria-hidden",
+                                "false"
+                            );
+
+
+                            document.body.style.overflow =
+                                "hidden";
+
+                        }
+                    );
+
+                }
+            );
+
+
+        if (closeButton) {
+
+            closeButton.addEventListener(
+                "click",
+                closeLightbox
+            );
+
+        }
+
+
+        if (lightbox) {
+
+            lightbox.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target
+                        ===
+                        lightbox
+                    ) {
+
+                        closeLightbox();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key
+                    ===
+                    "Escape"
+                ) {
+
+                    closeLightbox();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
 
 
 {% endblock %}
