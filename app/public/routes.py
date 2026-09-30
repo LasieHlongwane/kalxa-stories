@@ -845,6 +845,31 @@ def article_detail(
         .all()
     )
 
+    # ========================================================
+# READING TIME
+# ========================================================
+
+    plain_body = (
+        article.body
+        .replace(
+          "<",
+         " <",
+        )
+    )
+
+    word_count = len(
+        plain_body.split()
+    )
+
+    reading_minutes = max(
+      1,
+      round(
+        word_count
+        /
+        220
+      ),
+    )
+
 
     # ========================================================
     # RENDER
@@ -859,6 +884,10 @@ def article_detail(
 
         featured_restaurants=(
             featured_restaurants
+        ),
+
+        reading_minutes=(
+            reading_minutes
         ),
 
         related_articles=(
