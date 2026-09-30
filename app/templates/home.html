@@ -6,6 +6,476 @@ Kalxa Stories | Local Food & Restaurant Stories
 {% endblock %}
 
 
+{% block meta_description %}
+Discover restaurant stories, local food, hidden spots and experiences worth discovering on Kalxa.
+{% endblock %}
+
+
+{% block extra_head %}
+
+<style>
+
+    /* =====================================================
+       HOME HERO
+    ====================================================== */
+
+    .home-hero {
+
+        position: relative;
+
+        overflow: hidden;
+
+        padding:
+            92px 0 82px;
+
+        background:
+            var(--kalxa-cream);
+
+    }
+
+
+    .home-hero::after {
+
+        content: "K";
+
+        position: absolute;
+
+        right: -25px;
+
+        bottom: -135px;
+
+        color:
+            rgba(11, 12, 14, .035);
+
+        font-size:
+            min(
+                430px,
+                45vw
+            );
+
+        font-weight: 950;
+
+        line-height: 1;
+
+        letter-spacing:
+            -30px;
+
+        pointer-events: none;
+
+    }
+
+
+    .home-hero .page-container {
+
+        position: relative;
+
+        z-index: 2;
+
+    }
+
+
+    .home-hero h1 {
+
+        max-width: 850px;
+
+        margin:
+            0 0 24px;
+
+        color:
+            var(--kalxa-black);
+
+        font-size:
+            clamp(
+                48px,
+                8vw,
+                94px
+            );
+
+        font-weight: 950;
+
+        line-height: .92;
+
+        letter-spacing:
+            -5px;
+
+    }
+
+
+    .hero-copy {
+
+        max-width: 590px;
+
+        margin: 0;
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size:
+            clamp(
+                16px,
+                2vw,
+                20px
+            );
+
+        line-height: 1.6;
+
+        letter-spacing:
+            -.25px;
+
+    }
+
+
+    /* =====================================================
+       FEATURED STORY
+    ====================================================== */
+
+    .featured-story {
+
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1.35fr)
+            minmax(330px, .65fr);
+
+        overflow: hidden;
+
+        min-height: 510px;
+
+        border-radius:
+            28px;
+
+        background:
+            var(--kalxa-black);
+
+        color: white;
+
+        box-shadow:
+            var(--kalxa-shadow);
+
+        transition:
+            transform .22s ease,
+            box-shadow .22s ease;
+
+    }
+
+
+    .featured-story:hover {
+
+        transform:
+            translateY(-4px);
+
+        box-shadow:
+            var(--kalxa-shadow-hover);
+
+    }
+
+
+    .featured-image {
+
+        position: relative;
+
+        min-height: 510px;
+
+        overflow: hidden;
+
+        background:
+            #24272c;
+
+    }
+
+
+    .featured-image img {
+
+        width: 100%;
+
+        height: 100%;
+
+        display: block;
+
+        object-fit: cover;
+
+        transition:
+            transform .6s
+            cubic-bezier(
+                .2,
+                .7,
+                .2,
+                1
+            );
+
+    }
+
+
+    .featured-story:hover
+    .featured-image img {
+
+        transform:
+            scale(1.025);
+
+    }
+
+
+    .featured-image::after {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent 72%,
+                rgba(11, 12, 14, .22)
+            );
+
+        pointer-events: none;
+
+    }
+
+
+    .featured-photo-count {
+
+        position: absolute;
+
+        left: 18px;
+
+        bottom: 18px;
+
+        z-index: 2;
+
+        min-height: 31px;
+
+        padding:
+            0 11px;
+
+        display: inline-flex;
+
+        align-items: center;
+
+        border:
+            1px solid
+            rgba(255, 255, 255, .25);
+
+        border-radius:
+            999px;
+
+        background:
+            rgba(11, 12, 14, .74);
+
+        backdrop-filter:
+            blur(10px);
+
+        color: white;
+
+        font-size: 10px;
+
+        font-weight: 900;
+
+    }
+
+
+    .featured-content {
+
+        padding:
+            50px 42px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        justify-content: center;
+
+    }
+
+
+    .featured-content
+    .story-meta {
+
+        color:
+            rgba(255, 255, 255, .55);
+
+    }
+
+
+    .featured-content h2 {
+
+        margin:
+            17px 0 18px;
+
+        font-size:
+            clamp(
+                34px,
+                4vw,
+                54px
+            );
+
+        line-height: .98;
+
+        letter-spacing:
+            -2.5px;
+
+    }
+
+
+    .featured-content p {
+
+        margin:
+            0 0 28px;
+
+        color:
+            rgba(255, 255, 255, .67);
+
+        font-size: 14px;
+
+        line-height: 1.7;
+
+    }
+
+
+    .featured-content
+    .read-link {
+
+        color: white;
+
+    }
+
+
+    /* =====================================================
+       LATEST
+    ====================================================== */
+
+    .latest-section {
+
+        padding-top: 55px;
+
+        padding-bottom: 80px;
+
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
+
+    @media (
+        max-width: 900px
+    ) {
+
+        .featured-story {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .featured-image {
+
+            min-height: 440px;
+
+        }
+
+
+        .featured-content {
+
+            padding:
+                38px 34px 42px;
+
+        }
+
+    }
+
+
+    @media (
+        max-width: 650px
+    ) {
+
+        .home-hero {
+
+            padding:
+                68px 0 60px;
+
+        }
+
+
+        .home-hero h1 {
+
+            max-width: 95%;
+
+            margin-bottom: 19px;
+
+            font-size:
+                clamp(
+                    46px,
+                    15vw,
+                    67px
+                );
+
+            letter-spacing:
+                -3.5px;
+
+        }
+
+
+        .hero-copy {
+
+            max-width: 95%;
+
+            font-size: 15px;
+
+        }
+
+
+        .featured-story {
+
+            border-radius:
+                20px;
+
+        }
+
+
+        .featured-image {
+
+            min-height: 330px;
+
+        }
+
+
+        .featured-content {
+
+            padding:
+                28px 22px 31px;
+
+        }
+
+
+        .featured-content h2 {
+
+            font-size: 34px;
+
+            letter-spacing:
+                -1.7px;
+
+        }
+
+
+        .latest-section {
+
+            padding-bottom: 50px;
+
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
 {% block content %}
 
 
@@ -50,7 +520,7 @@ Kalxa Stories | Local Food & Restaurant Stories
         <div class="section-heading">
 
             <span>
-                Featured
+                Featured story
             </span>
 
         </div>
@@ -65,9 +535,37 @@ Kalxa Stories | Local Food & Restaurant Stories
         >
 
 
+            <!-- =================================================
+                 FEATURED IMAGE
+            ================================================== -->
+
             <div class="featured-image">
 
-                {% if featured_article.cover_image_url %}
+                {% if
+                    featured_article.images
+                    and
+                    featured_article.images | length > 0
+                %}
+
+                    <img
+                        src="{{ featured_article.images[0].image_url }}"
+                        alt="{{ featured_article.title }}"
+                    >
+
+
+                    {% if
+                        featured_article.images | length > 1
+                    %}
+
+                        <span class="featured-photo-count">
+                            {{ featured_article.images | length }}
+                            photos
+                        </span>
+
+                    {% endif %}
+
+
+                {% elif featured_article.cover_image_url %}
 
                     <img
                         src="{{ featured_article.cover_image_url }}"
@@ -89,6 +587,10 @@ Kalxa Stories | Local Food & Restaurant Stories
             </div>
 
 
+            <!-- =================================================
+                 FEATURED COPY
+            ================================================== -->
+
             <div class="featured-content">
 
                 <div class="story-meta">
@@ -103,10 +605,13 @@ Kalxa Stories | Local Food & Restaurant Stories
 
 
                     <span>
-                        {{ featured_article.article_type
+
+                        {{
+                            featured_article.article_type
                             .replace("_", " ")
                             .title()
                         }}
+
                     </span>
 
                 </div>
@@ -156,10 +661,11 @@ Kalxa Stories | Local Food & Restaurant Stories
                 Latest stories
             </span>
 
+
             <a
                 href="{{ url_for('public.stories') }}"
             >
-                View all
+                View all →
             </a>
 
         </div>
@@ -175,17 +681,52 @@ Kalxa Stories | Local Food & Restaurant Stories
             <article class="story-card">
 
 
+                <!-- =============================================
+                     IMAGE
+                ============================================== -->
+
                 <a
                     href="{{ url_for(
                         'public.article_detail',
                         slug=article.slug
                     ) }}"
                     class="story-image-link"
+                    aria-label="Read {{ article.title }}"
                 >
 
                     <div class="story-image">
 
-                        {% if article.cover_image_url %}
+                        {% if
+                            article.images
+                            and
+                            article.images | length > 0
+                        %}
+
+                            <img
+                                src="{{ article.images[0].image_url }}"
+                                alt="{{ article.title }}"
+                                loading="lazy"
+                            >
+
+
+                            {% if
+                                article.images | length > 1
+                            %}
+
+                                <span class="story-image-count">
+
+                                    {{
+                                        article.images
+                                        | length
+                                    }}
+                                    photos
+
+                                </span>
+
+                            {% endif %}
+
+
+                        {% elif article.cover_image_url %}
 
                             <img
                                 src="{{ article.cover_image_url }}"
@@ -210,6 +751,10 @@ Kalxa Stories | Local Food & Restaurant Stories
                 </a>
 
 
+                <!-- =============================================
+                     CONTENT
+                ============================================== -->
+
                 <div class="story-card-content">
 
 
@@ -225,10 +770,13 @@ Kalxa Stories | Local Food & Restaurant Stories
 
 
                         <span>
-                            {{ article.article_type
+
+                            {{
+                                article.article_type
                                 .replace("_", " ")
                                 .title()
                             }}
+
                         </span>
 
                     </div>
@@ -250,9 +798,9 @@ Kalxa Stories | Local Food & Restaurant Stories
 
                     {% if article.excerpt %}
 
-                    <p>
-                        {{ article.excerpt }}
-                    </p>
+                        <p>
+                            {{ article.excerpt }}
+                        </p>
 
                     {% endif %}
 
