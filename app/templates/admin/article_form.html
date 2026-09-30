@@ -14,30 +14,26 @@
 {% endblock %}
 
 
-
 {% block extra_head %}
 
 <style>
 
+    /* =====================================================
+       EDITOR LAYOUT
+    ====================================================== */
+
     .editor-layout {
-
         display: grid;
-
         grid-template-columns:
             minmax(0, 1fr)
             310px;
-
         gap: 24px;
-
         align-items: start;
-
     }
 
 
     .form-section {
-
         margin-bottom: 20px;
-
         padding: 25px;
 
         border:
@@ -45,48 +41,36 @@
             #d7dade;
 
         border-radius: 16px;
-
         background: white;
-
     }
 
 
     .form-section h2 {
-
         margin:
             0
             0
             22px;
 
         font-size: 18px;
-
     }
 
 
     .field {
-
         margin-bottom: 20px;
-
     }
 
 
     .field:last-child {
-
         margin-bottom: 0;
-
     }
 
 
     label {
-
         display: block;
-
         margin-bottom: 7px;
 
         font-size: 12px;
-
         font-weight: 800;
-
     }
 
 
@@ -94,7 +78,6 @@
     input[type="url"],
     textarea,
     select {
-
         width: 100%;
 
         border:
@@ -104,40 +87,30 @@
         border-radius: 9px;
 
         background: white;
-
         color: #17191d;
 
         outline: none;
-
     }
 
 
     input[type="text"],
     input[type="url"],
     select {
-
         min-height: 45px;
-
         padding:
             0
             12px;
-
     }
 
 
     textarea {
-
         min-height: 115px;
-
         padding: 12px;
-
         resize: vertical;
-
     }
 
 
     textarea.body-editor {
-
         min-height: 500px;
 
         font-family:
@@ -146,104 +119,632 @@
             monospace;
 
         line-height: 1.6;
-
     }
 
 
     input:focus,
     textarea:focus,
     select:focus {
-
         border-color: #111318;
-
     }
 
 
     .help {
-
         margin-top: 6px;
 
         color: #81868e;
 
         font-size: 11px;
-
         line-height: 1.5;
-
     }
 
 
     .checkbox-row {
-
         display: flex;
-
         align-items: center;
-
         gap: 9px;
-
     }
 
 
     .checkbox-row label {
-
         margin: 0;
-
     }
 
 
+    /* =====================================================
+       SIDEBAR
+    ====================================================== */
+
     .side-panel {
-
         position: sticky;
-
         top: 25px;
-
     }
 
 
     .side-actions {
-
         display: grid;
-
         gap: 9px;
-
     }
 
 
     .side-actions .button {
-
         width: 100%;
-
     }
 
 
     .danger-zone {
-
         margin-top: 18px;
-
         padding-top: 18px;
 
         border-top:
             1px solid
             #eceef1;
-
     }
 
+
+    /* =====================================================
+       RESTAURANT SEARCH
+    ====================================================== */
+
+    .restaurant-search-row {
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+
+        gap: 8px;
+    }
+
+
+    .restaurant-search-status {
+        margin:
+            8px
+            0
+            14px;
+
+        color: #777c84;
+
+        font-size: 12px;
+    }
+
+
+    .restaurant-search-results,
+    .selected-restaurants {
+        display: grid;
+        gap: 10px;
+    }
+
+
+    .restaurant-search-results {
+        margin-bottom: 22px;
+    }
+
+
+    .restaurant-result,
+    .selected-restaurant {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 12px;
+
+        padding: 13px;
+
+        border:
+            1px solid
+            #d7dade;
+
+        border-radius: 11px;
+
+        background: #f8f9fa;
+    }
+
+
+    .restaurant-result-info,
+    .selected-restaurant-info {
+        min-width: 0;
+    }
+
+
+    .restaurant-result-name,
+    .selected-restaurant-name {
+        color: #17191d;
+
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+
+    .restaurant-result-area,
+    .selected-restaurant-area {
+        margin-top: 3px;
+
+        color: #777c84;
+
+        font-size: 11px;
+    }
+
+
+    .restaurant-result-button,
+    .selected-restaurant-remove {
+        flex: 0 0 auto;
+
+        border: 0;
+        border-radius: 8px;
+
+        cursor: pointer;
+
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+
+    .restaurant-result-button {
+        padding:
+            8px
+            12px;
+
+        background: #111318;
+        color: white;
+    }
+
+
+    .selected-restaurant-remove {
+        padding: 6px;
+
+        background: transparent;
+        color: #a52c2c;
+    }
+
+
+    .selected-restaurants-heading {
+        margin-bottom: 10px;
+
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+
+    .selected-restaurants-empty {
+        padding: 14px;
+
+        border:
+            1px dashed
+            #d7dade;
+
+        border-radius: 10px;
+
+        color: #81868e;
+
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+       STORY MEDIA
+    ====================================================== */
+
+    .media-section-header {
+        display: flex;
+
+        align-items: flex-start;
+        justify-content: space-between;
+
+        gap: 20px;
+
+        margin-bottom: 22px;
+    }
+
+
+    .media-section-header h2 {
+        margin-bottom: 6px;
+    }
+
+
+    .media-section-copy {
+        margin: 0;
+
+        color: #777c84;
+
+        font-size: 13px;
+    }
+
+
+    .media-limit {
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        min-width: 52px;
+        height: 32px;
+
+        padding:
+            0
+            12px;
+
+        border-radius: 999px;
+
+        background: #111318;
+        color: white;
+
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+
+    /* =====================================================
+       EXISTING STORY IMAGES
+    ====================================================== */
+
+    .story-media-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+        gap: 12px;
+
+        margin-bottom: 20px;
+    }
+
+
+    .story-media-item {
+        overflow: hidden;
+
+        border:
+            1px solid
+            #d7dade;
+
+        border-radius: 13px;
+
+        background: #f7f8f9;
+    }
+
+
+    .story-media-preview {
+        position: relative;
+
+        aspect-ratio: 4 / 3;
+
+        overflow: hidden;
+
+        background: #eceef1;
+    }
+
+
+    .story-media-preview img {
+        width: 100%;
+        height: 100%;
+
+        display: block;
+
+        object-fit: cover;
+    }
+
+
+    .cover-badge,
+    .image-number {
+        position: absolute;
+
+        left: 9px;
+        bottom: 9px;
+
+        padding:
+            5px
+            8px;
+
+        border-radius: 999px;
+
+        background:
+            rgba(
+                17,
+                19,
+                24,
+                .88
+            );
+
+        color: white;
+
+        font-size: 9px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+
+    .story-media-actions {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 8px;
+
+        padding: 10px;
+
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+
+    .media-remove-button {
+        padding: 0;
+
+        border: 0;
+
+        background: transparent;
+        color: #a52c2c;
+
+        font-size: 11px;
+        font-weight: 900;
+
+        cursor: pointer;
+    }
+
+
+    /* =====================================================
+       STORY IMAGE UPLOAD
+    ====================================================== */
+
+    .story-upload-zone {
+        position: relative;
+
+        min-height: 125px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 15px;
+
+        padding: 22px;
+
+        border:
+            2px dashed
+            #cfd3d8;
+
+        border-radius: 14px;
+
+        background: #fafafa;
+
+        transition:
+            border-color .18s ease,
+            background .18s ease;
+    }
+
+
+    .story-upload-zone:hover {
+        border-color: #111318;
+        background: #f5f6f7;
+    }
+
+
+    .story-upload-zone input {
+        position: absolute;
+
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+
+        opacity: 0;
+
+        cursor: pointer;
+    }
+
+
+    .upload-icon {
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        flex:
+            0
+            0
+            auto;
+
+        border-radius: 50%;
+
+        background: #111318;
+        color: white;
+
+        font-size: 24px;
+        font-weight: 400;
+    }
+
+
+    .upload-copy {
+        display: grid;
+        gap: 4px;
+    }
+
+
+    .upload-copy strong {
+        font-size: 13px;
+    }
+
+
+    .upload-copy span {
+        color: #777c84;
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+       NEW IMAGE PREVIEW
+    ====================================================== */
+
+    .new-image-preview {
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+        gap: 10px;
+
+        margin-top: 12px;
+    }
+
+
+    .new-image-preview-item {
+        position: relative;
+
+        overflow: hidden;
+
+        aspect-ratio: 4 / 3;
+
+        border-radius: 10px;
+
+        background: #eceef1;
+    }
+
+
+    .new-image-preview-item img {
+        width: 100%;
+        height: 100%;
+
+        display: block;
+
+        object-fit: cover;
+    }
+
+
+    .new-image-preview-label {
+        position: absolute;
+
+        left: 8px;
+        bottom: 8px;
+
+        padding:
+            4px
+            7px;
+
+        border-radius: 999px;
+
+        background:
+            rgba(
+                17,
+                19,
+                24,
+                .85
+            );
+
+        color: white;
+
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+
+    .media-full-message {
+        padding: 15px;
+
+        border-radius: 11px;
+
+        background: #f3f4f5;
+
+        color: #666b73;
+
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       LEGACY COVER
+    ====================================================== */
+
+    .legacy-cover-notice {
+        margin-bottom: 18px;
+        padding: 14px;
+
+        border-radius: 12px;
+
+        background: #fff8e5;
+    }
+
+
+    .legacy-cover-notice p {
+        margin:
+            5px
+            0
+            12px;
+
+        color: #766635;
+
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+
+    .legacy-cover-notice img {
+        display: block;
+
+        width: 180px;
+        max-width: 100%;
+
+        border-radius: 9px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
 
     @media (
         max-width: 950px
     ) {
 
         .editor-layout {
-
             grid-template-columns:
                 1fr;
-
         }
 
 
         .side-panel {
-
             position: static;
+        }
 
+    }
+
+
+    @media (
+        max-width: 650px
+    ) {
+
+        .story-media-grid,
+        .new-image-preview {
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+        }
+
+
+        .restaurant-search-row {
+            grid-template-columns:
+                1fr;
+        }
+
+
+        .media-section-header {
+            align-items: center;
         }
 
     }
@@ -256,6 +757,10 @@
 
 {% block content %}
 
+
+<!-- =========================================================
+     PAGE HEADER
+========================================================== -->
 
 <div class="page-header">
 
@@ -286,7 +791,11 @@
 
 
 
-<form 
+<!-- =========================================================
+     STORY FORM
+========================================================== -->
+
+<form
     method="POST"
     enctype="multipart/form-data"
 >
@@ -301,6 +810,10 @@
 
     <div>
 
+
+        <!-- =================================================
+             STORY
+        ================================================== -->
 
         <div class="form-section">
 
@@ -412,153 +925,319 @@
 
 
         <!-- =================================================
-             MEDIA
+             STORY MEDIA
         ================================================== -->
 
         <div class="form-section">
 
-            <h2>
-                Media
-            </h2>
+
+            {% set image_count =
+                article.images | length
+                if article
+                else 0
+            %}
 
 
-            <div class="field">
+            <div class="media-section-header">
 
-                <label>
-                    Cover Image URL
-                </label>
+                <div>
 
-                <input
-                    type="url"
-                    name="cover_image_url"
-                    placeholder="https://..."
-                    value="{{
-                        request.form.get(
-                            'cover_image_url',
-                            article.cover_image_url
-                            if article
-                            and article.cover_image_url
-                            else ''
-                        )
-                    }}"
-                >
+                    <h2>
+                        Story Images
+                    </h2>
 
-                <div class="help">
-                    We'll connect Cloudinary uploads
-                    directly in a later stage.
+                    <p class="media-section-copy">
+                        Add up to three images to make the
+                        story more visual.
+                    </p>
+
                 </div>
 
+
+                <span class="media-limit">
+                    {{ image_count }}/3
+                </span>
+
             </div>
+
+
+
+            <!-- =============================================
+                 EXISTING GALLERY IMAGES
+            ============================================== -->
+
+            {% if article and article.images %}
+
+            <div class="story-media-grid">
+
+
+                {% for image in article.images %}
+
+                <div class="story-media-item">
+
+
+                    <div class="story-media-preview">
+
+                        <img
+                            src="{{ image.image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
+
+
+                        {% if loop.first %}
+
+                        <span class="cover-badge">
+                            Cover
+                        </span>
+
+                        {% else %}
+
+                        <span class="image-number">
+                            Image {{ loop.index }}
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="story-media-actions">
+
+                        <span>
+                            Image {{ loop.index }}
+                        </span>
+
+
+                        <button
+                            class="media-remove-button"
+                            type="submit"
+                            formaction="{{ url_for(
+                                'admin.article_image_delete',
+                                article_id=article.id,
+                                image_id=image.id
+                            ) }}"
+                            formmethod="POST"
+                            onclick="
+                                return confirm(
+                                    'Remove this image?'
+                                );
+                            "
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- =============================================
+                 LEGACY COVER IMAGE
+            ============================================== -->
+
+            {% if
+                article
+                and
+                article.cover_image_url
+                and
+                not article.images
+            %}
+
+            <div class="legacy-cover-notice">
+
+                <strong>
+                    Existing cover image
+                </strong>
+
+                <p>
+                    This story uses the previous image system.
+                    It will continue displaying normally.
+                    Uploading new images will switch the story
+                    to the new gallery system.
+                </p>
+
+
+                <img
+                    src="{{ article.cover_image_url }}"
+                    alt="{{ article.title }}"
+                >
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- =============================================
+                 IMAGE UPLOAD
+            ============================================== -->
+
+            {% if image_count < 3 %}
+
+            <div class="story-upload-zone">
+
+                <div class="upload-icon">
+                    +
+                </div>
+
+
+                <div class="upload-copy">
+
+                    <strong>
+                        Add story images
+                    </strong>
+
+                    <span>
+                        JPG, PNG or WebP · maximum 8 MB each
+                    </span>
+
+                </div>
+
+
+                <input
+                    id="story_images"
+                    type="file"
+                    name="story_images"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                >
+
+            </div>
+
+
+            <div
+                id="story-image-preview"
+                class="new-image-preview"
+            ></div>
+
+
+            <div class="help">
+                Maximum 3 images per story.
+                The first image becomes the main cover image.
+            </div>
+
+
+            {% else %}
+
+            <div class="media-full-message">
+
+                This story already has the maximum
+                of three images.
+
+                Remove an image before uploading
+                another one.
+
+            </div>
+
+            {% endif %}
+
 
         </div>
 
 
 
         <!-- =================================================
-     KALXA RESTAURANTS
-================================================== -->
+             KALXA RESTAURANTS
+        ================================================== -->
 
-<div class="form-section">
+        <div class="form-section">
 
-    <h2>
-        Kalxa Restaurants
-    </h2>
-
-
-    <!-- =============================================
-         SEARCH
-    ============================================== -->
-
-    <div class="field">
-
-        <label>
-            Search Kalxa Ticketing
-        </label>
+            <h2>
+                Kalxa Restaurants
+            </h2>
 
 
-        <div class="restaurant-search-row">
+            <!-- =============================================
+                 SEARCH
+            ============================================== -->
+
+            <div class="field">
+
+                <label>
+                    Search Kalxa Ticketing
+                </label>
+
+
+                <div class="restaurant-search-row">
+
+                    <input
+                        id="restaurant-search"
+                        type="text"
+                        placeholder="Search restaurant name or area"
+                        autocomplete="off"
+                    >
+
+
+                    <button
+                        id="restaurant-search-button"
+                        class="button"
+                        type="button"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="help">
+                    Restaurants come directly from
+                    Kalxa Ticketing.
+                </div>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 RESULTS
+            ============================================== -->
+
+            <div
+                id="restaurant-search-status"
+                class="restaurant-search-status"
+            ></div>
+
+
+            <div
+                id="restaurant-search-results"
+                class="restaurant-search-results"
+            ></div>
+
+
+
+            <!-- =============================================
+                 SELECTED
+            ============================================== -->
+
+            <div class="selected-restaurants-heading">
+                Selected Restaurants
+            </div>
+
+
+            <div
+                id="selected-restaurants"
+                class="selected-restaurants"
+            ></div>
+
 
             <input
-                id="restaurant-search"
-                type="text"
-                placeholder="Search restaurant name or area"
-                autocomplete="off"
+                id="restaurant_ids"
+                type="hidden"
+                name="restaurant_ids"
+                value="{{ restaurant_ids }}"
             >
-
-
-            <button
-                id="restaurant-search-button"
-                class="button"
-                type="button"
-            >
-                Search
-            </button>
 
         </div>
 
-
-        <div class="help">
-
-            Restaurants come directly from
-            Kalxa Ticketing.
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =============================================
-         RESULTS
-    ============================================== -->
-
-    <div
-        id="restaurant-search-status"
-        class="restaurant-search-status"
-    ></div>
-
-
-    <div
-        id="restaurant-search-results"
-        class="restaurant-search-results"
-    ></div>
-
-
-
-    <!-- =============================================
-         SELECTED
-    ============================================== -->
-
-    <div class="selected-restaurants-heading">
-
-        Selected Restaurants
-
-    </div>
-
-
-    <div
-        id="selected-restaurants"
-        class="selected-restaurants"
-    ></div>
-
-
-    <!--
-        This hidden input remains compatible
-        with our Stage 3 backend.
-
-        Example:
-        1,7,12
-    -->
-
-    <input
-        id="restaurant_ids"
-        type="hidden"
-        name="restaurant_ids"
-        value="{{ restaurant_ids }}"
-    >
-
-
-</div>
 
 
         <!-- =================================================
@@ -634,11 +1313,16 @@
             </h2>
 
 
+            <!-- =============================================
+                 STORY TYPE
+            ============================================== -->
+
             <div class="field">
 
                 <label>
                     Story Type
                 </label>
+
 
                 {% set current_type =
                     request.form.get(
@@ -677,14 +1361,14 @@
                         )
                     ] %}
 
-                        <option
-                            value="{{ value }}"
-                            {% if current_type == value %}
-                                selected
-                            {% endif %}
-                        >
-                            {{ label }}
-                        </option>
+                    <option
+                        value="{{ value }}"
+                        {% if current_type == value %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ label }}
+                    </option>
 
                     {% endfor %}
 
@@ -693,6 +1377,10 @@
             </div>
 
 
+
+            <!-- =============================================
+                 STATUS
+            ============================================== -->
 
             <div class="field">
 
@@ -750,6 +1438,10 @@
 
 
 
+            <!-- =============================================
+                 SPONSORED
+            ============================================== -->
+
             <div class="field">
 
                 <div class="checkbox-row">
@@ -776,6 +1468,7 @@
                         {% endif %}
                     >
 
+
                     <label
                         for="is_sponsored"
                     >
@@ -787,6 +1480,10 @@
             </div>
 
 
+
+            <!-- =============================================
+                 ACTIONS
+            ============================================== -->
 
             <div class="side-actions">
 
@@ -814,22 +1511,26 @@
                     article.status == "published"
                 %}
 
-                    <a
-                        class="button secondary"
-                        target="_blank"
-                        href="{{ url_for(
-                            'public.article_detail',
-                            slug=article.slug
-                        ) }}"
-                    >
-                        View Story
-                    </a>
+                <a
+                    class="button secondary"
+                    target="_blank"
+                    href="{{ url_for(
+                        'public.article_detail',
+                        slug=article.slug
+                    ) }}"
+                >
+                    View Story
+                </a>
 
                 {% endif %}
 
             </div>
 
 
+
+            <!-- =============================================
+                 DELETE STORY
+            ============================================== -->
 
             {% if article %}
 
@@ -868,14 +1569,17 @@
 
 </form>
 
+
+
 <script>
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+
         // ====================================================
-        // ELEMENTS
+        // RESTAURANT ELEMENTS
         // ====================================================
 
         const searchInput =
@@ -910,14 +1614,12 @@ document.addEventListener(
 
 
         // ====================================================
-        // SELECTED STATE
+        // SELECTED RESTAURANTS
         // ====================================================
 
         const selectedRestaurants =
             new Map();
 
-
-        // Existing article IDs.
 
         const initialIds =
             hiddenInput.value
@@ -953,16 +1655,253 @@ document.addEventListener(
 
         renderSelected();
 
-
-        // Load real information for
-        // existing restaurant IDs.
-
         hydrateExistingRestaurants();
 
 
 
         // ====================================================
-        // SEARCH
+        // UPDATE HIDDEN INPUT
+        // ====================================================
+
+        function updateHiddenInput() {
+
+            hiddenInput.value =
+                Array.from(
+                    selectedRestaurants.keys()
+                )
+                .join(",");
+
+        }
+
+
+
+        // ====================================================
+        // RESTAURANT NAME
+        // ====================================================
+
+        function getRestaurantName(
+            restaurant
+        ) {
+
+            return (
+                restaurant.business_name
+                ||
+                restaurant.name
+                ||
+                (
+                    "Restaurant #"
+                    +
+                    restaurant.id
+                )
+            );
+
+        }
+
+
+
+        // ====================================================
+        // RESTAURANT AREA
+        // ====================================================
+
+        function getRestaurantArea(
+            restaurant
+        ) {
+
+            return (
+                restaurant.area
+                ||
+                restaurant.address
+                ||
+                ""
+            );
+
+        }
+
+
+
+        // ====================================================
+        // RENDER SELECTED
+        // ====================================================
+
+        function renderSelected() {
+
+            selectedContainer.innerHTML =
+                "";
+
+
+            if (
+                selectedRestaurants.size === 0
+            ) {
+
+                const empty =
+                    document.createElement(
+                        "div"
+                    );
+
+                empty.className =
+                    "selected-restaurants-empty";
+
+                empty.textContent =
+                    "No restaurants selected yet.";
+
+                selectedContainer.appendChild(
+                    empty
+                );
+
+                updateHiddenInput();
+
+                return;
+
+            }
+
+
+            for (
+                const [
+                    id,
+                    restaurant
+                ]
+                of selectedRestaurants
+            ) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "selected-restaurant";
+
+
+                const info =
+                    document.createElement(
+                        "div"
+                    );
+
+                info.className =
+                    "selected-restaurant-info";
+
+
+                const name =
+                    document.createElement(
+                        "div"
+                    );
+
+                name.className =
+                    "selected-restaurant-name";
+
+                name.textContent =
+                    getRestaurantName(
+                        restaurant
+                    );
+
+
+                const area =
+                    document.createElement(
+                        "div"
+                    );
+
+                area.className =
+                    "selected-restaurant-area";
+
+                area.textContent =
+                    getRestaurantArea(
+                        restaurant
+                    );
+
+
+                info.appendChild(
+                    name
+                );
+
+                info.appendChild(
+                    area
+                );
+
+
+                const removeButton =
+                    document.createElement(
+                        "button"
+                    );
+
+                removeButton.type =
+                    "button";
+
+                removeButton.className =
+                    "selected-restaurant-remove";
+
+                removeButton.textContent =
+                    "Remove";
+
+
+                removeButton.addEventListener(
+                    "click",
+                    function () {
+
+                        selectedRestaurants.delete(
+                            String(id)
+                        );
+
+                        renderSelected();
+
+                    }
+                );
+
+
+                card.appendChild(
+                    info
+                );
+
+                card.appendChild(
+                    removeButton
+                );
+
+
+                selectedContainer.appendChild(
+                    card
+                );
+
+            }
+
+
+            updateHiddenInput();
+
+        }
+
+
+
+        // ====================================================
+        // ADD RESTAURANT
+        // ====================================================
+
+        function addRestaurant(
+            restaurant
+        ) {
+
+            if (
+                !restaurant
+                ||
+                !restaurant.id
+            ) {
+                return;
+            }
+
+
+            selectedRestaurants.set(
+                String(
+                    restaurant.id
+                ),
+                restaurant
+            );
+
+
+            renderSelected();
+
+        }
+
+
+
+        // ====================================================
+        // SEARCH RESTAURANTS
         // ====================================================
 
         async function searchRestaurants() {
@@ -970,8 +1909,10 @@ document.addEventListener(
             const query =
                 searchInput.value.trim();
 
+
             statusContainer.textContent =
                 "Searching Kalxa Ticketing...";
+
 
             resultsContainer.innerHTML =
                 "";
@@ -1005,7 +1946,9 @@ document.addEventListener(
 
 
                 const restaurants =
-                    data.restaurants || [];
+                    data.restaurants
+                    ||
+                    [];
 
 
                 statusContainer.textContent =
@@ -1032,6 +1975,7 @@ document.addEventListener(
                     error
                 );
 
+
                 statusContainer.textContent =
                     "Unable to connect to Kalxa Ticketing.";
 
@@ -1042,7 +1986,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // RESULTS
+        // RENDER SEARCH RESULTS
         // ====================================================
 
         function renderResults(
@@ -1057,6 +2001,15 @@ document.addEventListener(
                 const restaurant
                 of restaurants
             ) {
+
+                if (
+                    !restaurant
+                    ||
+                    !restaurant.id
+                ) {
+                    continue;
+                }
+
 
                 const card =
                     document.createElement(
@@ -1085,12 +2038,8 @@ document.addEventListener(
                     "restaurant-result-name";
 
                 name.textContent =
-                    restaurant.business_name
-                    ||
-                    (
-                        "Restaurant #"
-                        +
-                        restaurant.id
+                    getRestaurantName(
+                        restaurant
                     );
 
 
@@ -1103,11 +2052,9 @@ document.addEventListener(
                     "restaurant-result-area";
 
                 area.textContent =
-                    restaurant.area
-                    ||
-                    restaurant.address
-                    ||
-                    "Area not specified";
+                    getRestaurantArea(
+                        restaurant
+                    );
 
 
                 info.appendChild(
@@ -1128,31 +2075,49 @@ document.addEventListener(
                     "button";
 
                 button.className =
-                    "restaurant-add-button";
+                    "restaurant-result-button";
 
-                button.textContent =
+
+                if (
                     selectedRestaurants.has(
                         String(
                             restaurant.id
                         )
                     )
-                        ? "Added"
-                        : "+ Add";
+                ) {
+
+                    button.textContent =
+                        "Selected";
+
+                    button.disabled =
+                        true;
+
+                }
+
+                else {
+
+                    button.textContent =
+                        "Add";
 
 
-                button.addEventListener(
-                    "click",
-                    function () {
+                    button.addEventListener(
+                        "click",
+                        function () {
 
-                        addRestaurant(
-                            restaurant
-                        );
+                            addRestaurant(
+                                restaurant
+                            );
 
-                        button.textContent =
-                            "Added";
+                            button.textContent =
+                                "Selected";
 
-                    }
-                );
+                            button.disabled =
+                                true;
+
+                        }
+                    );
+
+                }
 
 
                 card.appendChild(
@@ -1162,6 +2127,7 @@ document.addEventListener(
                 card.appendChild(
                     button
                 );
+
 
                 resultsContainer.appendChild(
                     card
@@ -1174,211 +2140,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // ADD
-        // ====================================================
-
-        function addRestaurant(
-            restaurant
-        ) {
-
-            selectedRestaurants.set(
-                String(
-                    restaurant.id
-                ),
-                restaurant
-            );
-
-            renderSelected();
-
-            syncHiddenInput();
-
-        }
-
-
-
-        // ====================================================
-        // REMOVE
-        // ====================================================
-
-        function removeRestaurant(
-            restaurantId
-        ) {
-
-            selectedRestaurants.delete(
-                String(
-                    restaurantId
-                )
-            );
-
-            renderSelected();
-
-            syncHiddenInput();
-
-        }
-
-
-
-        // ====================================================
-        // RENDER SELECTED
-        // ====================================================
-
-        function renderSelected() {
-
-            selectedContainer.innerHTML =
-                "";
-
-
-            if (
-                selectedRestaurants.size
-                === 0
-            ) {
-
-                const empty =
-                    document.createElement(
-                        "div"
-                    );
-
-                empty.className =
-                    "restaurant-empty";
-
-                empty.textContent =
-                    "No restaurants selected.";
-
-                selectedContainer.appendChild(
-                    empty
-                );
-
-                return;
-
-            }
-
-
-            for (
-                const restaurant
-                of selectedRestaurants.values()
-            ) {
-
-                const row =
-                    document.createElement(
-                        "div"
-                    );
-
-                row.className =
-                    "selected-restaurant";
-
-
-                const info =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                const name =
-                    document.createElement(
-                        "div"
-                    );
-
-                name.className =
-                    "restaurant-result-name";
-
-                name.textContent =
-                    restaurant.business_name
-                    ||
-                    (
-                        "Restaurant #"
-                        +
-                        restaurant.id
-                    );
-
-
-                const area =
-                    document.createElement(
-                        "div"
-                    );
-
-                area.className =
-                    "restaurant-result-area";
-
-                area.textContent =
-                    restaurant.area
-                    ||
-                    restaurant.address
-                    ||
-                    "";
-
-
-                info.appendChild(
-                    name
-                );
-
-                info.appendChild(
-                    area
-                );
-
-
-                const removeButton =
-                    document.createElement(
-                        "button"
-                    );
-
-                removeButton.type =
-                    "button";
-
-                removeButton.className =
-                    "restaurant-remove-button";
-
-                removeButton.textContent =
-                    "Remove";
-
-
-                removeButton.addEventListener(
-                    "click",
-                    function () {
-
-                        removeRestaurant(
-                            restaurant.id
-                        );
-
-                    }
-                );
-
-
-                row.appendChild(
-                    info
-                );
-
-                row.appendChild(
-                    removeButton
-                );
-
-                selectedContainer.appendChild(
-                    row
-                );
-
-            }
-
-        }
-
-
-
-        // ====================================================
-        // HIDDEN INPUT
-        // ====================================================
-
-        function syncHiddenInput() {
-
-            hiddenInput.value =
-                Array.from(
-                    selectedRestaurants.keys()
-                )
-                .join(",");
-
-        }
-
-
-
-        // ====================================================
-        // HYDRATE EXISTING
+        // HYDRATE EXISTING RESTAURANTS
         // ====================================================
 
         async function hydrateExistingRestaurants() {
@@ -1386,24 +2148,31 @@ document.addEventListener(
             if (
                 initialIds.length === 0
             ) {
-
                 return;
-
             }
 
+
+            /*
+             * We already have the selected IDs from the
+             * existing article.
+             *
+             * Search Ticketing once and replace any matching
+             * placeholder Restaurant #ID records with their
+             * real restaurant information.
+             */
 
             try {
 
                 const response =
                     await fetch(
                         "{{ url_for('admin.restaurant_search') }}"
+                        +
+                        "?q="
                     );
 
 
                 if (!response.ok) {
-
                     return;
-
                 }
 
 
@@ -1412,7 +2181,9 @@ document.addEventListener(
 
 
                 const restaurants =
-                    data.restaurants || [];
+                    data.restaurants
+                    ||
+                    [];
 
 
                 for (
@@ -1420,7 +2191,16 @@ document.addEventListener(
                     of restaurants
                 ) {
 
-                    const key =
+                    if (
+                        !restaurant
+                        ||
+                        !restaurant.id
+                    ) {
+                        continue;
+                    }
+
+
+                    const id =
                         String(
                             restaurant.id
                         );
@@ -1428,12 +2208,12 @@ document.addEventListener(
 
                     if (
                         selectedRestaurants.has(
-                            key
+                            id
                         )
                     ) {
 
                         selectedRestaurants.set(
-                            key,
+                            id,
                             restaurant
                         );
 
@@ -1459,7 +2239,7 @@ document.addEventListener(
 
 
         // ====================================================
-        // EVENTS
+        // RESTAURANT EVENTS
         // ====================================================
 
         searchButton.addEventListener(
@@ -1485,8 +2265,267 @@ document.addEventListener(
             }
         );
 
+
+
+        // ====================================================
+        // STORY IMAGE PREVIEW
+        // ====================================================
+
+        const storyImageInput =
+            document.getElementById(
+                "story_images"
+            );
+
+
+        const storyImagePreview =
+            document.getElementById(
+                "story-image-preview"
+            );
+
+
+        if (
+            storyImageInput
+            &&
+            storyImagePreview
+        ) {
+
+            storyImageInput.addEventListener(
+                "change",
+                function () {
+
+                    storyImagePreview.innerHTML =
+                        "";
+
+
+                    const files =
+                        Array.from(
+                            storyImageInput.files
+                        );
+
+
+                    const existingCount =
+                        Number(
+                            "{{ article.images|length if article else 0 }}"
+                        );
+
+
+                    const availableSlots =
+                        Math.max(
+                            0,
+                            3 - existingCount
+                        );
+
+
+                    // =========================================
+                    // MAXIMUM IMAGE COUNT
+                    // =========================================
+
+                    if (
+                        files.length
+                        >
+                        availableSlots
+                    ) {
+
+                        alert(
+                            (
+                                "You can only add "
+                                +
+                                availableSlots
+                                +
+                                " more image(s)."
+                            )
+                        );
+
+
+                        storyImageInput.value =
+                            "";
+
+                        return;
+
+                    }
+
+
+                    // =========================================
+                    // VALIDATE FILES
+                    // =========================================
+
+                    const allowedTypes =
+                        new Set([
+                            "image/jpeg",
+                            "image/png",
+                            "image/webp"
+                        ]);
+
+
+                    const maximumBytes =
+                        8
+                        *
+                        1024
+                        *
+                        1024;
+
+
+                    for (
+                        const file
+                        of files
+                    ) {
+
+                        if (
+                            !allowedTypes.has(
+                                file.type
+                            )
+                        ) {
+
+                            alert(
+                                (
+                                    file.name
+                                    +
+                                    " is not a supported image."
+                                )
+                            );
+
+
+                            storyImageInput.value =
+                                "";
+
+                            storyImagePreview.innerHTML =
+                                "";
+
+                            return;
+
+                        }
+
+
+                        if (
+                            file.size
+                            >
+                            maximumBytes
+                        ) {
+
+                            alert(
+                                (
+                                    file.name
+                                    +
+                                    " is larger than 8 MB."
+                                )
+                            );
+
+
+                            storyImageInput.value =
+                                "";
+
+                            storyImagePreview.innerHTML =
+                                "";
+
+                            return;
+
+                        }
+
+                    }
+
+
+                    // =========================================
+                    // PREVIEW FILES
+                    // =========================================
+
+                    files.forEach(
+                        function (
+                            file,
+                            index
+                        ) {
+
+                            const reader =
+                                new FileReader();
+
+
+                            reader.onload =
+                                function (event) {
+
+                                    const wrapper =
+                                        document.createElement(
+                                            "div"
+                                        );
+
+
+                                    wrapper.className =
+                                        "new-image-preview-item";
+
+
+                                    const image =
+                                        document.createElement(
+                                            "img"
+                                        );
+
+
+                                    image.src =
+                                        event.target.result;
+
+
+                                    image.alt =
+                                        "Story image preview";
+
+
+                                    const label =
+                                        document.createElement(
+                                            "span"
+                                        );
+
+
+                                    label.className =
+                                        "new-image-preview-label";
+
+
+                                    const finalPosition =
+                                        existingCount
+                                        +
+                                        index
+                                        +
+                                        1;
+
+
+                                    label.textContent =
+                                        finalPosition === 1
+                                            ? "Cover"
+                                            : (
+                                                "Image "
+                                                +
+                                                finalPosition
+                                            );
+
+
+                                    wrapper.appendChild(
+                                        image
+                                    );
+
+
+                                    wrapper.appendChild(
+                                        label
+                                    );
+
+
+                                    storyImagePreview.appendChild(
+                                        wrapper
+                                    );
+
+                                };
+
+
+                            reader.readAsDataURL(
+                                file
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
     }
 );
 
 </script>
+
+
 {% endblock %}
