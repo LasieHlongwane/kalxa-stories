@@ -42,6 +42,16 @@ class Article(db.Model):
         nullable=False,
     )
 
+    # =========================================================
+    # LEGACY COVER IMAGE
+    # =========================================================
+    #
+    # Keep this field for backward compatibility with stories
+    # created before ArticleImage existed.
+    #
+    # New stories should use ArticleImage.
+    # =========================================================
+
     cover_image_url = db.Column(
         db.Text,
         nullable=True,
@@ -123,18 +133,24 @@ class Article(db.Model):
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(
+            timezone.utc
+        ),
     )
 
     updated_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(
+            timezone.utc
+        ),
+        onupdate=lambda: datetime.now(
+            timezone.utc
+        ),
     )
 
     # ==========================================
-    # RELATIONSHIPS
+    # RESTAURANTS
     # ==========================================
 
     restaurants = db.relationship(
@@ -143,6 +159,43 @@ class Article(db.Model):
         cascade="all, delete-orphan",
         lazy=True,
     )
+
+    # ==========================================
+    # STORY IMAGES
+    # ==========================================
+
+    images = db.relationship(
+        "ArticleImage",
+        back_populates="article",
+        cascade="all, delete-orphan",
+        lazy=True,
+        order_by="ArticleImage.display_order",
+    )
+
+    # ==========================================
+    # DISPLAY COVER
+    # ==========================================
+
+    @property
+    def display_cover_image_url(self):
+        """
+        Prefer the first ArticleImage.
+
+        Fall back to the old cover_image_url so existing
+        published stories continue working.
+        """
+
+        if self.images:
+
+            first_image = min(
+                self.images,
+                key=lambda image:
+                    image.display_order,
+            )
+
+            return first_image.image_url
+
+        return self.cover_image_url
 
     def __repr__(self):
 
