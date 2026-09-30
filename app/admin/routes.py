@@ -2312,14 +2312,7 @@ def populate_article_from_form(
         .strip()
     )
 
-    cover_image_url = (
-        request.form
-        .get(
-            "cover_image_url",
-            "",
-        )
-        .strip()
-    )
+
 
     article_type = (
         request.form
@@ -2468,11 +2461,7 @@ def populate_article_from_form(
         body
     )
 
-    article.cover_image_url = (
-        cover_image_url
-        or
-        None
-    )
+ 
 
     article.article_type = (
         article_type
