@@ -6,8 +6,241 @@ Restaurant Stories | Kalxa
 {% endblock %}
 
 
+{% block meta_description %}
+Explore restaurant stories, food experiences, people and local places worth discovering on Kalxa.
+{% endblock %}
+
+
+{% block extra_head %}
+
+<style>
+
+    /* =====================================================
+       STORIES INTRO
+    ====================================================== */
+
+    .page-intro {
+
+        position: relative;
+
+        overflow: hidden;
+
+        padding:
+            82px 0 68px;
+
+        border-bottom:
+            1px solid
+            var(--kalxa-border-soft);
+
+        background:
+            var(--kalxa-cream);
+
+    }
+
+
+    .page-intro::after {
+
+        content: "";
+
+        position: absolute;
+
+        top: -120px;
+
+        right: -90px;
+
+        width: 370px;
+
+        height: 370px;
+
+        border:
+            80px solid
+            rgba(232, 109, 50, .045);
+
+        border-radius: 50%;
+
+        pointer-events: none;
+
+    }
+
+
+    .page-intro .page-container {
+
+        position: relative;
+
+        z-index: 2;
+
+    }
+
+
+    .page-intro h1 {
+
+        max-width: 800px;
+
+        margin:
+            0 0 18px;
+
+        color:
+            var(--kalxa-black);
+
+        font-size:
+            clamp(
+                48px,
+                7vw,
+                82px
+            );
+
+        font-weight: 950;
+
+        line-height: .95;
+
+        letter-spacing:
+            -4px;
+
+    }
+
+
+    .page-intro p {
+
+        max-width: 610px;
+
+        margin: 0;
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size:
+            clamp(
+                15px,
+                2vw,
+                18px
+            );
+
+        line-height: 1.65;
+
+    }
+
+
+    /* =====================================================
+       STORIES CONTENT
+    ====================================================== */
+
+    .stories-content {
+
+        padding:
+            55px 0 85px;
+
+    }
+
+
+    .stories-topline {
+
+        margin-bottom: 25px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content:
+            space-between;
+
+        gap: 20px;
+
+    }
+
+
+    .stories-topline strong {
+
+        font-size: 12px;
+
+        font-weight: 950;
+
+        letter-spacing:
+            .8px;
+
+        text-transform:
+            uppercase;
+
+    }
+
+
+    .stories-count {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        min-height: 31px;
+
+        padding:
+            0 11px;
+
+        border:
+            1px solid
+            var(--kalxa-border);
+
+        border-radius:
+            999px;
+
+        background:
+            white;
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size: 10px;
+
+        font-weight: 850;
+
+    }
+
+
+    @media (
+        max-width: 650px
+    ) {
+
+        .page-intro {
+
+            padding:
+                65px 0 53px;
+
+        }
+
+
+        .page-intro h1 {
+
+            font-size:
+                clamp(
+                    46px,
+                    15vw,
+                    64px
+                );
+
+            letter-spacing:
+                -3px;
+
+        }
+
+
+        .stories-content {
+
+            padding:
+                38px 0 55px;
+
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
 {% block content %}
 
+
+<!-- ========================================================
+     INTRO
+========================================================= -->
 
 <section class="page-intro">
 
@@ -32,12 +265,39 @@ Restaurant Stories | Kalxa
 
 
 
-<section class="section">
+<!-- ========================================================
+     STORIES
+========================================================= -->
+
+<section class="stories-content">
 
     <div class="page-container">
 
 
         {% if articles %}
+
+
+        <div class="stories-topline">
+
+            <strong>
+                Explore stories
+            </strong>
+
+
+            <span class="stories-count">
+
+                {{ articles | length }}
+
+                {% if articles | length == 1 %}
+                    story
+                {% else %}
+                    stories
+                {% endif %}
+
+            </span>
+
+        </div>
+
 
         <div class="story-grid">
 
@@ -47,22 +307,60 @@ Restaurant Stories | Kalxa
             <article class="story-card">
 
 
+                <!-- =============================================
+                     IMAGE
+                ============================================== -->
+
                 <a
                     href="{{ url_for(
                         'public.article_detail',
                         slug=article.slug
                     ) }}"
+                    class="story-image-link"
+                    aria-label="Read {{ article.title }}"
                 >
 
                     <div class="story-image">
 
-                        {% if article.cover_image_url %}
+
+                        {% if
+                            article.images
+                            and
+                            article.images | length > 0
+                        %}
+
+                            <img
+                                src="{{ article.images[0].image_url }}"
+                                alt="{{ article.title }}"
+                                loading="lazy"
+                            >
+
+
+                            {% if
+                                article.images | length > 1
+                            %}
+
+                                <span class="story-image-count">
+
+                                    {{
+                                        article.images
+                                        | length
+                                    }}
+                                    photos
+
+                                </span>
+
+                            {% endif %}
+
+
+                        {% elif article.cover_image_url %}
 
                             <img
                                 src="{{ article.cover_image_url }}"
                                 alt="{{ article.title }}"
                                 loading="lazy"
                             >
+
 
                         {% else %}
 
@@ -76,10 +374,15 @@ Restaurant Stories | Kalxa
 
                         {% endif %}
 
+
                     </div>
 
                 </a>
 
+
+                <!-- =============================================
+                     STORY COPY
+                ============================================== -->
 
                 <div class="story-card-content">
 
@@ -94,11 +397,15 @@ Restaurant Stories | Kalxa
 
                         {% endif %}
 
+
                         <span>
-                            {{ article.article_type
+
+                            {{
+                                article.article_type
                                 .replace("_", " ")
                                 .title()
                             }}
+
                         </span>
 
                     </div>
@@ -120,9 +427,9 @@ Restaurant Stories | Kalxa
 
                     {% if article.excerpt %}
 
-                    <p>
-                        {{ article.excerpt }}
-                    </p>
+                        <p>
+                            {{ article.excerpt }}
+                        </p>
 
                     {% endif %}
 
@@ -153,13 +460,17 @@ Restaurant Stories | Kalxa
 
         <div class="empty-state">
 
+            <div class="empty-icon">
+                K
+            </div>
+
             <h2>
                 No stories published yet.
             </h2>
 
             <p>
-                Check back soon for restaurant stories
-                and local food discoveries.
+                Check back soon for restaurant stories,
+                food guides and local discoveries.
             </p>
 
         </div>
