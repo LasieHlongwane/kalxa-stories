@@ -45,12 +45,6 @@ class Article(db.Model):
     # =========================================================
     # LEGACY COVER IMAGE
     # =========================================================
-    #
-    # Keep this field for backward compatibility with stories
-    # created before ArticleImage existed.
-    #
-    # New stories should use ArticleImage.
-    # =========================================================
 
     cover_image_url = db.Column(
         db.Text,
@@ -68,8 +62,6 @@ class Article(db.Model):
         index=True,
     )
 
-    # Possible values:
-    #
     # restaurant_story
     # food_guide
     # sponsored
@@ -200,12 +192,6 @@ class Article(db.Model):
 
     @property
     def display_cover_image_url(self):
-        """
-        Prefer the first ArticleImage.
-
-        Fall back to the old cover_image_url so existing
-        published stories continue working.
-        """
 
         if self.images:
 
@@ -227,52 +213,67 @@ class Article(db.Model):
     def is_expired(self):
 
         if not self.expires_at:
+
             return False
 
         now = datetime.now(
             timezone.utc
         )
 
-        expires_at = self.expires_at
+        expires_at = (
+            self.expires_at
+        )
 
-        # PostgreSQL normally returns timezone-aware
-        # datetimes for timezone=True, but this keeps
-        # SQLite/dev environments safe too.
         if expires_at.tzinfo is None:
 
-            expires_at = expires_at.replace(
-                tzinfo=timezone.utc
+            expires_at = (
+                expires_at.replace(
+                    tzinfo=timezone.utc
+                )
             )
 
-        return now >= expires_at
-
+        return (
+            now
+            >=
+            expires_at
+        )
 
     @property
     def comments_open(self):
 
         return (
             self.status == "published"
-            and not self.is_expired
+            and
+            not self.is_expired
         )
 
+    # ==========================================
+    # SEO HELPERS
+    # ==========================================
 
     @property
     def seo_title(self):
 
         return (
             self.meta_title
-            or f"{self.title} | Kalxa Stories"
+            or
+            f"{self.title} | Kalxa Stories"
         )
-
 
     @property
     def seo_description(self):
 
         if self.meta_description:
-            return self.meta_description
+
+            return (
+                self.meta_description
+            )
 
         if self.excerpt:
-            return self.excerpt[:320]
+
+            return (
+                self.excerpt[:320]
+            )
 
         return (
             "Discover local stories, restaurants "
