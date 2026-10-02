@@ -32,21 +32,14 @@
         {% endblock %}
     </title>
 
-
     <meta
         name="description"
         content="{% block meta_description %}Discover local stories, restaurants and experiences on Kalxa.{% endblock %}"
     >
 
 
-    <meta
-        name="robots"
-        content="{% block robots %}index, follow{% endblock %}"
-    >
-
-
     <!-- =====================================================
-         CANONICAL URL
+         CANONICAL
     ====================================================== -->
 
     {% block canonical %}
@@ -62,11 +55,6 @@
     <meta
         property="og:type"
         content="website"
-    >
-
-    <meta
-        property="og:site_name"
-        content="Kalxa Stories"
     >
 
     <meta
@@ -95,10 +83,6 @@
     {% endblock %}
 
 
-    <!-- =====================================================
-         STYLESHEET
-    ====================================================== -->
-
     <link
         rel="stylesheet"
         href="{{ url_for(
@@ -108,19 +92,11 @@
     >
 
 
-    <!-- =====================================================
-         PAGE-SPECIFIC HEAD CONTENT
-    ====================================================== -->
-
     {% block extra_head %}
     {% endblock %}
 
 
     <style>
-
-        /* =====================================================
-           PUBLIC EDITORIAL SHELL
-        ====================================================== */
 
         :root {
 
@@ -160,16 +136,12 @@
 
 
         * {
-
             box-sizing: border-box;
-
         }
 
 
         html {
-
             scroll-behavior: smooth;
-
         }
 
 
@@ -206,41 +178,31 @@
         input,
         textarea,
         select {
-
             font: inherit;
-
         }
 
 
         img {
-
             max-width: 100%;
-
         }
 
 
         a {
-
             color: inherit;
             text-decoration: none;
-
         }
 
 
         button,
         a {
-
             -webkit-tap-highlight-color:
                 transparent;
-
         }
 
 
         main {
-
             min-height:
                 calc(100vh - 220px);
-
         }
 
 
@@ -254,92 +216,6 @@
 
             margin:
                 0 auto;
-
-        }
-
-
-        /* =====================================================
-           FLASH MESSAGES
-        ====================================================== */
-
-        .flash-container {
-
-            width:
-                min(
-                    calc(100% - 40px),
-                    var(--kalxa-max-width)
-                );
-
-            margin:
-                18px auto 0;
-
-        }
-
-
-        .flash-message {
-
-            margin-bottom: 10px;
-
-            padding:
-                14px 16px;
-
-            border:
-                1px solid
-                var(--kalxa-border);
-
-            border-radius:
-                12px;
-
-            background:
-                white;
-
-            color:
-                var(--kalxa-text);
-
-            font-size: 12px;
-
-            font-weight: 750;
-
-            line-height: 1.5;
-
-        }
-
-
-        .flash-message.success {
-
-            border-color:
-                #cbe6d5;
-
-            background:
-                var(--kalxa-green-soft);
-
-            color:
-                var(--kalxa-green);
-
-        }
-
-
-        .flash-message.error {
-
-            border-color:
-                #f0c9c2;
-
-            background:
-                #fff0ed;
-
-            color:
-                #9b3428;
-
-        }
-
-
-        .flash-message.info {
-
-            background:
-                #f4f4f2;
-
-            color:
-                var(--kalxa-text-soft);
 
         }
 
@@ -558,10 +434,7 @@
 
 
         .section {
-
-            padding:
-                46px 0;
-
+            padding: 46px 0;
         }
 
 
@@ -612,10 +485,7 @@
 
 
         .section-heading > a:hover {
-
-            color:
-                var(--kalxa-black);
-
+            color: var(--kalxa-black);
         }
 
 
@@ -771,9 +641,7 @@
 
 
         .story-image-link {
-
             display: block;
-
         }
 
 
@@ -897,9 +765,7 @@
 
 
         .story-card-content h3 {
-
             font-size: 20px;
-
         }
 
 
@@ -1004,9 +870,7 @@
 
 
         .image-placeholder.small {
-
             min-height: 100%;
-
         }
 
 
@@ -1220,8 +1084,7 @@
 
             .page-container,
             .header-inner,
-            .footer-inner,
-            .flash-container {
+            .footer-inner {
 
                 width:
                     min(
@@ -1233,16 +1096,12 @@
 
 
             .header-inner {
-
                 min-height: 66px;
-
             }
 
 
             .brand {
-
                 gap: 7px;
-
             }
 
 
@@ -1259,16 +1118,12 @@
 
 
             .brand-section {
-
                 font-size: 15px;
-
             }
 
 
             .main-nav {
-
                 gap: 2px;
-
             }
 
 
@@ -1285,10 +1140,7 @@
 
 
             .section {
-
-                padding:
-                    34px 0;
-
+                padding: 34px 0;
             }
 
 
@@ -1303,18 +1155,12 @@
 
 
             .story-card {
-
-                border-radius:
-                    18px;
-
+                border-radius: 18px;
             }
 
 
             .story-card-content {
-
-                padding:
-                    18px;
-
+                padding: 18px;
             }
 
 
@@ -1337,9 +1183,7 @@
         ) {
 
             html {
-
                 scroll-behavior: auto;
-
             }
 
 
@@ -1417,43 +1261,6 @@
 </header>
 
 
-
-<!-- ========================================================
-     FLASH MESSAGES
-========================================================= -->
-
-{% with messages =
-    get_flashed_messages(
-        with_categories=true
-    )
-%}
-
-    {% if messages %}
-
-    <div
-        class="flash-container"
-        role="status"
-        aria-live="polite"
-    >
-
-        {% for category, message in messages %}
-
-        <div
-            class="flash-message {{ category }}"
-        >
-            {{ message }}
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    {% endif %}
-
-{% endwith %}
-
-
-
 <!-- ========================================================
      PAGE
 ========================================================= -->
@@ -1464,7 +1271,6 @@
     {% endblock %}
 
 </main>
-
 
 
 <!-- ========================================================
