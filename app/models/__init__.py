@@ -4,6 +4,10 @@ from app.models.article_restaurant import ArticleRestaurant
 from app.models.analytics_event import StoryAnalyticsEvent
 
 
+from app.models.article_comment import ArticleComment
+from app.models.analytics_event import AnalyticsEvent
+from app.models.restaurant_analytics_event import RestaurantAnalyticsEvent
+
 __all__ = [
     "Article",
     "ArticleImage",
