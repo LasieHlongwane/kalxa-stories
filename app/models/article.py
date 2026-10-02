@@ -130,6 +130,16 @@ class Article(db.Model):
         nullable=True,
     )
 
+    # ==========================================
+    # STORY / COMMENT EXPIRY
+    # ==========================================
+
+    expires_at = db.Column(
+        db.DateTime(timezone=True),
+        nullable=True,
+        index=True,
+    )
+
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -173,6 +183,18 @@ class Article(db.Model):
     )
 
     # ==========================================
+    # COMMENTS
+    # ==========================================
+
+    comments = db.relationship(
+        "ArticleComment",
+        back_populates="article",
+        cascade="all, delete-orphan",
+        lazy=True,
+        order_by="ArticleComment.created_at.desc()",
+    )
+
+    # ==========================================
     # DISPLAY COVER
     # ==========================================
 
@@ -196,6 +218,66 @@ class Article(db.Model):
             return first_image.image_url
 
         return self.cover_image_url
+
+    # ==========================================
+    # ARTICLE LIFECYCLE
+    # ==========================================
+
+    @property
+    def is_expired(self):
+
+        if not self.expires_at:
+            return False
+
+        now = datetime.now(
+            timezone.utc
+        )
+
+        expires_at = self.expires_at
+
+        # PostgreSQL normally returns timezone-aware
+        # datetimes for timezone=True, but this keeps
+        # SQLite/dev environments safe too.
+        if expires_at.tzinfo is None:
+
+            expires_at = expires_at.replace(
+                tzinfo=timezone.utc
+            )
+
+        return now >= expires_at
+
+
+    @property
+    def comments_open(self):
+
+        return (
+            self.status == "published"
+            and not self.is_expired
+        )
+
+
+    @property
+    def seo_title(self):
+
+        return (
+            self.meta_title
+            or f"{self.title} | Kalxa Stories"
+        )
+
+
+    @property
+    def seo_description(self):
+
+        if self.meta_description:
+            return self.meta_description
+
+        if self.excerpt:
+            return self.excerpt[:320]
+
+        return (
+            "Discover local stories, restaurants "
+            "and experiences on Kalxa."
+        )
 
     def __repr__(self):
 
