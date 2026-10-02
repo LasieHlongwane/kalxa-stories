@@ -1,4 +1,4 @@
-```python
+
 """add article expiry and comments
 
 Revision ID: 7a9106dc7c14
@@ -266,4 +266,3 @@ def downgrade():
     op.drop_table(
         "article_comments"
     )
-```
