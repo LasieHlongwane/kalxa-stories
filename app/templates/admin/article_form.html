@@ -202,6 +202,215 @@ Edit Story
         gap: 8px;
     }
 
+        /* =====================================================
+       EXPIRATION
+    ====================================================== */
+
+    input[type="datetime-local"] {
+        width: 100%;
+
+        min-height: 45px;
+
+        padding:
+            0
+            12px;
+
+        border:
+            1px solid
+            #d7dade;
+
+        border-radius: 9px;
+
+        background: white;
+        color: #17191d;
+
+        outline: none;
+    }
+
+
+    input[type="datetime-local"]:focus {
+        border-color: #111318;
+    }
+
+
+    .expiry-status {
+        margin-top: 10px;
+
+        padding: 11px 13px;
+
+        border-radius: 9px;
+
+        background: #f5f6f7;
+
+        color: #555b63;
+
+        font-size: 11px;
+
+        line-height: 1.55;
+    }
+
+
+    .expiry-status.expired {
+        background: #fff0ee;
+        color: #96362d;
+    }
+
+
+    /* =====================================================
+       COMMENT MODERATION
+    ====================================================== */
+
+    .comment-moderation-list {
+        display: grid;
+        gap: 12px;
+    }
+
+
+    .comment-moderation-card {
+        padding: 16px;
+
+        border:
+            1px solid
+            #d7dade;
+
+        border-radius: 12px;
+
+        background: #f8f9fa;
+    }
+
+
+    .comment-moderation-top {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 12px;
+
+        margin-bottom: 10px;
+    }
+
+
+    .comment-author {
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+
+    .comment-status {
+        display: inline-flex;
+
+        align-items: center;
+
+        min-height: 24px;
+
+        padding:
+            0
+            8px;
+
+        border-radius: 999px;
+
+        background: #eceef1;
+
+        font-size: 9px;
+        font-weight: 900;
+
+        text-transform: uppercase;
+    }
+
+
+    .comment-status.pending {
+        background: #fff3d6;
+        color: #765413;
+    }
+
+
+    .comment-status.approved {
+        background: #e8f5ed;
+        color: #23613d;
+    }
+
+
+    .comment-status.rejected {
+        background: #f8e7e7;
+        color: #8b3030;
+    }
+
+
+    .comment-body {
+        margin:
+            0
+            0
+            12px;
+
+        color: #444a52;
+
+        font-size: 12px;
+        line-height: 1.65;
+
+        white-space: pre-wrap;
+    }
+
+
+    .comment-date {
+        margin-bottom: 12px;
+
+        color: #858a92;
+
+        font-size: 10px;
+    }
+
+
+    .comment-actions {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 7px;
+    }
+
+
+    .comment-actions form {
+        margin: 0;
+    }
+
+
+    .comment-action-button {
+        min-height: 32px;
+
+        padding:
+            0
+            11px;
+
+        border: 0;
+
+        border-radius: 7px;
+
+        cursor: pointer;
+
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+
+    .comment-action-button.approve {
+        background: #1f7047;
+        color: white;
+    }
+
+
+    .comment-action-button.reject {
+        background: #8d3434;
+        color: white;
+    }
+
+
+    .comment-action-button.remove {
+        background: #e7e9ec;
+        color: #444a52;
+    }
+
 
     .restaurant-search-status {
         margin:
