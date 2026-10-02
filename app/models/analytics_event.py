@@ -25,6 +25,10 @@ class StoryAnalyticsEvent(db.Model):
     # ========================================================
     # ARTICLE
     # ========================================================
+    #
+    # This IS a real database foreign key because Article
+    # belongs to the same Kalxa Stories database.
+    # ========================================================
 
     article_id = db.Column(
         db.Integer,
@@ -41,11 +45,12 @@ class StoryAnalyticsEvent(db.Model):
     # EVENT TYPE
     # ========================================================
     #
-    # Initial Stage 5 events:
+    # Current / planned events:
     #
     # article_view
     # restaurant_impression
     # restaurant_click
+    # comment_submit
     #
     # Later:
     #
@@ -67,11 +72,20 @@ class StoryAnalyticsEvent(db.Model):
     # KALXA TICKETING RESTAURANT
     # ========================================================
     #
-    # External ID.
+    # External Kalxa Ticketing restaurant ID.
     #
     # IMPORTANT:
-    # This is NOT a database foreign key because the restaurant
-    # belongs to Kalxa Ticketing.
+    #
+    # This is deliberately NOT a database foreign key.
+    #
+    # Kalxa Stories and Kalxa Ticketing use separate
+    # applications/databases.
+    #
+    # Example:
+    #
+    # kalxa_restaurant_id = 7
+    #
+    # means Restaurant #7 in Kalxa Ticketing.
     # ========================================================
 
     kalxa_restaurant_id = db.Column(
@@ -146,6 +160,10 @@ class StoryAnalyticsEvent(db.Model):
     # ========================================================
     # RELATIONSHIP
     # ========================================================
+    #
+    # This relationship is safe because Article belongs
+    # to the same Kalxa Stories database.
+    # ========================================================
 
     article = db.relationship(
         "Article",
@@ -165,6 +183,8 @@ class StoryAnalyticsEvent(db.Model):
 
         return (
             "<StoryAnalyticsEvent "
-            f"{self.event_type} "
-            f"article={self.article_id}>"
+            f"id={self.id} "
+            f"event={self.event_type} "
+            f"article={self.article_id} "
+            f"restaurant={self.kalxa_restaurant_id}>"
         )
