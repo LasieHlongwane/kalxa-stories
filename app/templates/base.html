@@ -21,16 +21,83 @@
         content="light"
     >
 
+
+    <!-- =====================================================
+         PRIMARY SEO
+    ====================================================== -->
+
     <title>
         {% block title %}
             Kalxa Stories
         {% endblock %}
     </title>
 
+
     <meta
         name="description"
-        content="{% block meta_description %}Discover restaurant stories, food guides and local experiences on Kalxa.{% endblock %}"
+        content="{% block meta_description %}Discover local stories, restaurants and experiences on Kalxa.{% endblock %}"
     >
+
+
+    <meta
+        name="robots"
+        content="{% block robots %}index, follow{% endblock %}"
+    >
+
+
+    <!-- =====================================================
+         CANONICAL URL
+    ====================================================== -->
+
+    {% block canonical %}
+    {% endblock %}
+
+
+    <!-- =====================================================
+         SOCIAL / OPEN GRAPH
+    ====================================================== -->
+
+    {% block social_meta %}
+
+    <meta
+        property="og:type"
+        content="website"
+    >
+
+    <meta
+        property="og:site_name"
+        content="Kalxa Stories"
+    >
+
+    <meta
+        property="og:title"
+        content="Kalxa Stories"
+    >
+
+    <meta
+        property="og:description"
+        content="Discover local stories, restaurants and experiences on Kalxa."
+    >
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    {% endblock %}
+
+
+    <!-- =====================================================
+         STRUCTURED DATA
+    ====================================================== -->
+
+    {% block structured_data %}
+    {% endblock %}
+
+
+    <!-- =====================================================
+         STYLESHEET
+    ====================================================== -->
 
     <link
         rel="stylesheet"
@@ -40,6 +107,10 @@
         ) }}"
     >
 
+
+    <!-- =====================================================
+         PAGE-SPECIFIC HEAD CONTENT
+    ====================================================== -->
 
     {% block extra_head %}
     {% endblock %}
@@ -183,6 +254,92 @@
 
             margin:
                 0 auto;
+
+        }
+
+
+        /* =====================================================
+           FLASH MESSAGES
+        ====================================================== */
+
+        .flash-container {
+
+            width:
+                min(
+                    calc(100% - 40px),
+                    var(--kalxa-max-width)
+                );
+
+            margin:
+                18px auto 0;
+
+        }
+
+
+        .flash-message {
+
+            margin-bottom: 10px;
+
+            padding:
+                14px 16px;
+
+            border:
+                1px solid
+                var(--kalxa-border);
+
+            border-radius:
+                12px;
+
+            background:
+                white;
+
+            color:
+                var(--kalxa-text);
+
+            font-size: 12px;
+
+            font-weight: 750;
+
+            line-height: 1.5;
+
+        }
+
+
+        .flash-message.success {
+
+            border-color:
+                #cbe6d5;
+
+            background:
+                var(--kalxa-green-soft);
+
+            color:
+                var(--kalxa-green);
+
+        }
+
+
+        .flash-message.error {
+
+            border-color:
+                #f0c9c2;
+
+            background:
+                #fff0ed;
+
+            color:
+                #9b3428;
+
+        }
+
+
+        .flash-message.info {
+
+            background:
+                #f4f4f2;
+
+            color:
+                var(--kalxa-text-soft);
 
         }
 
@@ -1063,7 +1220,8 @@
 
             .page-container,
             .header-inner,
-            .footer-inner {
+            .footer-inner,
+            .flash-container {
 
                 width:
                     min(
@@ -1257,6 +1415,42 @@
     </div>
 
 </header>
+
+
+
+<!-- ========================================================
+     FLASH MESSAGES
+========================================================= -->
+
+{% with messages =
+    get_flashed_messages(
+        with_categories=true
+    )
+%}
+
+    {% if messages %}
+
+    <div
+        class="flash-container"
+        role="status"
+        aria-live="polite"
+    >
+
+        {% for category, message in messages %}
+
+        <div
+            class="flash-message {{ category }}"
+        >
+            {{ message }}
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+{% endwith %}
 
 
 
