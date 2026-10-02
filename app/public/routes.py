@@ -649,6 +649,23 @@ def home():
     )
 
 
+
+def get_anonymous_session_id():
+
+    session_id = session.get(
+        "kalxa_story_session_id"
+    )
+
+    if not session_id:
+
+        session_id = uuid.uuid4().hex
+
+        session[
+            "kalxa_story_session_id"
+        ] = session_id
+
+    return session_id
+
 # ============================================================
 # ALL STORIES
 # ============================================================
