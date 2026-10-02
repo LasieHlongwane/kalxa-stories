@@ -36,6 +36,9 @@ from app.models import (
     StoryAnalyticsEvent,
 )
 
+from app.models.article import Article
+from app.models.article_comment import ArticleComment
+
 from app.kalxa.client import (
     get_restaurant,
     get_restaurants_by_ids,
