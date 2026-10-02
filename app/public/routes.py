@@ -30,6 +30,8 @@ from itsdangerous import (
     URLSafeTimedSerializer,
 )
 
+from markupsafe import escape
+
 from sqlalchemy import (
     or_,
 )
@@ -88,6 +90,20 @@ def active_published_article_query():
     Expired published stories remain accessible through their
     permanent article URL, but they are removed from active
     discovery feeds.
+
+    This means:
+
+        Home feed:
+            active published stories only.
+
+        Stories feed:
+            active published stories only.
+
+        Permanent story URL:
+            all published stories, including expired stories.
+
+        Sitemap:
+            all published stories, including expired stories.
     """
 
     now = datetime.now(
@@ -413,6 +429,9 @@ def build_attributed_ticketing_url(
             )
         )
 
+        # Remove legacy/raw attribution values if they exist.
+        # Only the signed attribution token should be sent.
+
         existing_query.pop(
             "source",
             None,
@@ -552,6 +571,7 @@ def article_comment(
         .first_or_404()
     )
 
+
     # ========================================================
     # COMMENTS CLOSED / STORY EXPIRED
     # ========================================================
@@ -574,6 +594,7 @@ def article_comment(
             "#comments"
         )
 
+
     # ========================================================
     # FORM DATA
     # ========================================================
@@ -595,6 +616,7 @@ def article_comment(
         )
         .strip()
     )
+
 
     # ========================================================
     # VALIDATION
@@ -666,6 +688,7 @@ def article_comment(
             +
             "#comments"
         )
+
 
     # ========================================================
     # CREATE PENDING COMMENT
@@ -773,6 +796,7 @@ def article_detail(
             404
         )
 
+
     # ========================================================
     # ARTICLE VIEW
     # ========================================================
@@ -785,6 +809,7 @@ def article_detail(
                 "article_page",
         },
     )
+
 
     # ========================================================
     # KALXA TICKETING RESTAURANTS
@@ -807,6 +832,7 @@ def article_detail(
             restaurant_ids
         )
     )
+
 
     # ========================================================
     # RESTAURANT IMPRESSIONS
@@ -842,8 +868,13 @@ def article_detail(
             },
         )
 
+
     # ========================================================
     # APPROVED COMMENTS
+    # ========================================================
+    #
+    # Expired stories remain available as permanent archive
+    # pages, but their comments are hidden and closed.
     # ========================================================
 
     approved_comments = []
@@ -867,6 +898,7 @@ def article_detail(
 
             .all()
         )
+
 
     # ========================================================
     # RELATED ACTIVE STORIES
@@ -892,6 +924,7 @@ def article_detail(
         .all()
     )
 
+
     # ========================================================
     # READING TIME
     # ========================================================
@@ -916,6 +949,7 @@ def article_detail(
             220
         ),
     )
+
 
     # ========================================================
     # RENDER
@@ -1055,6 +1089,22 @@ def restaurant_click(
     "/sitemap.xml"
 )
 def sitemap():
+    """
+    XML sitemap for Kalxa Stories.
+
+    IMPORTANT:
+
+    Unlike the home page and /stories discovery feed,
+    the sitemap deliberately contains ALL published stories,
+    including stories whose expires_at date has passed.
+
+    Story expiration removes a story from active discovery.
+    It does not delete or archive its permanent public URL.
+    """
+
+    # ========================================================
+    # ALL PUBLISHED STORIES
+    # ========================================================
 
     articles = (
         Article.query
@@ -1072,29 +1122,34 @@ def sitemap():
         .all()
     )
 
-    urls = []
 
-    urls.append({
-        "location":
-            url_for(
-                "public.home",
-                _external=True,
-            ),
+    # ========================================================
+    # BUILD SITEMAP URL DATA
+    # ========================================================
 
-        "last_modified":
-            None,
-    })
+    urls = [
+        {
+            "location":
+                url_for(
+                    "public.home",
+                    _external=True,
+                ),
 
-    urls.append({
-        "location":
-            url_for(
-                "public.stories",
-                _external=True,
-            ),
+            "last_modified":
+                None,
+        },
 
-        "last_modified":
-            None,
-    })
+        {
+            "location":
+                url_for(
+                    "public.stories",
+                    _external=True,
+                ),
+
+            "last_modified":
+                None,
+        },
+    ]
 
     for article in articles:
 
@@ -1106,20 +1161,28 @@ def sitemap():
             article.created_at
         )
 
-        urls.append({
-            "location":
-                url_for(
-                    "public.article_detail",
-                    slug=article.slug,
-                    _external=True,
-                ),
+        urls.append(
+            {
+                "location":
+                    url_for(
+                        "public.article_detail",
+                        slug=article.slug,
+                        _external=True,
+                    ),
 
-            "last_modified":
-                last_modified,
-        })
+                "last_modified":
+                    last_modified,
+            }
+        )
+
+
+    # ========================================================
+    # XML DOCUMENT
+    # ========================================================
 
     xml_parts = [
         '<?xml version="1.0" encoding="UTF-8"?>',
+
         (
             '<urlset '
             'xmlns="http://www.sitemaps.org/'
@@ -1127,19 +1190,24 @@ def sitemap():
         ),
     ]
 
+
+    # ========================================================
+    # XML URL ENTRIES
+    # ========================================================
+
     for item in urls:
 
         xml_parts.append(
-            "<url>"
+            "  <url>"
         )
 
         xml_parts.append(
-            "<loc>"
+            "    <loc>"
             +
-            item["location"]
-            .replace(
-                "&",
-                "&amp;",
+            str(
+                escape(
+                    item["location"]
+                )
             )
             +
             "</loc>"
@@ -1165,7 +1233,7 @@ def sitemap():
                 )
 
             xml_parts.append(
-                "<lastmod>"
+                "    <lastmod>"
                 +
                 last_modified
                 .date()
@@ -1175,19 +1243,28 @@ def sitemap():
             )
 
         xml_parts.append(
-            "</url>"
+            "  </url>"
         )
 
     xml_parts.append(
         "</urlset>"
     )
 
-    return Response(
+
+    # ========================================================
+    # RESPONSE
+    # ========================================================
+
+    response = Response(
         "\n".join(
             xml_parts
         ),
-        mimetype="application/xml",
+        content_type=(
+            "application/xml; charset=utf-8"
+        ),
     )
+
+    return response
 
 
 # ============================================================
