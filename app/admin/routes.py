@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
 from functools import wraps
 import os
-
+from app.models.article_comment import (
+    ArticleComment,
+)
 import cloudinary
 import cloudinary.uploader
 from sqlalchemy import case, func
@@ -1644,6 +1646,10 @@ def articles():
 # CREATE ARTICLE
 # ============================================================
 
+# ============================================================
+# CREATE ARTICLE
+# ============================================================
+
 @admin_bp.route(
     "/articles/new",
     methods=[
@@ -1668,30 +1674,18 @@ def article_new():
 
             return render_template(
                 "admin/article_form.html",
-
                 article=article,
-
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
                 ),
-
                 page_mode="new",
+                article_comments=[],
             )
 
         try:
-
-            # =================================================
-            # CREATE ARTICLE FIRST
-            # =================================================
-            #
-            # Images are deliberately NOT processed here.
-            #
-            # The article must first exist and receive a
-            # permanent database ID.
-            # =================================================
 
             db.session.add(
                 article
@@ -1699,14 +1693,8 @@ def article_new():
 
             db.session.flush()
 
-
-            # =================================================
-            # RESTAURANTS
-            # =================================================
-
             replace_restaurant_links(
                 article=article,
-
                 raw_restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
@@ -1714,7 +1702,6 @@ def article_new():
                     )
                 ),
             )
-
 
             db.session.commit()
 
@@ -1733,19 +1720,16 @@ def article_new():
 
             return render_template(
                 "admin/article_form.html",
-
                 article=article,
-
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
                 ),
-
                 page_mode="new",
+                article_comments=[],
             )
-
 
         flash(
             (
@@ -1755,15 +1739,6 @@ def article_new():
             "success",
         )
 
-
-        # =====================================================
-        # REDIRECT TO EDITOR
-        # =====================================================
-        #
-        # The image uploader is available only after the
-        # article has a permanent ID.
-        # =====================================================
-
         return redirect(
             url_for(
                 "admin.article_edit",
@@ -1771,15 +1746,12 @@ def article_new():
             )
         )
 
-
     return render_template(
         "admin/article_form.html",
-
         article=None,
-
         restaurant_ids="",
-
         page_mode="new",
+        article_comments=[],
     )
 
 
@@ -1808,8 +1780,9 @@ def article_edit(
 
     if article is None:
 
-        abort(404)
-
+        abort(
+            404
+        )
 
     if request.method == "POST":
 
@@ -1821,31 +1794,41 @@ def article_edit(
 
         if not success:
 
+            article_comments = (
+                ArticleComment.query
+
+                .filter_by(
+                    article_id=article.id
+                )
+
+                .order_by(
+                    ArticleComment
+                    .created_at
+                    .desc()
+                )
+
+                .all()
+            )
+
             return render_template(
                 "admin/article_form.html",
-
                 article=article,
-
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
                 ),
-
                 page_mode="edit",
+                article_comments=(
+                    article_comments
+                ),
             )
-
 
         try:
 
-            # =================================================
-            # RESTAURANTS
-            # =================================================
-
             replace_restaurant_links(
                 article=article,
-
                 raw_restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
@@ -1854,24 +1837,7 @@ def article_edit(
                 ),
             )
 
-
-            # =================================================
-            # IMPORTANT
-            # =================================================
-            #
-            # No image files are processed by this request.
-            #
-            # Image uploading has its own endpoint:
-            #
-            # POST
-            # /admin/articles/<id>/images/upload
-            #
-            # This keeps article saving independent from
-            # browser file handles.
-            # =================================================
-
             db.session.commit()
-
 
         except Exception:
 
@@ -1886,27 +1852,41 @@ def article_edit(
                 "error",
             )
 
+            article_comments = (
+                ArticleComment.query
+
+                .filter_by(
+                    article_id=article.id
+                )
+
+                .order_by(
+                    ArticleComment
+                    .created_at
+                    .desc()
+                )
+
+                .all()
+            )
+
             return render_template(
                 "admin/article_form.html",
-
                 article=article,
-
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
                 ),
-
                 page_mode="edit",
+                article_comments=(
+                    article_comments
+                ),
             )
-
 
         flash(
             "Article updated.",
             "success",
         )
-
 
         return redirect(
             url_for(
@@ -1915,32 +1895,543 @@ def article_edit(
             )
         )
 
-
     restaurant_ids = ", ".join(
         str(
             relation.kalxa_restaurant_id
         )
-
-        for relation in sorted(
+        for relation
+        in sorted(
             article.restaurants,
-
             key=lambda relation:
                 relation.display_order,
         )
     )
 
+    article_comments = (
+        ArticleComment.query
+
+        .filter_by(
+            article_id=article.id
+        )
+
+        .order_by(
+            ArticleComment
+            .created_at
+            .desc()
+        )
+
+        .all()
+    )
 
     return render_template(
         "admin/article_form.html",
-
         article=article,
-
         restaurant_ids=restaurant_ids,
-
         page_mode="edit",
+        article_comments=(
+            article_comments
+        ),
     )
 
 
+# ============================================================
+# APPROVE COMMENT
+# ============================================================
+
+@admin_bp.route(
+    "/comments/<int:comment_id>/approve",
+    methods=["POST"],
+)
+@admin_required
+def article_comment_approve(
+    comment_id,
+):
+
+    comment = (
+        db.session.get(
+            ArticleComment,
+            comment_id,
+        )
+    )
+
+    if comment is None:
+
+        abort(
+            404
+        )
+
+    article_id = (
+        comment.article_id
+    )
+
+    comment.moderation_status = (
+        "approved"
+    )
+
+    comment.active = True
+
+    try:
+
+        db.session.commit()
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to approve story comment."
+        )
+
+        flash(
+            "Unable to approve the comment.",
+            "error",
+        )
+
+    else:
+
+        flash(
+            "Comment approved.",
+            "success",
+        )
+
+    return redirect(
+        url_for(
+            "admin.article_edit",
+            article_id=article_id,
+        )
+        +
+        "#story-comments"
+    )
+
+
+# ============================================================
+# REJECT COMMENT
+# ============================================================
+
+@admin_bp.route(
+    "/comments/<int:comment_id>/reject",
+    methods=["POST"],
+)
+@admin_required
+def article_comment_reject(
+    comment_id,
+):
+
+    comment = (
+        db.session.get(
+            ArticleComment,
+            comment_id,
+        )
+    )
+
+    if comment is None:
+
+        abort(
+            404
+        )
+
+    article_id = (
+        comment.article_id
+    )
+
+    comment.moderation_status = (
+        "rejected"
+    )
+
+    comment.active = True
+
+    try:
+
+        db.session.commit()
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to reject story comment."
+        )
+
+        flash(
+            "Unable to reject the comment.",
+            "error",
+        )
+
+    else:
+
+        flash(
+            "Comment rejected.",
+            "success",
+        )
+
+    return redirect(
+        url_for(
+            "admin.article_edit",
+            article_id=article_id,
+        )
+        +
+        "#story-comments"
+    )
+
+
+# ============================================================
+# DELETE / DEACTIVATE COMMENT
+# ============================================================
+
+@admin_bp.route(
+    "/comments/<int:comment_id>/remove",
+    methods=["POST"],
+)
+@admin_required
+def article_comment_remove(
+    comment_id,
+):
+
+    comment = (
+        db.session.get(
+            ArticleComment,
+            comment_id,
+        )
+    )
+
+    if comment is None:
+
+        abort(
+            404
+        )
+
+    article_id = (
+        comment.article_id
+    )
+
+    comment.active = False
+
+    try:
+
+        db.session.commit()
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to remove story comment."
+        )
+
+        flash(
+            "Unable to remove the comment.",
+            "error",
+        )
+
+    else:
+
+        flash(
+            "Comment removed from public view.",
+            "success",
+        )
+
+    return redirect(
+        url_for(
+            "admin.article_edit",
+            article_id=article_id,
+        )
+        +
+        "#story-comments"
+    )
+
+
+# ============================================================
+# FORM HELPERS
+# ============================================================
+
+def populate_article_from_form(
+    article
+):
+
+    title = (
+        request.form
+        .get(
+            "title",
+            "",
+        )
+        .strip()
+    )
+
+    slug = (
+        request.form
+        .get(
+            "slug",
+            "",
+        )
+        .strip()
+        .lower()
+    )
+
+    excerpt = (
+        request.form
+        .get(
+            "excerpt",
+            "",
+        )
+        .strip()
+    )
+
+    body = (
+        request.form
+        .get(
+            "body",
+            "",
+        )
+        .strip()
+    )
+
+    article_type = (
+        request.form
+        .get(
+            "article_type",
+            "restaurant_story",
+        )
+        .strip()
+    )
+
+    status = (
+        request.form
+        .get(
+            "status",
+            "draft",
+        )
+        .strip()
+    )
+
+    meta_title = (
+        request.form
+        .get(
+            "meta_title",
+            "",
+        )
+        .strip()
+    )
+
+    meta_description = (
+        request.form
+        .get(
+            "meta_description",
+            "",
+        )
+        .strip()
+    )
+
+    expires_at_raw = (
+        request.form
+        .get(
+            "expires_at",
+            "",
+        )
+        .strip()
+    )
+
+    # --------------------------------------------------------
+    # VALIDATION
+    # --------------------------------------------------------
+
+    if not title:
+
+        flash(
+            "Title is required.",
+            "error",
+        )
+
+        return False
+
+    if not slug:
+
+        flash(
+            "Slug is required.",
+            "error",
+        )
+
+        return False
+
+    if not body:
+
+        flash(
+            "Article body is required.",
+            "error",
+        )
+
+        return False
+
+    allowed_types = {
+        "restaurant_story",
+        "food_guide",
+        "sponsored",
+        "new_restaurant",
+        "experience",
+    }
+
+    if article_type not in allowed_types:
+
+        article_type = (
+            "restaurant_story"
+        )
+
+    allowed_statuses = {
+        "draft",
+        "published",
+        "archived",
+    }
+
+    if status not in allowed_statuses:
+
+        status = (
+            "draft"
+        )
+
+    # --------------------------------------------------------
+    # EXPIRATION DATE
+    # --------------------------------------------------------
+
+    expires_at = None
+
+    if expires_at_raw:
+
+        try:
+
+            expires_at = (
+                datetime.strptime(
+                    expires_at_raw,
+                    "%Y-%m-%dT%H:%M",
+                )
+            )
+
+            # The editor currently treats entered times
+            # as UTC.
+            #
+            # This keeps storage consistent with the rest
+            # of the application's timezone-aware fields.
+            expires_at = (
+                expires_at.replace(
+                    tzinfo=timezone.utc
+                )
+            )
+
+        except ValueError:
+
+            flash(
+                (
+                    "Story expiration date/time "
+                    "is invalid."
+                ),
+                "error",
+            )
+
+            return False
+
+    # --------------------------------------------------------
+    # DUPLICATE SLUG
+    # --------------------------------------------------------
+
+    existing_article = (
+        Article.query
+
+        .filter(
+            Article.slug
+            == slug
+        )
+
+        .first()
+    )
+
+    if (
+        existing_article
+        and
+        existing_article.id
+        != article.id
+    ):
+
+        flash(
+            (
+                "Another article already "
+                "uses that slug."
+            ),
+            "error",
+        )
+
+        return False
+
+    # --------------------------------------------------------
+    # ASSIGN
+    # --------------------------------------------------------
+
+    article.title = (
+        title
+    )
+
+    article.slug = (
+        slug
+    )
+
+    article.excerpt = (
+        excerpt
+        or
+        None
+    )
+
+    article.body = (
+        body
+    )
+
+    article.article_type = (
+        article_type
+    )
+
+    article.status = (
+        status
+    )
+
+    article.is_sponsored = (
+        request.form.get(
+            "is_sponsored"
+        )
+        == "on"
+    )
+
+    article.meta_title = (
+        meta_title
+        or
+        None
+    )
+
+    article.meta_description = (
+        meta_description
+        or
+        None
+    )
+
+    article.expires_at = (
+        expires_at
+    )
+
+    # --------------------------------------------------------
+    # PUBLISHED DATE
+    # --------------------------------------------------------
+
+    if (
+        status == "published"
+        and
+        article.published_at is None
+    ):
+
+        article.published_at = (
+            datetime.now(
+                timezone.utc
+            )
+        )
+
+    return True
+        
+            
+    
 # ============================================================
 # UPLOAD ARTICLE IMAGES
 # ============================================================
@@ -2763,239 +3254,7 @@ def article_delete(article_id):
 # FORM HELPERS
 # ============================================================
 
-def populate_article_from_form(
-    article
-):
 
-    title = (
-        request.form
-        .get(
-            "title",
-            "",
-        )
-        .strip()
-    )
-
-    slug = (
-        request.form
-        .get(
-            "slug",
-            "",
-        )
-        .strip()
-        .lower()
-    )
-
-    excerpt = (
-        request.form
-        .get(
-            "excerpt",
-            "",
-        )
-        .strip()
-    )
-
-    body = (
-        request.form
-        .get(
-            "body",
-            "",
-        )
-        .strip()
-    )
-
-    article_type = (
-        request.form
-        .get(
-            "article_type",
-            "restaurant_story",
-        )
-        .strip()
-    )
-
-    status = (
-        request.form
-        .get(
-            "status",
-            "draft",
-        )
-        .strip()
-    )
-
-    meta_title = (
-        request.form
-        .get(
-            "meta_title",
-            "",
-        )
-        .strip()
-    )
-
-    meta_description = (
-        request.form
-        .get(
-            "meta_description",
-            "",
-        )
-        .strip()
-    )
-
-
-    # --------------------------------------------------------
-    # VALIDATION
-    # --------------------------------------------------------
-
-    if not title:
-
-        flash(
-            "Title is required.",
-            "error",
-        )
-
-        return False
-
-    if not slug:
-
-        flash(
-            "Slug is required.",
-            "error",
-        )
-
-        return False
-
-    if not body:
-
-        flash(
-            "Article body is required.",
-            "error",
-        )
-
-        return False
-
-
-    allowed_types = {
-        "restaurant_story",
-        "food_guide",
-        "sponsored",
-        "new_restaurant",
-        "experience",
-    }
-
-    if article_type not in allowed_types:
-
-        article_type = (
-            "restaurant_story"
-        )
-
-
-    allowed_statuses = {
-        "draft",
-        "published",
-        "archived",
-    }
-
-    if status not in allowed_statuses:
-
-        status = (
-            "draft"
-        )
-
-
-    # --------------------------------------------------------
-    # DUPLICATE SLUG
-    # --------------------------------------------------------
-
-    existing_article = (
-        Article.query
-        .filter(
-            Article.slug
-            == slug
-        )
-        .first()
-    )
-
-    if (
-        existing_article
-        and
-        existing_article.id
-        != article.id
-    ):
-
-        flash(
-            "Another article already uses that slug.",
-            "error",
-        )
-
-        return False
-
-
-    # --------------------------------------------------------
-    # ASSIGN
-    # --------------------------------------------------------
-
-    article.title = (
-        title
-    )
-
-    article.slug = (
-        slug
-    )
-
-    article.excerpt = (
-        excerpt
-        or
-        None
-    )
-
-    article.body = (
-        body
-    )
-
-    article.article_type = (
-        article_type
-    )
-
-    article.status = (
-        status
-    )
-
-    article.is_sponsored = (
-        request.form.get(
-            "is_sponsored"
-        )
-        == "on"
-    )
-
-    article.meta_title = (
-        meta_title
-        or
-        None
-    )
-
-    article.meta_description = (
-        meta_description
-        or
-        None
-    )
-
-
-    # --------------------------------------------------------
-    # PUBLISHED DATE
-    # --------------------------------------------------------
-
-    if (
-        status == "published"
-        and
-        article.published_at is None
-    ):
-
-        article.published_at = (
-            datetime.now(
-                timezone.utc
-            )
-        )
-
-    return True
 
 
 # ============================================================
