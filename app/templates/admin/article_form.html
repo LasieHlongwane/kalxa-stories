@@ -12,6 +12,7 @@ Edit Story
 
 {% endblock %}
 
+
 {% block extra_head %}
 
 <style>
@@ -74,6 +75,7 @@ Edit Story
 
     input[type="text"],
     input[type="url"],
+    input[type="datetime-local"],
     textarea,
     select {
         width: 100%;
@@ -93,6 +95,7 @@ Edit Story
 
     input[type="text"],
     input[type="url"],
+    input[type="datetime-local"],
     select {
         min-height: 45px;
 
@@ -189,49 +192,8 @@ Edit Story
 
 
     /* =====================================================
-       RESTAURANT SEARCH
-    ====================================================== */
-
-    .restaurant-search-row {
-        display: grid;
-
-        grid-template-columns:
-            minmax(0, 1fr)
-            auto;
-
-        gap: 8px;
-    }
-
-        /* =====================================================
        EXPIRATION
     ====================================================== */
-
-    input[type="datetime-local"] {
-        width: 100%;
-
-        min-height: 45px;
-
-        padding:
-            0
-            12px;
-
-        border:
-            1px solid
-            #d7dade;
-
-        border-radius: 9px;
-
-        background: white;
-        color: #17191d;
-
-        outline: none;
-    }
-
-
-    input[type="datetime-local"]:focus {
-        border-color: #111318;
-    }
-
 
     .expiry-status {
         margin-top: 10px;
@@ -262,6 +224,7 @@ Edit Story
 
     .comment-moderation-list {
         display: grid;
+
         gap: 12px;
     }
 
@@ -338,6 +301,12 @@ Edit Story
     }
 
 
+    .comment-status.inactive {
+        background: #eceef1;
+        color: #666b73;
+    }
+
+
     .comment-body {
         margin:
             0
@@ -350,6 +319,8 @@ Edit Story
         line-height: 1.65;
 
         white-space: pre-wrap;
+
+        overflow-wrap: anywhere;
     }
 
 
@@ -409,6 +380,21 @@ Edit Story
     .comment-action-button.remove {
         background: #e7e9ec;
         color: #444a52;
+    }
+
+
+    /* =====================================================
+       RESTAURANT SEARCH
+    ====================================================== */
+
+    .restaurant-search-row {
+        display: grid;
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+
+        gap: 8px;
     }
 
 
@@ -1107,38 +1093,78 @@ Edit Story
 
     }
 
-</style>{% endblock %}
+</style>
+
+{% endblock %}
+
 
 {% block content %}
 
+
 <!-- =========================================================
      PAGE HEADER
-========================================================== --><div class="page-header"><div>
+========================================================== -->
 
-    <h1>
+<div class="page-header">
 
-        {% if page_mode == "new" %}
+    <div>
 
-            New Story
+        <h1>
 
-        {% else %}
+            {% if page_mode == "new" %}
 
-            Edit Story
+                New Story
 
-        {% endif %}
+            {% else %}
 
-    </h1>
+                Edit Story
+
+            {% endif %}
+
+        </h1>
 
 
-    <p>
-        Restaurant editorial and sponsored content.
-    </p>
+        <p>
+            Restaurant editorial and sponsored content.
+        </p>
+
+    </div>
 
 </div>
 
-</div><!-- =========================================================
+
+<!-- =========================================================
+     SIDEBAR CONTROL VALUES
+========================================================== -->
+
+{% set current_type =
+    request.form.get(
+        'article_type',
+        article.article_type
+        if article
+        else 'restaurant_story'
+    )
+%}
+
+
+{% set current_status =
+    request.form.get(
+        'status',
+        article.status
+        if article
+        else 'draft'
+    )
+%}
+
+
+<!-- =========================================================
      EDITOR LAYOUT
-========================================================== --><div class="editor-layout"><!-- =====================================================
+========================================================== -->
+
+<div class="editor-layout">
+
+
+<!-- =====================================================
      MAIN EDITOR
 ====================================================== -->
 
@@ -1271,7 +1297,6 @@ Edit Story
         </div>
 
 
-
         <!-- =============================================
              KALXA RESTAURANTS
         ============================================== -->
@@ -1352,7 +1377,6 @@ Edit Story
         </div>
 
 
-
         <!-- =============================================
              SEO
         ============================================== -->
@@ -1385,6 +1409,11 @@ Edit Story
                     }}"
                 >
 
+                <div class="help">
+                    Optional. If empty, Kalxa will use
+                    the story title.
+                </div>
+
             </div>
 
 
@@ -1397,6 +1426,7 @@ Edit Story
                 <textarea
                     id="meta-description"
                     name="meta_description"
+                    maxlength="320"
                 >{{ request.form.get(
                     'meta_description',
                     article.meta_description
@@ -1405,35 +1435,19 @@ Edit Story
                     else ''
                 ) }}</textarea>
 
+                <div class="help">
+                    Describe what this story is about for
+                    search engines and social sharing.
+                </div>
+
             </div>
 
         </div>
 
 
-
         <!-- =============================================
-             SIDEBAR CONTROL VALUES
+             HIDDEN SIDEBAR VALUES
         ============================================== -->
-
-        {% set current_type =
-            request.form.get(
-                'article_type',
-                article.article_type
-                if article
-                else 'restaurant_story'
-            )
-        %}
-
-
-        {% set current_status =
-            request.form.get(
-                'status',
-                article.status
-                if article
-                else 'draft'
-            )
-        %}
-
 
         <input
             id="story-type-value"
@@ -1475,7 +1489,6 @@ Edit Story
     </form>
 
 
-
     <!-- =================================================
          STORY MEDIA
     ================================================== -->
@@ -1511,7 +1524,6 @@ Edit Story
             </span>
 
         </div>
-
 
 
         <!-- =============================================
@@ -1631,7 +1643,6 @@ Edit Story
             {% endif %}
 
 
-
             <!-- =========================================
                  LEGACY COVER
             ========================================== -->
@@ -1665,7 +1676,6 @@ Edit Story
             </div>
 
             {% endif %}
-
 
 
             <!-- =========================================
@@ -1719,22 +1729,6 @@ Edit Story
                     >
 
                 </div>
-
-
-                <!--
-                    IMPORTANT:
-
-                    There is deliberately NO browser-side
-                    image preview here.
-
-                    The selected files are not read with
-                    FileReader, createObjectURL, canvas,
-                    fetch, or any other JavaScript API.
-
-                    They remain attached directly to the
-                    native file input until the browser
-                    submits this multipart form.
-                -->
 
 
                 <div
@@ -1803,8 +1797,229 @@ Edit Story
     </div>
 
 
-</div>
+    <!-- =================================================
+         COMMENT MODERATION
+    ================================================== -->
 
+    {% if article %}
+
+    <div
+        id="story-comments"
+        class="form-section"
+    >
+
+        <div class="media-section-header">
+
+            <div>
+
+                <h2>
+                    Story Comments
+                </h2>
+
+                <p class="media-section-copy">
+                    Review comments submitted by readers
+                    before they appear publicly.
+                </p>
+
+            </div>
+
+
+            <span class="media-limit">
+                {{ article_comments | default([], true) | length }}
+            </span>
+
+        </div>
+
+
+        {% if article.is_expired %}
+
+        <div class="expiry-status expired">
+            This story has expired.
+            Public comments are hidden and new comments
+            can no longer be submitted.
+        </div>
+
+        {% endif %}
+
+
+        {% if article_comments | default([], true) %}
+
+        <div class="comment-moderation-list">
+
+
+            {% for comment in article_comments %}
+
+            <div class="comment-moderation-card">
+
+
+                <div class="comment-moderation-top">
+
+                    <div class="comment-author">
+                        {{ comment.display_name }}
+                    </div>
+
+
+                    {% if not comment.active %}
+
+                    <span
+                        class="
+                            comment-status
+                            inactive
+                        "
+                    >
+                        Removed
+                    </span>
+
+                    {% else %}
+
+                    <span
+                        class="
+                            comment-status
+                            {{ comment.moderation_status }}
+                        "
+                    >
+                        {{ comment.moderation_status }}
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <p class="comment-body">{{ comment.comment_text }}</p>
+
+
+                <div class="comment-date">
+
+                    Submitted
+
+                    {% if comment.created_at %}
+
+                        {{ comment.created_at.strftime(
+                            "%d %b %Y at %H:%M"
+                        ) }}
+
+                        UTC
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="comment-actions">
+
+
+                    {% if
+                        comment.moderation_status
+                        != "approved"
+                    %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'admin.article_comment_approve',
+                            comment_id=comment.id
+                        ) }}"
+                    >
+
+                        <button
+                            class="
+                                comment-action-button
+                                approve
+                            "
+                            type="submit"
+                        >
+                            Approve
+                        </button>
+
+                    </form>
+
+                    {% endif %}
+
+
+                    {% if
+                        comment.moderation_status
+                        != "rejected"
+                    %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'admin.article_comment_reject',
+                            comment_id=comment.id
+                        ) }}"
+                    >
+
+                        <button
+                            class="
+                                comment-action-button
+                                reject
+                            "
+                            type="submit"
+                        >
+                            Reject
+                        </button>
+
+                    </form>
+
+                    {% endif %}
+
+
+                    {% if comment.active %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'admin.article_comment_remove',
+                            comment_id=comment.id
+                        ) }}"
+                        onsubmit="
+                            return confirm(
+                                'Remove this comment from public view?'
+                            );
+                        "
+                    >
+
+                        <button
+                            class="
+                                comment-action-button
+                                remove
+                            "
+                            type="submit"
+                        >
+                            Remove
+                        </button>
+
+                    </form>
+
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+        {% else %}
+
+        <div class="selected-restaurants-empty">
+            No comments have been submitted yet.
+        </div>
+
+        {% endif %}
+
+
+    </div>
+
+    {% endif %}
+
+
+</div>
 
 
 <!-- =====================================================
@@ -1820,6 +2035,10 @@ Edit Story
             Publish
         </h2>
 
+
+        <!-- =============================================
+             STORY TYPE
+        ============================================== -->
 
         <div class="field">
 
@@ -1871,6 +2090,9 @@ Edit Story
         </div>
 
 
+        <!-- =============================================
+             STATUS
+        ============================================== -->
 
         <div class="field">
 
@@ -1917,6 +2139,9 @@ Edit Story
         </div>
 
 
+        <!-- =============================================
+             SPONSORED
+        ============================================== -->
 
         <div class="field">
 
@@ -1955,6 +2180,85 @@ Edit Story
         </div>
 
 
+        <!-- =============================================
+             STORY EXPIRATION
+        ============================================== -->
+
+        <div class="field">
+
+            <label for="story-expires-at">
+                Story Expires
+            </label>
+
+
+            <input
+                id="story-expires-at"
+                type="datetime-local"
+                name="expires_at"
+                form="story-form"
+                value="{{
+                    request.form.get(
+                        'expires_at',
+                        article.expires_at.strftime(
+                            '%Y-%m-%dT%H:%M'
+                        )
+                        if
+                            article
+                            and
+                            article.expires_at
+                        else
+                            ''
+                    )
+                }}"
+            >
+
+
+            <div class="help">
+                Optional. Leave empty for a permanent story.
+                When this time passes, the story disappears
+                from active feeds and its comments close.
+                The published story URL remains available.
+                Time is currently stored as UTC.
+            </div>
+
+
+            {% if
+                article
+                and
+                article.expires_at
+            %}
+
+
+                {% if article.is_expired %}
+
+                <div class="expiry-status expired">
+                    This story has expired.
+                    It remains available as a published
+                    archive, but comments are closed.
+                </div>
+
+
+                {% else %}
+
+                <div class="expiry-status">
+                    Scheduled to expire on
+                    {{ article.expires_at.strftime(
+                        "%d %b %Y at %H:%M"
+                    ) }}
+                    UTC.
+                </div>
+
+                {% endif %}
+
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =============================================
+             ACTIONS
+        ============================================== -->
 
         <div class="side-actions">
 
@@ -2001,6 +2305,9 @@ Edit Story
         </div>
 
 
+        <!-- =============================================
+             DANGER ZONE
+        ============================================== -->
 
         {% if article %}
 
@@ -2039,7 +2346,11 @@ Edit Story
 
 </aside>
 
-</div><script>
+
+</div>
+
+
+<script>
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -2172,7 +2483,6 @@ document.addEventListener(
         syncSidebarFields();
 
 
-
         // ====================================================
         // RESTAURANT ELEMENTS
         // ====================================================
@@ -2263,7 +2573,6 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // UPDATE HIDDEN INPUT
         // ====================================================
@@ -2284,7 +2593,6 @@ document.addEventListener(
                 .join(",");
 
         }
-
 
 
         // ====================================================
@@ -2310,7 +2618,6 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // RESTAURANT AREA
         // ====================================================
@@ -2328,7 +2635,6 @@ document.addEventListener(
             );
 
         }
-
 
 
         // ====================================================
@@ -2487,7 +2793,6 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // ADD RESTAURANT
         // ====================================================
@@ -2518,7 +2823,6 @@ document.addEventListener(
             renderSelected();
 
         }
-
 
 
         // ====================================================
@@ -2616,7 +2920,6 @@ document.addEventListener(
             }
 
         }
-
 
 
         // ====================================================
@@ -2781,7 +3084,6 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // HYDRATE EXISTING RESTAURANTS
         // ====================================================
@@ -2877,7 +3179,6 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // RESTAURANT EVENTS
         // ====================================================
@@ -2914,23 +3215,8 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // STORY IMAGE UPLOAD
-        // ====================================================
-        //
-        // IMPORTANT:
-        //
-        // We deliberately do NOT use:
-        //
-        // FileReader
-        // readAsDataURL
-        // URL.createObjectURL
-        // Canvas
-        // fetch(file)
-        //
-        // The selected File objects stay untouched in the
-        // native input until the browser submits the form.
         // ====================================================
 
         const storyImageInput =
@@ -3124,12 +3410,6 @@ document.addEventListener(
                     // =========================================
                     // FILES SELECTED
                     // =========================================
-                    //
-                    // Only metadata already exposed by the
-                    // native input is used here.
-                    //
-                    // The actual file contents are NOT read.
-                    // =========================================
 
                     if (storyUploadZone) {
 
@@ -3204,7 +3484,6 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // IMAGE UPLOAD SUBMISSION
         // ====================================================
@@ -3240,24 +3519,6 @@ document.addEventListener(
                     }
 
 
-                    // =========================================
-                    // DO NOT MANIPULATE THE FILE INPUT
-                    // =========================================
-                    //
-                    // Do not:
-                    //
-                    // - clear it
-                    // - clone it
-                    // - replace it
-                    // - move it
-                    // - create FormData manually
-                    // - read the selected files
-                    //
-                    // Allow the browser to perform its normal
-                    // multipart/form-data submission.
-                    // =========================================
-
-
                     uploadButton.disabled =
                         true;
 
@@ -3285,4 +3546,7 @@ document.addEventListener(
     }
 );
 
-</script>{% endblock %}
+</script>
+
+
+{% endblock %}
