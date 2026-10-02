@@ -702,6 +702,158 @@ def stories():
     )
 
 
+@public_bp.post(
+    "/stories/<slug>/comment"
+)
+def article_comment(slug):
+
+    article = (
+        Article.query
+        .filter_by(
+            slug=slug,
+            status="published",
+        )
+        .first_or_404()
+    )
+
+    # ==========================================
+    # COMMENTS CLOSED
+    # ==========================================
+
+    if not article.comments_open:
+
+        flash(
+            "Comments are closed for this story.",
+            "info",
+        )
+
+        return redirect(
+            url_for(
+                "public.article_detail",
+                slug=article.slug,
+            )
+        )
+
+    # ==========================================
+    # FORM DATA
+    # ==========================================
+
+    display_name = (
+        request.form.get(
+            "display_name",
+            ""
+        )
+        .strip()
+    )
+
+    comment_text = (
+        request.form.get(
+            "comment_text",
+            ""
+        )
+        .strip()
+    )
+
+    # ==========================================
+    # VALIDATION
+    # ==========================================
+
+    if not display_name:
+
+        flash(
+            "Please enter your name.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "public.article_detail",
+                slug=article.slug,
+            )
+            + "#comments"
+        )
+
+    if len(display_name) > 80:
+
+        flash(
+            "Your name is too long.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "public.article_detail",
+                slug=article.slug,
+            )
+            + "#comments"
+        )
+
+    if not comment_text:
+
+        flash(
+            "Please write a comment.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "public.article_detail",
+                slug=article.slug,
+            )
+            + "#comments"
+        )
+
+    if len(comment_text) > 1000:
+
+        flash(
+            "Comments cannot exceed 1000 characters.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "public.article_detail",
+                slug=article.slug,
+            )
+            + "#comments"
+        )
+
+    # ==========================================
+    # CREATE COMMENT
+    # ==========================================
+
+    comment = ArticleComment(
+        article_id=article.id,
+        display_name=display_name,
+        comment_text=comment_text,
+        anonymous_session_id=(
+            get_anonymous_session_id()
+        ),
+        moderation_status="pending",
+        active=True,
+    )
+
+    db.session.add(
+        comment
+    )
+
+    db.session.commit()
+
+    flash(
+        (
+            "Your comment was submitted "
+            "and will appear after review."
+        ),
+        "success",
+    )
+
+    return redirect(
+        url_for(
+            "public.article_detail",
+            slug=article.slug,
+        )
+        + "#comments"
+    )
 # ============================================================
 # ARTICLE
 # ============================================================
