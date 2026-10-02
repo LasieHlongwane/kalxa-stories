@@ -857,7 +857,6 @@ def article_comment(slug):
 # ============================================================
 # ARTICLE
 # ============================================================
-
 @public_bp.route(
     "/stories/<string:slug>"
 )
@@ -865,17 +864,16 @@ def article_detail(
     slug,
 ):
 
+    # ========================================================
+    # ARTICLE
+    # ========================================================
+
     article = (
         Article.query
 
         .filter_by(
-            slug=(
-                slug
-            ),
-
-            status=(
-                "published"
-            ),
+            slug=slug,
+            status="published",
         )
 
         .first()
@@ -894,13 +892,9 @@ def article_detail(
     # ========================================================
 
     record_analytics_event(
-        article=(
-            article
-        ),
+        article=article,
 
-        event_type=(
-            "article_view"
-        ),
+        event_type="article_view",
 
         metadata={
             "source":
@@ -913,13 +907,11 @@ def article_detail(
     # KALXA TICKETING RESTAURANTS
     # ========================================================
 
-    relations = (
-        sorted(
-            article.restaurants,
+    relations = sorted(
+        article.restaurants,
 
-            key=lambda relation:
-                relation.display_order,
-        )
+        key=lambda relation:
+            relation.display_order,
     )
 
 
@@ -970,17 +962,11 @@ def article_detail(
 
 
         record_analytics_event(
-            article=(
-                article
-            ),
+            article=article,
 
-            event_type=(
-                "restaurant_impression"
-            ),
+            event_type="restaurant_impression",
 
-            restaurant_id=(
-                restaurant_id
-            ),
+            restaurant_id=restaurant_id,
 
             metadata={
                 "position":
@@ -989,6 +975,44 @@ def article_detail(
                 "source":
                     "article_restaurant_card",
             },
+        )
+
+
+    # ========================================================
+    # APPROVED COMMENTS
+    # ========================================================
+    #
+    # Comments are only visible while the story's
+    # conversation is active.
+    #
+    # Once Article.expires_at passes:
+    #
+    # - approved comments are hidden
+    # - the comment form is closed
+    # - existing database records remain available
+    #   for moderation/audit purposes
+    #
+    # ========================================================
+
+    approved_comments = []
+
+
+    if not article.is_expired:
+
+        approved_comments = (
+            ArticleComment.query
+
+            .filter_by(
+                article_id=article.id,
+                moderation_status="approved",
+                active=True,
+            )
+
+            .order_by(
+                ArticleComment.created_at.desc()
+            )
+
+            .all()
         )
 
 
@@ -1019,29 +1043,33 @@ def article_detail(
         .all()
     )
 
+
     # ========================================================
-# READING TIME
-# ========================================================
+    # READING TIME
+    # ========================================================
 
     plain_body = (
         article.body
         .replace(
-          "<",
-         " <",
+            "<",
+            " <",
         )
     )
+
 
     word_count = len(
         plain_body.split()
     )
 
+
     reading_minutes = max(
-      1,
-      round(
-        word_count
-        /
-        220
-      ),
+        1,
+
+        round(
+            word_count
+            /
+            220
+        ),
     )
 
 
@@ -1052,9 +1080,7 @@ def article_detail(
     return render_template(
         "article.html",
 
-        article=(
-            article
-        ),
+        article=article,
 
         featured_restaurants=(
             featured_restaurants
@@ -1067,8 +1093,19 @@ def article_detail(
         related_articles=(
             related_articles
         ),
+
+        approved_comments=(
+            approved_comments
+        ),
     )
 
+
+
+    # ========================================================
+    # RENDER
+    # ========================================================
+
+    
 
 # ============================================================
 # TRACK RESTAURANT CLICK
