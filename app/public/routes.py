@@ -1058,7 +1058,6 @@ def toggle_comment_upvote(
 # ============================================================
 # ARTICLE
 # ============================================================
-
 @public_bp.route(
     "/stories/<string:slug>"
 )
@@ -1111,26 +1110,285 @@ def article_detail(
 
 
     # ========================================================
-    # KALXA TICKETING RESTAURANTS
+    # LINKED KALXA RESTAURANTS
+    # ========================================================
+    #
+    # The ArticleRestaurant relationship is the permanent
+    # source of truth that tells Stories which restaurants
+    # belong to this article.
+    #
+    # Live Kalxa Ticketing data is then used to enrich the
+    # restaurant card.
+    #
+    # IMPORTANT:
+    #
+    # Previously, if the Ticketing lookup returned no data,
+    # featured_restaurants became empty and the entire
+    # "Places from this story" section disappeared.
+    #
+    # We now preserve the article's stored restaurant
+    # relationship as a fallback.
     # ========================================================
 
     relations = sorted(
         article.restaurants,
         key=lambda relation:
-            relation.display_order,
+            (
+                relation.display_order
+                if relation.display_order
+                is not None
+                else 999999
+            ),
     )
+
 
     restaurant_ids = [
+
         relation.kalxa_restaurant_id
+
         for relation
         in relations
+
+        if relation.kalxa_restaurant_id
+        is not None
+
     ]
 
-    featured_restaurants = (
-        get_restaurants_by_ids(
-            restaurant_ids
+
+    # ========================================================
+    # LIVE TICKETING LOOKUP
+    # ========================================================
+
+    live_restaurants = []
+
+    if restaurant_ids:
+
+        try:
+
+            live_restaurants = (
+                get_restaurants_by_ids(
+                    restaurant_ids
+                )
+                or []
+            )
+
+        except Exception as error:
+
+            current_app.logger.exception(
+                (
+                    "[Kalxa Stories] "
+                    "Unable to load linked restaurants "
+                    "for article_id=%s: %s"
+                ),
+                article.id,
+                error,
+            )
+
+            live_restaurants = []
+
+
+    # ========================================================
+    # INDEX LIVE RESTAURANTS BY ID
+    # ========================================================
+
+    live_restaurants_by_id = {}
+
+    for restaurant in live_restaurants:
+
+        if not isinstance(
+            restaurant,
+            dict,
+        ):
+
+            continue
+
+
+        restaurant_id = (
+            restaurant.get(
+                "id"
+            )
         )
-    )
+
+
+        if restaurant_id is None:
+
+            continue
+
+
+        try:
+
+            restaurant_id = int(
+                restaurant_id
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            continue
+
+
+        live_restaurants_by_id[
+            restaurant_id
+        ] = restaurant
+
+
+    # ========================================================
+    # BUILD FEATURED RESTAURANTS
+    # ========================================================
+    #
+    # Always preserve the restaurant relationship stored in
+    # Kalxa Stories.
+    #
+    # When Ticketing responds successfully, its live fields
+    # override / enrich the fallback values.
+    # ========================================================
+
+    featured_restaurants = []
+
+
+    for relation in relations:
+
+        restaurant_id = (
+            relation.kalxa_restaurant_id
+        )
+
+
+        if restaurant_id is None:
+
+            continue
+
+
+        try:
+
+            normalized_restaurant_id = int(
+                restaurant_id
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            continue
+
+
+        live_restaurant = (
+            live_restaurants_by_id.get(
+                normalized_restaurant_id
+            )
+        )
+
+
+        # ====================================================
+        # FALLBACK DATA FROM ARTICLE RELATIONSHIP
+        # ====================================================
+
+        restaurant = {
+
+            "id":
+                normalized_restaurant_id,
+
+            "business_name":
+                getattr(
+                    relation,
+                    "restaurant_name",
+                    None,
+                ),
+
+            "name":
+                getattr(
+                    relation,
+                    "restaurant_name",
+                    None,
+                ),
+
+            "area":
+                getattr(
+                    relation,
+                    "restaurant_area",
+                    None,
+                ),
+
+            "address":
+                None,
+
+            "headline":
+                None,
+
+            "price_text":
+                None,
+
+            "profile_url":
+                None,
+
+        }
+
+
+        # ====================================================
+        # ENRICH WITH LIVE TICKETING DATA
+        # ====================================================
+
+        if live_restaurant:
+
+            restaurant.update(
+                live_restaurant
+            )
+
+
+            # Ensure the canonical linked ID remains present.
+
+            restaurant["id"] = (
+                normalized_restaurant_id
+            )
+
+
+            # Keep stored fallback values when Ticketing
+            # returns a field as blank / None.
+
+            if not restaurant.get(
+                "business_name"
+            ):
+
+                restaurant[
+                    "business_name"
+                ] = getattr(
+                    relation,
+                    "restaurant_name",
+                    None,
+                )
+
+
+            if not restaurant.get(
+                "name"
+            ):
+
+                restaurant[
+                    "name"
+                ] = getattr(
+                    relation,
+                    "restaurant_name",
+                    None,
+                )
+
+
+            if not restaurant.get(
+                "area"
+            ):
+
+                restaurant[
+                    "area"
+                ] = getattr(
+                    relation,
+                    "restaurant_area",
+                    None,
+                )
+
+
+        featured_restaurants.append(
+            restaurant
+        )
 
 
     # ========================================================
@@ -1148,9 +1406,11 @@ def article_detail(
             )
         )
 
+
         if restaurant_id is None:
 
             continue
+
 
         record_analytics_event(
             article=article,
@@ -1180,6 +1440,7 @@ def article_detail(
 
     comment_upvote_state = {}
 
+
     if not article.is_expired:
 
         approved_comments = (
@@ -1204,17 +1465,6 @@ def article_detail(
         # ====================================================
         # CURRENT VISITOR UPVOTE STATE
         # ====================================================
-        #
-        # This allows the template to render:
-        #
-        #   ♡ Upvote
-        #
-        # or:
-        #
-        #   ♥ Upvoted
-        #
-        # correctly when the page first loads.
-        # ====================================================
 
         if approved_comments:
 
@@ -1222,16 +1472,22 @@ def article_detail(
                 get_anonymous_session_id()
             )
 
+
             comment_ids = [
+
                 comment.id
+
                 for comment
                 in approved_comments
+
             ]
+
 
             visitor_upvotes = (
                 CommentUpvote.query
 
                 .filter(
+
                     CommentUpvote.comment_id
                     .in_(
                         comment_ids
@@ -1240,26 +1496,35 @@ def article_detail(
                     CommentUpvote
                     .anonymous_session_id
                     == anonymous_session_id,
+
                 )
 
                 .all()
             )
 
+
             visitor_upvoted_comment_ids = {
+
                 upvote.comment_id
+
                 for upvote
                 in visitor_upvotes
+
             }
 
+
             comment_upvote_state = {
-                comment.id: (
-                    comment.id
-                    in
-                    visitor_upvoted_comment_ids
-                )
+
+                comment.id:
+                    (
+                        comment.id
+                        in
+                        visitor_upvoted_comment_ids
+                    )
 
                 for comment
                 in approved_comments
+
             }
 
 
@@ -1300,9 +1565,11 @@ def article_detail(
         )
     )
 
+
     word_count = len(
         plain_body.split()
     )
+
 
     reading_minutes = max(
         1,
@@ -1320,19 +1587,25 @@ def article_detail(
 
     return render_template(
         "article.html",
+
         article=article,
+
         featured_restaurants=(
             featured_restaurants
         ),
+
         reading_minutes=(
             reading_minutes
         ),
+
         related_articles=(
             related_articles
         ),
+
         approved_comments=(
             approved_comments
         ),
+
         comment_upvote_state=(
             comment_upvote_state
         ),
