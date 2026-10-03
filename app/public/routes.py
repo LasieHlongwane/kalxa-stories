@@ -1612,27 +1612,40 @@ def article_detail(
     )
 
 
-# ============================================================
-# TRACK RESTAURANT CLICK
-# ============================================================
+
 
 # ============================================================
 # TRACK RESTAURANT CLICK
 # ============================================================
 #
+# PURPOSE:
+#
+# Redirect a reader from a Kalxa Story directly to the linked
+# restaurant profile on Kalxa Ticketing.
+#
 # IMPORTANT:
 #
-# This route deliberately does NOT call get_restaurant().
+# This route deliberately does NOT call:
+#
+#     get_restaurant()
 #
 # The ArticleRestaurant relationship already proves that the
-# restaurant is linked to this published story.
+# restaurant belongs to this story.
 #
-# This prevents temporary Kalxa Ticketing API problems such as
-# HTTP 429 from breaking the "View restaurant" button.
+# Avoiding another Ticketing API lookup prevents temporary
+# API errors such as HTTP 429 Too Many Requests from breaking
+# the "View restaurant" CTA.
 #
-# The visitor can therefore still continue to Kalxa Ticketing
-# even when the Ticketing API enrichment request is temporarily
-# unavailable.
+# Public Ticketing restaurant route:
+#
+#     /restaurant/<int:advert_id>
+#
+# Example:
+#
+#     https://tickets.kalxa.co.za/restaurant/5
+#
+# Attribution parameters are still added before redirecting,
+# allowing Kalxa Ticketing to capture the Stories referral.
 # ============================================================
 
 @public_bp.route(
@@ -1666,11 +1679,22 @@ def restaurant_click(
 
 
     # ========================================================
-    # VERIFY RESTAURANT BELONGS TO STORY
+    # VERIFY RESTAURANT IS LINKED TO ARTICLE
     # ========================================================
     #
-    # Do not allow this route to become an open redirect to
-    # arbitrary Kalxa restaurant IDs.
+    # The redirect must only work for restaurants actually
+    # connected to this story.
+    #
+    # This prevents somebody from manually changing:
+    #
+    #     /restaurants/5
+    #
+    # to:
+    #
+    #     /restaurants/999
+    #
+    # and using the Stories redirect route for an unrelated
+    # restaurant.
     # ========================================================
 
     linked_restaurant_ids = set()
@@ -1716,6 +1740,200 @@ def restaurant_click(
             404
         )
 
+
+    # ========================================================
+    # KALXA TICKETING BASE URL
+    # ========================================================
+    #
+    # Expected environment/config value:
+    #
+    #     KALXA_TICKETING_URL=
+    #         https://tickets.kalxa.co.za
+    #
+    # Do not call the Ticketing API here.
+    # ========================================================
+
+    ticketing_base_url = (
+        current_app.config.get(
+            "KALXA_TICKETING_URL"
+        )
+        or ""
+    ).strip()
+
+
+    if not ticketing_base_url:
+
+        current_app.logger.error(
+            (
+                "[Kalxa Stories] "
+                "KALXA_TICKETING_URL is not configured. "
+                "Unable to redirect article_id=%s "
+                "restaurant_id=%s."
+            ),
+            article.id,
+            restaurant_id,
+        )
+
+        abort(
+            500
+        )
+
+
+    ticketing_base_url = (
+        ticketing_base_url.rstrip(
+            "/"
+        )
+    )
+
+
+    # ========================================================
+    # RESTAURANT PROFILE URL
+    # ========================================================
+    #
+    # Confirmed Kalxa Ticketing public route:
+    #
+    #     /restaurant/<int:advert_id>
+    #
+    # restaurant_id in Stories corresponds to advert_id in
+    # Kalxa Ticketing.
+    # ========================================================
+
+    profile_url = (
+        f"{ticketing_base_url}"
+        f"/restaurant/{restaurant_id}"
+    )
+
+
+    # ========================================================
+    # ANALYTICS SESSION
+    # ========================================================
+    #
+    # This session ID allows Stories -> Ticketing activity to
+    # remain attributable across the redirect.
+    # ========================================================
+
+    analytics_session_id = (
+        get_analytics_session_id()
+    )
+
+
+    # ========================================================
+    # RECORD STORIES RESTAURANT CLICK
+    # ========================================================
+    #
+    # This records the outbound click inside Kalxa Stories
+    # before the visitor leaves for Kalxa Ticketing.
+    # ========================================================
+
+    record_analytics_event(
+        article=article,
+
+        event_type=(
+            "restaurant_click"
+        ),
+
+        restaurant_id=(
+            restaurant_id
+        ),
+
+        metadata={
+            "source":
+                "article_restaurant_card",
+
+            "destination":
+                "kalxa_ticketing",
+
+            "profile_path":
+                (
+                    f"/restaurant/"
+                    f"{restaurant_id}"
+                ),
+        },
+
+        deduplicate=False,
+    )
+
+
+    # ========================================================
+    # BUILD ATTRIBUTED TICKETING URL
+    # ========================================================
+    #
+    # Existing helper is preserved.
+    #
+    # It should add the Stories attribution parameters used by
+    # Ticketing's:
+    #
+    #     capture_restaurant_attribution(advert)
+    #
+    # Example conceptual destination:
+    #
+    # https://tickets.kalxa.co.za/restaurant/5
+    #     ?utm_source=kalxa_stories
+    #     &...
+    #
+    # Exact parameters remain controlled by the existing
+    # build_attributed_ticketing_url() helper.
+    # ========================================================
+
+    attributed_url = (
+        build_attributed_ticketing_url(
+
+            profile_url=(
+                profile_url
+            ),
+
+            article=(
+                article
+            ),
+
+            restaurant_id=(
+                restaurant_id
+            ),
+
+            analytics_session_id=(
+                analytics_session_id
+            ),
+        )
+    )
+
+
+    # ========================================================
+    # ATTRIBUTION FALLBACK
+    # ========================================================
+    #
+    # A tracking/helper problem should never prevent the user
+    # from opening the restaurant.
+    #
+    # If attribution URL generation unexpectedly fails, send
+    # the visitor to the normal restaurant profile.
+    # ========================================================
+
+    if not attributed_url:
+
+        current_app.logger.warning(
+            (
+                "[Kalxa Stories] "
+                "Unable to build attributed restaurant URL. "
+                "Falling back to direct Ticketing profile. "
+                "article_id=%s restaurant_id=%s"
+            ),
+            article.id,
+            restaurant_id,
+        )
+
+
+        attributed_url = (
+            profile_url
+        )
+
+
+    # ========================================================
+    # REDIRECT TO KALXA TICKETING
+    # ========================================================
+
+    return redirect(
+        attributed_url
+    )
 
     # ========================================================
     # TICKETING BASE URL
