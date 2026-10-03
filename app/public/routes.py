@@ -1267,6 +1267,24 @@ def sitemap():
     return response
 
 
+
+
+@public_bp.route("/robots.txt")
+def robots_txt():
+
+    robots = "\n".join([
+        "User-agent: *",
+        "Allow: /",
+        "",
+        "Sitemap: https://kalxa-stories.onrender.com/sitemap.xml",
+    ])
+
+    return Response(
+        robots,
+        content_type="text/plain; charset=utf-8",
+    )
+
+
 # ============================================================
 # HEALTH
 # ============================================================
