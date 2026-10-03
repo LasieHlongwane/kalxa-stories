@@ -600,187 +600,7 @@
 
 
 
-
-        <!-- =================================================
-             SHARE
-        ================================================== -->
-
-        <section
-            class="story-share"
-            aria-labelledby="story-share-heading"
-        >
-
-            <div class="story-share-copy">
-
-                <span class="story-share-eyebrow">
-                    SHARE THE STORY
-                </span>
-
-                <p>
-                    Share with Friends
-                    
-                </p>
-
-            </div>
-
-
-            <div
-                class="story-share-actions"
-                id="story-share-actions"
-                data-story-id="{{ article.id }}"
-                data-story-slug="{{ article.slug }}"
-                data-story-title="{{ article.title }}"
-                data-canonical-url="{{ canonical_story_url }}"
-            >
-
-
-                <!-- WHATSAPP -->
-
-                <button
-                    class="share-button share-whatsapp"
-                    type="button"
-                    data-share-channel="whatsapp"
-                    aria-label="Share this story on WhatsApp"
-                >
-
-                    <span
-                        class="share-icon"
-                        aria-hidden="true"
-                    >
-
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M20.5 11.7a8.45 8.45 0 0 1-12.5 7.4L3.5 20.5l1.45-4.35A8.46 8.46 0 1 1 20.5 11.7Z"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                            <path
-                                d="M8.4 7.65c.18-.4.37-.41.68-.42h.57c.18 0 .38.05.48.32l.68 1.64c.08.21.05.4-.08.57l-.51.64c-.15.18-.12.35-.03.51.54.94 1.27 1.69 2.18 2.22.17.1.34.12.5-.06l.66-.76c.16-.19.37-.23.58-.14l1.59.75c.23.11.37.26.33.49-.08.52-.36 1.27-.84 1.66-.45.36-1.05.57-1.67.54-1.06-.05-2.47-.52-4.03-1.88-1.27-1.11-2.16-2.46-2.45-3.56-.27-1.02-.12-1.88.36-2.52Z"
-                                fill="currentColor"
-                            />
-                        </svg>
-
-                    </span>
-
-                    <span>
-                        WhatsApp
-                    </span>
-
-                </button>
-
-
-
-                <!-- FACEBOOK -->
-
-                <button
-                    class="share-button share-facebook"
-                    type="button"
-                    data-share-channel="facebook"
-                    aria-label="Share this story on Facebook"
-                >
-
-                    <span
-                        class="share-icon"
-                        aria-hidden="true"
-                    >
-
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M13.7 21v-8h2.7l.4-3.1h-3.1V7.92c0-.9.25-1.52 1.56-1.52h1.67V3.63c-.29-.04-1.28-.13-2.44-.13-2.42 0-4.08 1.48-4.08 4.2v2.2H7.67V13h2.74v8h3.29Z"
-                            />
-                        </svg>
-
-                    </span>
-
-                    <span>
-                        Facebook
-                    </span>
-
-                </button>
-
-
-
-                <!-- COPY -->
-
-                <button
-                    class="share-button share-copy"
-                    type="button"
-                    data-share-channel="copy_link"
-                    aria-label="Copy story link"
-                >
-
-                    <span
-                        class="share-icon"
-                        aria-hidden="true"
-                    >
-
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M10.4 13.6a4 4 0 0 0 5.66 0l2.1-2.1a4 4 0 0 0-5.66-5.66l-1.2 1.2"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                            />
-                            <path
-                                d="M13.6 10.4a4 4 0 0 0-5.66 0l-2.1 2.1a4 4 0 1 0 5.66 5.66l1.2-1.2"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                            />
-                        </svg>
-
-                    </span>
-
-                    <span id="copy-link-label">
-                        Copy link
-                    </span>
-
-                </button>
-
-            </div>
-
-
-            <div
-                class="share-feedback"
-                id="share-feedback"
-                role="status"
-                aria-live="polite"
-            ></div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             EDITORIAL DIVIDER
-        ================================================== -->
-
-        <div class="story-divider">
-
-            <span>
-               K
-            </span>
-
-        </div>
-
-
-
-
-        <!-- =================================================
+                <!-- =================================================
              COMMENTS
         ================================================== -->
 
@@ -1072,6 +892,188 @@
             {% endif %}
 
         </section>
+
+
+        <!-- =================================================
+             SHARE
+        ================================================== -->
+
+        <section
+            class="story-share"
+            aria-labelledby="story-share-heading"
+        >
+
+            <div class="story-share-copy">
+
+                <span class="story-share-eyebrow">
+                    SHARE THE STORY
+                </span>
+
+                <p>
+                    Share with Friends
+                    
+                </p>
+
+            </div>
+
+
+            <div
+                class="story-share-actions"
+                id="story-share-actions"
+                data-story-id="{{ article.id }}"
+                data-story-slug="{{ article.slug }}"
+                data-story-title="{{ article.title }}"
+                data-canonical-url="{{ canonical_story_url }}"
+            >
+
+
+                <!-- WHATSAPP -->
+
+                <button
+                    class="share-button share-whatsapp"
+                    type="button"
+                    data-share-channel="whatsapp"
+                    aria-label="Share this story on WhatsApp"
+                >
+
+                    <span
+                        class="share-icon"
+                        aria-hidden="true"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M20.5 11.7a8.45 8.45 0 0 1-12.5 7.4L3.5 20.5l1.45-4.35A8.46 8.46 0 1 1 20.5 11.7Z"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M8.4 7.65c.18-.4.37-.41.68-.42h.57c.18 0 .38.05.48.32l.68 1.64c.08.21.05.4-.08.57l-.51.64c-.15.18-.12.35-.03.51.54.94 1.27 1.69 2.18 2.22.17.1.34.12.5-.06l.66-.76c.16-.19.37-.23.58-.14l1.59.75c.23.11.37.26.33.49-.08.52-.36 1.27-.84 1.66-.45.36-1.05.57-1.67.54-1.06-.05-2.47-.52-4.03-1.88-1.27-1.11-2.16-2.46-2.45-3.56-.27-1.02-.12-1.88.36-2.52Z"
+                                fill="currentColor"
+                            />
+                        </svg>
+
+                    </span>
+
+                    <span>
+                        WhatsApp
+                    </span>
+
+                </button>
+
+
+
+                <!-- FACEBOOK -->
+
+                <button
+                    class="share-button share-facebook"
+                    type="button"
+                    data-share-channel="facebook"
+                    aria-label="Share this story on Facebook"
+                >
+
+                    <span
+                        class="share-icon"
+                        aria-hidden="true"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M13.7 21v-8h2.7l.4-3.1h-3.1V7.92c0-.9.25-1.52 1.56-1.52h1.67V3.63c-.29-.04-1.28-.13-2.44-.13-2.42 0-4.08 1.48-4.08 4.2v2.2H7.67V13h2.74v8h3.29Z"
+                            />
+                        </svg>
+
+                    </span>
+
+                    <span>
+                        Facebook
+                    </span>
+
+                </button>
+
+
+
+                <!-- COPY -->
+
+                <button
+                    class="share-button share-copy"
+                    type="button"
+                    data-share-channel="copy_link"
+                    aria-label="Copy story link"
+                >
+
+                    <span
+                        class="share-icon"
+                        aria-hidden="true"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M10.4 13.6a4 4 0 0 0 5.66 0l2.1-2.1a4 4 0 0 0-5.66-5.66l-1.2 1.2"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                            <path
+                                d="M13.6 10.4a4 4 0 0 0-5.66 0l-2.1 2.1a4 4 0 1 0 5.66 5.66l1.2-1.2"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+
+                    </span>
+
+                    <span id="copy-link-label">
+                        Copy link
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <div
+                class="share-feedback"
+                id="share-feedback"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             EDITORIAL DIVIDER
+        ================================================== -->
+
+        <div class="story-divider">
+
+            <span>
+               K
+            </span>
+
+        </div>
+
+
+
+
+
 
     </div>
 
