@@ -16,7 +16,7 @@ Explore restaurant stories, food experiences, people and local places worth disc
 <style>
 
     /* =====================================================
-       STORIES INTRO
+       INTRO
     ====================================================== */
 
     .page-intro {
@@ -26,11 +26,11 @@ Explore restaurant stories, food experiences, people and local places worth disc
         overflow: hidden;
 
         padding:
-            82px 0 68px;
+            105px 0 88px;
 
         border-bottom:
             1px solid
-            var(--kalxa-border-soft);
+            var(--kalxa-border);
 
         background:
             var(--kalxa-cream);
@@ -38,25 +38,32 @@ Explore restaurant stories, food experiences, people and local places worth disc
     }
 
 
-    .page-intro::after {
+    .page-intro::before {
 
-        content: "";
+        content: "Stories";
 
         position: absolute;
 
-        top: -120px;
+        right: -25px;
 
-        right: -90px;
+        bottom: -45px;
 
-        width: 370px;
+        color:
+            rgba(101, 75, 43, .035);
 
-        height: 370px;
+        font-family:
+            var(--kalxa-serif);
 
-        border:
-            80px solid
-            rgba(232, 109, 50, .045);
+        font-size:
+            clamp(
+                130px,
+                20vw,
+                300px
+            );
 
-        border-radius: 50%;
+        font-weight: 600;
+
+        line-height: 1;
 
         pointer-events: none;
 
@@ -74,24 +81,27 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
     .page-intro h1 {
 
-        max-width: 800px;
+        max-width: 850px;
 
         margin:
-            0 0 18px;
+            0 0 24px;
 
         color:
-            var(--kalxa-black);
+            var(--kalxa-ink);
+
+        font-family:
+            var(--kalxa-serif);
 
         font-size:
             clamp(
-                48px,
-                7vw,
-                82px
+                58px,
+                8vw,
+                100px
             );
 
-        font-weight: 950;
+        font-weight: 500;
 
-        line-height: .95;
+        line-height: .94;
 
         letter-spacing:
             -4px;
@@ -99,9 +109,19 @@ Explore restaurant stories, food experiences, people and local places worth disc
     }
 
 
+    .page-intro h1 em {
+
+        color:
+            var(--kalxa-gold-dark);
+
+        font-weight: 500;
+
+    }
+
+
     .page-intro p {
 
-        max-width: 610px;
+        max-width: 590px;
 
         margin: 0;
 
@@ -111,54 +131,89 @@ Explore restaurant stories, food experiences, people and local places worth disc
         font-size:
             clamp(
                 15px,
-                2vw,
+                1.7vw,
                 18px
             );
 
-        line-height: 1.65;
+        line-height: 1.75;
 
     }
 
 
     /* =====================================================
-       STORIES CONTENT
+       STORIES
     ====================================================== */
 
     .stories-content {
 
         padding:
-            55px 0 85px;
+            68px 0 105px;
 
     }
 
 
     .stories-topline {
 
-        margin-bottom: 25px;
+        margin-bottom: 38px;
+
+        padding-bottom: 18px;
 
         display: flex;
 
-        align-items: center;
+        align-items: flex-end;
 
         justify-content:
             space-between;
 
         gap: 20px;
 
+        border-bottom:
+            1px solid
+            var(--kalxa-border);
+
     }
 
 
-    .stories-topline strong {
+    .stories-topline-copy span {
 
-        font-size: 12px;
+        display: block;
 
-        font-weight: 950;
+        margin-bottom: 7px;
+
+        color:
+            var(--kalxa-gold-dark);
+
+        font-size: 9px;
+
+        font-weight: 700;
 
         letter-spacing:
-            .8px;
+            2px;
 
         text-transform:
             uppercase;
+
+    }
+
+
+    .stories-topline h2 {
+
+        margin: 0;
+
+        font-family:
+            var(--kalxa-serif);
+
+        font-size:
+            clamp(
+                31px,
+                4vw,
+                44px
+            );
+
+        font-weight: 500;
+
+        letter-spacing:
+            -1px;
 
     }
 
@@ -169,30 +224,100 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
         align-items: center;
 
-        min-height: 31px;
-
-        padding:
-            0 11px;
-
-        border:
-            1px solid
-            var(--kalxa-border);
-
-        border-radius:
-            999px;
-
-        background:
-            white;
+        gap: 7px;
 
         color:
-            var(--kalxa-text-soft);
+            var(--kalxa-muted);
 
-        font-size: 10px;
+        font-size: 9px;
 
-        font-weight: 850;
+        font-weight: 700;
+
+        letter-spacing:
+            1px;
+
+        text-transform:
+            uppercase;
 
     }
 
+
+    .stories-count::before {
+
+        content: "";
+
+        width: 5px;
+
+        height: 5px;
+
+        border-radius: 50%;
+
+        background:
+            var(--kalxa-gold);
+
+    }
+
+
+    /* =====================================================
+       FIRST STORY EMPHASIS
+    ====================================================== */
+
+    @media (
+        min-width: 951px
+    ) {
+
+        .stories-content
+        .story-grid
+        .story-card:first-child {
+
+            grid-column:
+                span 2;
+
+        }
+
+
+        .stories-content
+        .story-grid
+        .story-card:first-child
+        .story-image {
+
+            aspect-ratio:
+                16 / 8.3;
+
+        }
+
+
+        .stories-content
+        .story-grid
+        .story-card:first-child
+        .story-card-content {
+
+            max-width:
+                720px;
+
+        }
+
+
+        .stories-content
+        .story-grid
+        .story-card:first-child
+        h2 {
+
+            font-size:
+                clamp(
+                    30px,
+                    3.2vw,
+                    43px
+                );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
 
     @media (
         max-width: 650px
@@ -201,7 +326,7 @@ Explore restaurant stories, food experiences, people and local places worth disc
         .page-intro {
 
             padding:
-                65px 0 53px;
+                78px 0 65px;
 
         }
 
@@ -210,9 +335,9 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
             font-size:
                 clamp(
-                    46px,
-                    15vw,
-                    64px
+                    52px,
+                    16vw,
+                    72px
                 );
 
             letter-spacing:
@@ -224,7 +349,18 @@ Explore restaurant stories, food experiences, people and local places worth disc
         .stories-content {
 
             padding:
-                38px 0 55px;
+                48px 0 70px;
+
+        }
+
+
+        .stories-topline {
+
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
 
         }
 
@@ -238,25 +374,24 @@ Explore restaurant stories, food experiences, people and local places worth disc
 {% block content %}
 
 
-<!-- ========================================================
-     INTRO
-========================================================= -->
-
 <section class="page-intro">
 
     <div class="page-container">
 
         <div class="hero-label">
-            DISCOVER
+            The journal
         </div>
 
+
         <h1>
-            Restaurant Stories
+            Restaurant
+            <em>Stories.</em>
         </h1>
 
+
         <p>
-            Local restaurants, food experiences,
-            people and places worth discovering.
+            Meet the restaurants, people, flavours
+            and experiences shaping the places around you.
         </p>
 
     </div>
@@ -264,10 +399,6 @@ Explore restaurant stories, food experiences, people and local places worth disc
 </section>
 
 
-
-<!-- ========================================================
-     STORIES
-========================================================= -->
 
 <section class="stories-content">
 
@@ -279,9 +410,17 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
         <div class="stories-topline">
 
-            <strong>
-                Explore stories
-            </strong>
+            <div class="stories-topline-copy">
+
+                <span>
+                    Explore
+                </span>
+
+                <h2>
+                    The latest from Kalxa
+                </h2>
+
+            </div>
 
 
             <span class="stories-count">
@@ -299,6 +438,7 @@ Explore restaurant stories, food experiences, people and local places worth disc
         </div>
 
 
+
         <div class="story-grid">
 
 
@@ -306,10 +446,6 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
             <article class="story-card">
 
-
-                <!-- =============================================
-                     IMAGE
-                ============================================== -->
 
                 <a
                     href="{{ url_for(
@@ -329,48 +465,45 @@ Explore restaurant stories, food experiences, people and local places worth disc
                             article.images | length > 0
                         %}
 
-                            <img
-                                src="{{ article.images[0].image_url }}"
-                                alt="{{ article.title }}"
-                                loading="lazy"
-                            >
+                        <img
+                            src="{{ article.images[0].image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
 
 
-                            {% if
-                                article.images | length > 1
-                            %}
+                        {% if
+                            article.images | length > 1
+                        %}
 
-                                <span class="story-image-count">
+                        <span class="story-image-count">
 
-                                    {{
-                                        article.images
-                                        | length
-                                    }}
-                                    photos
+                            {{ article.images | length }}
+                            photos
 
-                                </span>
+                        </span>
 
-                            {% endif %}
+                        {% endif %}
 
 
                         {% elif article.cover_image_url %}
 
-                            <img
-                                src="{{ article.cover_image_url }}"
-                                alt="{{ article.title }}"
-                                loading="lazy"
-                            >
+                        <img
+                            src="{{ article.cover_image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
 
 
                         {% else %}
 
-                            <div class="image-placeholder small">
+                        <div class="image-placeholder small">
 
-                                <span>
-                                    K
-                                </span>
+                            <span>
+                                K
+                            </span>
 
-                            </div>
+                        </div>
 
                         {% endif %}
 
@@ -380,9 +513,6 @@ Explore restaurant stories, food experiences, people and local places worth disc
                 </a>
 
 
-                <!-- =============================================
-                     STORY COPY
-                ============================================== -->
 
                 <div class="story-card-content">
 
@@ -391,9 +521,9 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
                         {% if article.is_sponsored %}
 
-                            <span class="sponsored-label">
-                                Sponsored
-                            </span>
+                        <span class="sponsored-label">
+                            Sponsored
+                        </span>
 
                         {% endif %}
 
@@ -427,9 +557,9 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
                     {% if article.excerpt %}
 
-                        <p>
-                            {{ article.excerpt }}
-                        </p>
+                    <p>
+                        {{ article.excerpt }}
+                    </p>
 
                     {% endif %}
 
@@ -441,7 +571,8 @@ Explore restaurant stories, food experiences, people and local places worth disc
                             slug=article.slug
                         ) }}"
                     >
-                        Read story →
+                        Read story
+                        <span>→</span>
                     </a>
 
 
@@ -456,7 +587,6 @@ Explore restaurant stories, food experiences, people and local places worth disc
 
 
         {% else %}
-
 
         <div class="empty-state">
 
@@ -474,7 +604,6 @@ Explore restaurant stories, food experiences, people and local places worth disc
             </p>
 
         </div>
-
 
         {% endif %}
 
