@@ -1,5 +1,7 @@
 import requests
 
+from datetime import datetime, timezone
+
 from flask import current_app
 
 
@@ -98,6 +100,7 @@ def build_api_url(
     base_url = get_ticketing_base_url()
 
     if not base_url:
+
         return ""
 
     return (
@@ -571,6 +574,55 @@ def normalize_story_ids(
 
 
 # ============================================================
+# NORMALIZE ANALYTICS DATETIME
+# ============================================================
+
+def normalize_analytics_datetime(
+    value,
+):
+    """
+    Convert a datetime into a UTC ISO-8601 string suitable
+    for the Kalxa Ticketing analytics API.
+
+    Naive datetimes are treated as UTC because Kalxa Stories
+    stores and compares analytics timestamps in UTC.
+
+    Example:
+
+        2026-10-03T12:30:00+00:00
+
+    Returns None when no datetime was supplied.
+    """
+
+    if value is None:
+
+        return None
+
+    if not isinstance(
+        value,
+        datetime,
+    ):
+
+        raise TypeError(
+            "Analytics date filters must be datetime objects."
+        )
+
+    if value.tzinfo is None:
+
+        value = value.replace(
+            tzinfo=timezone.utc
+        )
+
+    else:
+
+        value = value.astimezone(
+            timezone.utc
+        )
+
+    return value.isoformat()
+
+
+# ============================================================
 # EMPTY STORY CONVERSION ANALYTICS
 # ============================================================
 
@@ -606,6 +658,9 @@ def empty_story_conversion_analytics(
 
             "meaningful_actions":
                 0,
+
+            "unique_sessions":
+                0,
         },
 
         "restaurants":
@@ -619,15 +674,30 @@ def empty_story_conversion_analytics(
 
 def get_story_conversion_analytics(
     story_ids,
+    start_at=None,
+    end_at=None,
 ):
     """
     Retrieve aggregated downstream conversion analytics
     from Kalxa Ticketing.
 
+    The optional start_at and end_at values allow the Stories
+    dashboard period selector to use the same date window for
+    both Stories analytics and Ticketing analytics.
+
     Example:
 
         get_story_conversion_analytics(
-            [1, 2, 3]
+            [1, 2, 3],
+            start_at=datetime(
+                2026,
+                10,
+                1,
+                tzinfo=timezone.utc,
+            ),
+            end_at=datetime.now(
+                timezone.utc
+            ),
         )
 
     Ticketing may return:
@@ -641,6 +711,16 @@ def get_story_conversion_analytics(
     The private Ticketing endpoint returns aggregates only.
 
     Raw anonymous session IDs are never returned to Stories.
+
+    Request parameters:
+
+        story_ids=1,2,3
+
+        start_at=2026-10-01T00:00:00+00:00
+
+        end_at=2026-10-03T12:30:00+00:00
+
+    start_at and end_at are omitted for all-time analytics.
 
     Return format:
 
@@ -672,15 +752,39 @@ def get_story_conversion_analytics(
 
         return {}
 
-    # --------------------------------------------------------
+
+    # ========================================================
+    # NORMALIZE DATE FILTERS
+    # ========================================================
+
+    try:
+
+        normalized_start_at = (
+            normalize_analytics_datetime(
+                start_at
+            )
+        )
+
+        normalized_end_at = (
+            normalize_analytics_datetime(
+                end_at
+            )
+        )
+
+    except TypeError:
+
+        current_app.logger.exception(
+            "Invalid date filter supplied to "
+            "Ticketing conversion analytics."
+        )
+
+        normalized_start_at = None
+        normalized_end_at = None
+
+
+    # ========================================================
     # DEFAULT ZERO RESULTS
-    # --------------------------------------------------------
-    #
-    # We create these before calling Ticketing.
-    #
-    # Therefore if Ticketing is unavailable, Stories can still
-    # render its dashboard without crashing.
-    # --------------------------------------------------------
+    # ========================================================
 
     results = {
         story_id:
@@ -692,9 +796,10 @@ def get_story_conversion_analytics(
         in normalized_story_ids
     }
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # URL
-    # --------------------------------------------------------
+    # ========================================================
 
     url = build_api_url(
         INTERNAL_RESTAURANT_ANALYTICS_ENDPOINT
@@ -704,9 +809,10 @@ def get_story_conversion_analytics(
 
         return results
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # INTERNAL HEADERS
-    # --------------------------------------------------------
+    # ========================================================
 
     headers = get_internal_headers()
 
@@ -720,9 +826,10 @@ def get_story_conversion_analytics(
 
         return results
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # REQUEST PARAMETERS
-    # --------------------------------------------------------
+    # ========================================================
 
     params = {
         "story_ids":
@@ -735,13 +842,41 @@ def get_story_conversion_analytics(
             )
     }
 
+
+    # --------------------------------------------------------
+    # PERIOD FILTER
+    # --------------------------------------------------------
+
+    if normalized_start_at:
+
+        params[
+            "start_at"
+        ] = normalized_start_at
+
+    if normalized_end_at:
+
+        params[
+            "end_at"
+        ] = normalized_end_at
+
+
     current_app.logger.info(
-        "Requesting Kalxa Ticketing conversion "
-        "analytics for %s story/stories.",
+        (
+            "Requesting Kalxa Ticketing conversion "
+            "analytics for %s story/stories. "
+            "start_at=%s end_at=%s"
+        ),
         len(
             normalized_story_ids
         ),
+        normalized_start_at or "all-time",
+        normalized_end_at or "all-time",
     )
+
+
+    # ========================================================
+    # REQUEST
+    # ========================================================
 
     try:
 
@@ -762,9 +897,10 @@ def get_story_conversion_analytics(
 
         data = response.json()
 
-        # ----------------------------------------------------
+
+        # ====================================================
         # VALIDATE ROOT RESPONSE
-        # ----------------------------------------------------
+        # ====================================================
 
         if not isinstance(
             data,
@@ -807,9 +943,10 @@ def get_story_conversion_analytics(
 
             return results
 
-        # ----------------------------------------------------
+
+        # ====================================================
         # NORMALIZE RESPONSE
-        # ----------------------------------------------------
+        # ====================================================
 
         for story in stories:
 
@@ -866,9 +1003,10 @@ def get_story_conversion_analytics(
 
                 restaurants = []
 
-            # ------------------------------------------------
+
+            # ================================================
             # NORMALIZE RESTAURANT ANALYTICS
-            # ------------------------------------------------
+            # ================================================
 
             normalized_restaurants = []
 
@@ -952,6 +1090,11 @@ def get_story_conversion_analytics(
                     }
                 )
 
+
+            # ================================================
+            # STORY TOTALS
+            # ================================================
+
             results[
                 story_id
             ] = {
@@ -1000,6 +1143,13 @@ def get_story_conversion_analytics(
                                 "meaningful_actions"
                             )
                         ),
+
+                    "unique_sessions":
+                        safe_int(
+                            totals.get(
+                                "unique_sessions"
+                            )
+                        ),
                 },
 
                 "restaurants":
@@ -1007,6 +1157,11 @@ def get_story_conversion_analytics(
             }
 
         return results
+
+
+    # ========================================================
+    # REQUEST ERRORS
+    # ========================================================
 
     except requests.Timeout:
 
@@ -1100,9 +1255,7 @@ def normalize_restaurant(
 
     /restaurant/1
 
-    Stories converts that into:
-
-    https://tickets.kalxa.co.za/restaurant/1
+    Stories converts that into a complete Ticketing URL.
     """
 
     base_url = get_ticketing_base_url()
@@ -1119,9 +1272,10 @@ def normalize_restaurant(
         ""
     ).strip()
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # PROFILE URL
-    # --------------------------------------------------------
+    # ========================================================
 
     if (
         profile_path.startswith(
@@ -1154,12 +1308,11 @@ def normalize_restaurant(
         profile_url = base_url
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # RETURN NORMALIZED RESTAURANT
-    # --------------------------------------------------------
+    # ========================================================
 
     return {
-
         **data,
 
         "id":
@@ -1227,5 +1380,4 @@ def normalize_restaurant(
 
         "profile_url":
             profile_url,
-
     }
