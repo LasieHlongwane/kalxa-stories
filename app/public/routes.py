@@ -19,6 +19,7 @@ from flask import (
     abort,
     current_app,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -36,6 +37,10 @@ from sqlalchemy import (
     or_,
 )
 
+from sqlalchemy.exc import (
+    IntegrityError,
+)
+
 from app.extensions import db
 
 from app.models import (
@@ -45,6 +50,7 @@ from app.models import (
 
 from app.models.article_comment import (
     ArticleComment,
+    CommentUpvote,
 )
 
 from app.kalxa.client import (
@@ -757,6 +763,299 @@ def article_comment(
 
 
 # ============================================================
+# TOGGLE COMMENT UPVOTE
+# ============================================================
+
+@public_bp.post(
+    (
+        "/stories/<string:slug>"
+        "/comments/<int:comment_id>/upvote"
+    )
+)
+def toggle_comment_upvote(
+    slug,
+    comment_id,
+):
+
+    # ========================================================
+    # ARTICLE
+    # ========================================================
+
+    article = (
+        Article.query
+
+        .filter_by(
+            slug=slug,
+            status="published",
+        )
+
+        .first()
+    )
+
+    if article is None:
+
+        return jsonify(
+            {
+                "ok": False,
+                "error": "story_not_found",
+            }
+        ), 404
+
+
+    # ========================================================
+    # COMMENTS MUST STILL BE OPEN
+    # ========================================================
+    #
+    # Expired stories remain accessible as archive pages,
+    # but their conversation is closed.
+    # ========================================================
+
+    if not article.comments_open:
+
+        return jsonify(
+            {
+                "ok": False,
+                "error": "comments_closed",
+                "message": (
+                    "Upvotes are closed for this story."
+                ),
+            }
+        ), 403
+
+
+    # ========================================================
+    # APPROVED ACTIVE COMMENT
+    # ========================================================
+    #
+    # The article_id condition is important.
+    #
+    # It prevents someone from taking a valid comment ID from
+    # another story and submitting it through this story URL.
+    # ========================================================
+
+    comment = (
+        ArticleComment.query
+
+        .filter(
+            ArticleComment.id
+            == comment_id,
+
+            ArticleComment.article_id
+            == article.id,
+
+            ArticleComment.moderation_status
+            == "approved",
+
+            ArticleComment.active
+            .is_(True),
+        )
+
+        .first()
+    )
+
+    if comment is None:
+
+        return jsonify(
+            {
+                "ok": False,
+                "error": "comment_not_found",
+            }
+        ), 404
+
+
+    # ========================================================
+    # ANONYMOUS VISITOR SESSION
+    # ========================================================
+
+    anonymous_session_id = (
+        get_anonymous_session_id()
+    )
+
+
+    # ========================================================
+    # EXISTING UPVOTE
+    # ========================================================
+
+    existing_upvote = (
+        CommentUpvote.query
+
+        .filter_by(
+            comment_id=comment.id,
+            anonymous_session_id=(
+                anonymous_session_id
+            ),
+        )
+
+        .first()
+    )
+
+
+    # ========================================================
+    # REMOVE EXISTING UPVOTE
+    # ========================================================
+
+    if existing_upvote is not None:
+
+        try:
+
+            db.session.delete(
+                existing_upvote
+            )
+
+            db.session.commit()
+
+        except Exception:
+
+            db.session.rollback()
+
+            current_app.logger.exception(
+                "Unable to remove Kalxa Stories "
+                "comment upvote."
+            )
+
+            return jsonify(
+                {
+                    "ok": False,
+                    "error": (
+                        "upvote_remove_failed"
+                    ),
+                }
+            ), 500
+
+
+        upvote_count = (
+            CommentUpvote.query
+
+            .filter_by(
+                comment_id=comment.id,
+            )
+
+            .count()
+        )
+
+
+        return jsonify(
+            {
+                "ok": True,
+                "comment_id": comment.id,
+                "upvoted": False,
+                "upvote_count": (
+                    upvote_count
+                ),
+            }
+        ), 200
+
+
+    # ========================================================
+    # CREATE NEW UPVOTE
+    # ========================================================
+
+    upvote = CommentUpvote(
+        comment_id=comment.id,
+        anonymous_session_id=(
+            anonymous_session_id
+        ),
+    )
+
+    try:
+
+        db.session.add(
+            upvote
+        )
+
+        db.session.commit()
+
+    except IntegrityError:
+
+        # ====================================================
+        # DUPLICATE PROTECTION
+        # ====================================================
+        #
+        # The database has a UNIQUE constraint on:
+        #
+        #   comment_id + anonymous_session_id
+        #
+        # This protects against rapid duplicate requests,
+        # multiple tabs, or accidental double-clicks.
+        #
+        # If another request inserted the upvote first,
+        # rollback and return the current state.
+        # ====================================================
+
+        db.session.rollback()
+
+        upvote_count = (
+            CommentUpvote.query
+
+            .filter_by(
+                comment_id=comment.id,
+            )
+
+            .count()
+        )
+
+        return jsonify(
+            {
+                "ok": True,
+                "comment_id": comment.id,
+                "upvoted": True,
+                "upvote_count": (
+                    upvote_count
+                ),
+            }
+        ), 200
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to save Kalxa Stories "
+            "comment upvote."
+        )
+
+        return jsonify(
+            {
+                "ok": False,
+                "error": (
+                    "upvote_save_failed"
+                ),
+            }
+        ), 500
+
+
+    # ========================================================
+    # UPDATED COUNT
+    # ========================================================
+
+    upvote_count = (
+        CommentUpvote.query
+
+        .filter_by(
+            comment_id=comment.id,
+        )
+
+        .count()
+    )
+
+
+    # ========================================================
+    # RESPONSE
+    # ========================================================
+
+    return jsonify(
+        {
+            "ok": True,
+            "comment_id": comment.id,
+            "upvoted": True,
+            "upvote_count": (
+                upvote_count
+            ),
+        }
+    ), 200
+
+
+# ============================================================
 # ARTICLE
 # ============================================================
 
@@ -879,6 +1178,8 @@ def article_detail(
 
     approved_comments = []
 
+    comment_upvote_state = {}
+
     if not article.is_expired:
 
         approved_comments = (
@@ -898,6 +1199,68 @@ def article_detail(
 
             .all()
         )
+
+
+        # ====================================================
+        # CURRENT VISITOR UPVOTE STATE
+        # ====================================================
+        #
+        # This allows the template to render:
+        #
+        #   ♡ Upvote
+        #
+        # or:
+        #
+        #   ♥ Upvoted
+        #
+        # correctly when the page first loads.
+        # ====================================================
+
+        if approved_comments:
+
+            anonymous_session_id = (
+                get_anonymous_session_id()
+            )
+
+            comment_ids = [
+                comment.id
+                for comment
+                in approved_comments
+            ]
+
+            visitor_upvotes = (
+                CommentUpvote.query
+
+                .filter(
+                    CommentUpvote.comment_id
+                    .in_(
+                        comment_ids
+                    ),
+
+                    CommentUpvote
+                    .anonymous_session_id
+                    == anonymous_session_id,
+                )
+
+                .all()
+            )
+
+            visitor_upvoted_comment_ids = {
+                upvote.comment_id
+                for upvote
+                in visitor_upvotes
+            }
+
+            comment_upvote_state = {
+                comment.id: (
+                    comment.id
+                    in
+                    visitor_upvoted_comment_ids
+                )
+
+                for comment
+                in approved_comments
+            }
 
 
     # ========================================================
@@ -969,6 +1332,9 @@ def article_detail(
         ),
         approved_comments=(
             approved_comments
+        ),
+        comment_upvote_state=(
+            comment_upvote_state
         ),
     )
 
@@ -1267,21 +1633,33 @@ def sitemap():
     return response
 
 
+# ============================================================
+# ROBOTS
+# ============================================================
 
-
-@public_bp.route("/robots.txt")
+@public_bp.route(
+    "/robots.txt"
+)
 def robots_txt():
 
-    robots = "\n".join([
-        "User-agent: *",
-        "Allow: /",
-        "",
-        "Sitemap: https://kalxa-stories.onrender.com/sitemap.xml",
-    ])
+    robots = "\n".join(
+        [
+            "User-agent: *",
+            "Allow: /",
+            "",
+            (
+                "Sitemap: "
+                "https://kalxa-stories.onrender.com/"
+                "sitemap.xml"
+            ),
+        ]
+    )
 
     return Response(
         robots,
-        content_type="text/plain; charset=utf-8",
+        content_type=(
+            "text/plain; charset=utf-8"
+        ),
     )
 
 
