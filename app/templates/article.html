@@ -171,6 +171,13 @@
 {% block content %}
 
 
+{% set canonical_story_url = url_for(
+    'public.article_detail',
+    slug=article.slug,
+    _external=True
+) %}
+
+
 <div
     class="reading-progress"
     id="reading-progress"
@@ -401,6 +408,135 @@
         </div>
 
         {% endif %}
+
+
+
+        <!-- =================================================
+             SHARE STORY
+        ================================================== -->
+
+        <section
+            class="story-share"
+            aria-labelledby="story-share-heading"
+        >
+
+            <div class="story-share-copy">
+
+                <span class="story-share-eyebrow">
+                    SHARE
+                </span>
+
+                <h2 id="story-share-heading">
+                    Know someone who should see this?
+                </h2>
+
+                <p>
+                    Send this story to someone who might
+                    enjoy it or find it useful.
+                </p>
+
+            </div>
+
+
+            <div
+                class="story-share-actions"
+                id="story-share-actions"
+                data-story-id="{{ article.id }}"
+                data-story-slug="{{ article.slug }}"
+                data-story-title="{{ article.title }}"
+                data-canonical-url="{{ canonical_story_url }}"
+            >
+
+
+                <!-- =========================================
+                     WHATSAPP
+                ========================================== -->
+
+                <button
+                    class="share-button share-whatsapp"
+                    type="button"
+                    data-share-channel="whatsapp"
+                    aria-label="Share this story on WhatsApp"
+                >
+
+                    <span
+                        class="share-icon"
+                        aria-hidden="true"
+                    >
+                        W
+                    </span>
+
+                    <span>
+                        WhatsApp
+                    </span>
+
+                </button>
+
+
+
+                <!-- =========================================
+                     FACEBOOK
+                ========================================== -->
+
+                <button
+                    class="share-button share-facebook"
+                    type="button"
+                    data-share-channel="facebook"
+                    aria-label="Share this story on Facebook"
+                >
+
+                    <span
+                        class="share-icon"
+                        aria-hidden="true"
+                    >
+                        f
+                    </span>
+
+                    <span>
+                        Facebook
+                    </span>
+
+                </button>
+
+
+
+                <!-- =========================================
+                     COPY LINK
+                ========================================== -->
+
+                <button
+                    class="share-button share-copy"
+                    type="button"
+                    data-share-channel="copy_link"
+                    aria-label="Copy story link"
+                >
+
+                    <span
+                        class="share-icon"
+                        aria-hidden="true"
+                    >
+                        ↗
+                    </span>
+
+                    <span id="copy-link-label">
+                        Copy link
+                    </span>
+
+                </button>
+
+
+            </div>
+
+
+            <div
+                class="share-feedback"
+                id="share-feedback"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+
+        </section>
 
 
 
@@ -1417,6 +1553,252 @@
     color: #858a91;
 
     font-size: 11px;
+
+}
+
+
+/* =========================================================
+   SHARE STORY
+========================================================= */
+
+.story-share {
+
+    margin-top: 58px;
+
+    padding: 28px;
+
+    border:
+        1px solid
+        #e0e2e5;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8f8f7,
+            #ffffff
+        );
+
+}
+
+
+.story-share-copy {
+
+    max-width: 560px;
+
+}
+
+
+.story-share-eyebrow {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #7c8189;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: 1.4px;
+
+}
+
+
+.story-share h2 {
+
+    margin:
+        0
+        0
+        8px;
+
+    color: #111318;
+
+    font-size: 25px;
+
+    line-height: 1.2;
+
+    letter-spacing: -.8px;
+
+}
+
+
+.story-share p {
+
+    margin: 0;
+
+    color: #70757d;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+.story-share-actions {
+
+    display: grid;
+
+    grid-template-columns:
+        1.35fr
+        1fr
+        1fr;
+
+    gap: 10px;
+
+    margin-top: 22px;
+
+}
+
+
+.share-button {
+
+    min-height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    padding:
+        0
+        15px;
+
+    border:
+        1px solid
+        #d9dcdf;
+
+    border-radius: 12px;
+
+    background: white;
+
+    color: #202328;
+
+    font-family: inherit;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        background .15s ease;
+
+}
+
+
+.share-button:hover {
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0
+        8px
+        22px
+        rgba(
+            0,
+            0,
+            0,
+            .07
+        );
+
+}
+
+
+.share-button:focus-visible {
+
+    outline:
+        3px solid
+        rgba(
+            17,
+            19,
+            24,
+            .15
+        );
+
+    outline-offset: 2px;
+
+}
+
+
+.share-whatsapp {
+
+    border-color: #111318;
+
+    background: #111318;
+
+    color: white;
+
+}
+
+
+.share-whatsapp:hover {
+
+    background: #272a30;
+
+}
+
+
+.share-icon {
+
+    width: 25px;
+    height: 25px;
+
+    flex:
+        0
+        0
+        25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            .06
+        );
+
+    font-size: 12px;
+    font-weight: 950;
+
+}
+
+
+.share-whatsapp
+.share-icon {
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .14
+        );
+
+}
+
+
+.share-feedback {
+
+    min-height: 18px;
+
+    margin-top: 10px;
+
+    color: #62676e;
+
+    font-size: 11px;
+    font-weight: 700;
 
 }
 
@@ -2511,6 +2893,23 @@
     }
 
 
+    .story-share-actions {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+    }
+
+
+    .share-whatsapp {
+
+        grid-column:
+            1 / -1;
+
+    }
+
+
     .restaurant-reference {
 
         grid-template-columns:
@@ -2610,6 +3009,51 @@
     .article-body h2 {
 
         font-size: 26px;
+
+    }
+
+
+    .story-share {
+
+        margin-top: 45px;
+
+        padding: 20px;
+
+        border-radius: 17px;
+
+    }
+
+
+    .story-share h2 {
+
+        font-size: 22px;
+
+    }
+
+
+    .story-share-actions {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .share-whatsapp {
+
+        grid-column: auto;
+
+    }
+
+
+    .share-button {
+
+        justify-content:
+            flex-start;
+
+        padding:
+            0
+            17px;
 
     }
 
@@ -2718,6 +3162,367 @@ document.addEventListener(
 
 
         updateReadingProgress();
+
+
+
+        // ====================================================
+        // SHARE STORY
+        // ====================================================
+
+        const shareActions =
+            document.getElementById(
+                "story-share-actions"
+            );
+
+        const shareFeedback =
+            document.getElementById(
+                "share-feedback"
+            );
+
+        const copyLabel =
+            document.getElementById(
+                "copy-link-label"
+            );
+
+
+        function buildSharedStoryUrl(
+            source
+        ) {
+
+            if (!shareActions) {
+
+                return "";
+
+            }
+
+
+            const canonicalUrl =
+                shareActions.dataset.canonicalUrl;
+
+
+            if (!canonicalUrl) {
+
+                return "";
+
+            }
+
+
+            try {
+
+                const url =
+                    new URL(
+                        canonicalUrl
+                    );
+
+
+                url.searchParams.set(
+                    "utm_source",
+                    source
+                );
+
+
+                url.searchParams.set(
+                    "utm_medium",
+                    "share"
+                );
+
+
+                url.searchParams.set(
+                    "utm_campaign",
+                    "story_share"
+                );
+
+
+                return url.toString();
+
+            }
+            catch (error) {
+
+                return canonicalUrl;
+
+            }
+
+        }
+
+
+        function showShareFeedback(
+            message
+        ) {
+
+            if (!shareFeedback) {
+
+                return;
+
+            }
+
+
+            shareFeedback.textContent =
+                message;
+
+
+            window.setTimeout(
+                function () {
+
+                    if (
+                        shareFeedback.textContent
+                        ===
+                        message
+                    ) {
+
+                        shareFeedback.textContent =
+                            "";
+
+                    }
+
+                },
+                3000
+            );
+
+        }
+
+
+        function openShareWindow(
+            url
+        ) {
+
+            window.open(
+                url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+
+
+        async function copyStoryLink(
+            url
+        ) {
+
+            try {
+
+                if (
+                    navigator.clipboard
+                    &&
+                    window.isSecureContext
+                ) {
+
+                    await navigator.clipboard.writeText(
+                        url
+                    );
+
+                }
+                else {
+
+                    const textarea =
+                        document.createElement(
+                            "textarea"
+                        );
+
+
+                    textarea.value =
+                        url;
+
+
+                    textarea.setAttribute(
+                        "readonly",
+                        ""
+                    );
+
+
+                    textarea.style.position =
+                        "fixed";
+
+                    textarea.style.opacity =
+                        "0";
+
+
+                    document.body.appendChild(
+                        textarea
+                    );
+
+
+                    textarea.select();
+
+
+                    document.execCommand(
+                        "copy"
+                    );
+
+
+                    textarea.remove();
+
+                }
+
+
+                if (copyLabel) {
+
+                    copyLabel.textContent =
+                        "Copied!";
+
+
+                    window.setTimeout(
+                        function () {
+
+                            copyLabel.textContent =
+                                "Copy link";
+
+                        },
+                        2200
+                    );
+
+                }
+
+
+                showShareFeedback(
+                    "Story link copied."
+                );
+
+
+                return true;
+
+            }
+            catch (error) {
+
+                showShareFeedback(
+                    "Unable to copy automatically."
+                );
+
+
+                return false;
+
+            }
+
+        }
+
+
+        if (shareActions) {
+
+            shareActions
+                .querySelectorAll(
+                    "[data-share-channel]"
+                )
+                .forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            async function () {
+
+                                const channel =
+                                    button.getAttribute(
+                                        "data-share-channel"
+                                    );
+
+
+                                const storyTitle =
+                                    shareActions.dataset.storyTitle
+                                    ||
+                                    "Kalxa Story";
+
+
+                                if (
+                                    channel
+                                    ===
+                                    "whatsapp"
+                                ) {
+
+                                    const sharedUrl =
+                                        buildSharedStoryUrl(
+                                            "whatsapp"
+                                        );
+
+
+                                    const message =
+                                        (
+                                            storyTitle
+                                            +
+                                            "\n\n"
+                                            +
+                                            sharedUrl
+                                        );
+
+
+                                    const whatsappUrl =
+                                        (
+                                            "https://wa.me/?text="
+                                            +
+                                            encodeURIComponent(
+                                                message
+                                            )
+                                        );
+
+
+                                    openShareWindow(
+                                        whatsappUrl
+                                    );
+
+
+                                    showShareFeedback(
+                                        "Opening WhatsApp…"
+                                    );
+
+                                }
+
+
+                                else if (
+                                    channel
+                                    ===
+                                    "facebook"
+                                ) {
+
+                                    const sharedUrl =
+                                        buildSharedStoryUrl(
+                                            "facebook"
+                                        );
+
+
+                                    const facebookUrl =
+                                        (
+                                            "https://www.facebook.com/sharer/sharer.php?u="
+                                            +
+                                            encodeURIComponent(
+                                                sharedUrl
+                                            )
+                                        );
+
+
+                                    openShareWindow(
+                                        facebookUrl
+                                    );
+
+
+                                    showShareFeedback(
+                                        "Opening Facebook…"
+                                    );
+
+                                }
+
+
+                                else if (
+                                    channel
+                                    ===
+                                    "copy_link"
+                                ) {
+
+                                    const sharedUrl =
+                                        buildSharedStoryUrl(
+                                            "copy_link"
+                                        );
+
+
+                                    await copyStoryLink(
+                                        sharedUrl
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
 
 
 
