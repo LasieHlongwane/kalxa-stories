@@ -26,10 +26,34 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
         overflow: hidden;
 
         padding:
-            92px 0 82px;
+            115px 0 100px;
 
         background:
             var(--kalxa-cream);
+
+        border-bottom:
+            1px solid
+            var(--kalxa-border);
+
+    }
+
+
+    .home-hero::before {
+
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+
+        right: 8%;
+
+        width: 1px;
+
+        height: 100%;
+
+        background:
+            rgba(120, 91, 51, .1);
 
     }
 
@@ -40,25 +64,25 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         position: absolute;
 
-        right: -25px;
+        right: -35px;
 
-        bottom: -135px;
+        bottom: -175px;
 
         color:
-            rgba(11, 12, 14, .035);
+            rgba(93, 70, 40, .045);
+
+        font-family:
+            var(--kalxa-serif);
 
         font-size:
             min(
-                430px,
-                45vw
+                500px,
+                47vw
             );
 
-        font-weight: 950;
+        font-weight: 600;
 
         line-height: 1;
-
-        letter-spacing:
-            -30px;
 
         pointer-events: none;
 
@@ -76,24 +100,27 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
     .home-hero h1 {
 
-        max-width: 850px;
+        max-width: 940px;
 
         margin:
-            0 0 24px;
+            0 0 30px;
 
         color:
-            var(--kalxa-black);
+            var(--kalxa-ink);
+
+        font-family:
+            var(--kalxa-serif);
 
         font-size:
             clamp(
-                48px,
+                58px,
                 8vw,
-                94px
+                108px
             );
 
-        font-weight: 950;
+        font-weight: 500;
 
-        line-height: .92;
+        line-height: .91;
 
         letter-spacing:
             -5px;
@@ -101,9 +128,19 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
     }
 
 
+    .home-hero h1 em {
+
+        color:
+            var(--kalxa-gold-dark);
+
+        font-weight: 500;
+
+    }
+
+
     .hero-copy {
 
-        max-width: 590px;
+        max-width: 610px;
 
         margin: 0;
 
@@ -112,60 +149,96 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         font-size:
             clamp(
-                16px,
-                2vw,
-                20px
+                15px,
+                1.7vw,
+                19px
             );
 
-        line-height: 1.6;
+        line-height: 1.75;
+
+    }
+
+
+    .hero-edition {
+
+        margin-top: 48px;
+
+        padding-top: 18px;
+
+        border-top:
+            1px solid
+            rgba(116, 92, 60, .22);
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 14px;
+
+        max-width: 610px;
+
+        color:
+            var(--kalxa-muted);
+
+        font-size: 9px;
+
+        font-weight: 700;
 
         letter-spacing:
-            -.25px;
+            1.7px;
+
+        text-transform:
+            uppercase;
+
+    }
+
+
+    .hero-edition-dot {
+
+        width: 5px;
+
+        height: 5px;
+
+        border-radius: 50%;
+
+        background:
+            var(--kalxa-gold);
 
     }
 
 
     /* =====================================================
-       FEATURED STORY
+       FEATURED
     ====================================================== */
+
+    .featured-section {
+
+        padding:
+            72px 0 64px;
+
+    }
+
 
     .featured-story {
 
         display: grid;
 
         grid-template-columns:
-            minmax(0, 1.35fr)
-            minmax(330px, .65fr);
+            minmax(0, 1.45fr)
+            minmax(340px, .55fr);
+
+        min-height: 590px;
 
         overflow: hidden;
-
-        min-height: 510px;
-
-        border-radius:
-            28px;
 
         background:
             var(--kalxa-black);
 
-        color: white;
+        color:
+            #f7f2e9;
 
         box-shadow:
             var(--kalxa-shadow);
-
-        transition:
-            transform .22s ease,
-            box-shadow .22s ease;
-
-    }
-
-
-    .featured-story:hover {
-
-        transform:
-            translateY(-4px);
-
-        box-shadow:
-            var(--kalxa-shadow-hover);
 
     }
 
@@ -174,12 +247,12 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         position: relative;
 
-        min-height: 510px;
+        min-height: 590px;
 
         overflow: hidden;
 
         background:
-            #24272c;
+            #292721;
 
     }
 
@@ -195,13 +268,8 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
         object-fit: cover;
 
         transition:
-            transform .6s
-            cubic-bezier(
-                .2,
-                .7,
-                .2,
-                1
-            );
+            transform .8s
+            cubic-bezier(.2, .7, .2, 1);
 
     }
 
@@ -225,9 +293,9 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         background:
             linear-gradient(
-                90deg,
-                transparent 72%,
-                rgba(11, 12, 14, .22)
+                to right,
+                transparent 60%,
+                rgba(17, 17, 15, .18)
             );
 
         pointer-events: none;
@@ -239,16 +307,16 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         position: absolute;
 
-        left: 18px;
+        left: 20px;
 
-        bottom: 18px;
+        bottom: 20px;
 
-        z-index: 2;
+        z-index: 3;
 
         min-height: 31px;
 
         padding:
-            0 11px;
+            0 12px;
 
         display: inline-flex;
 
@@ -256,30 +324,33 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         border:
             1px solid
-            rgba(255, 255, 255, .25);
+            rgba(255, 255, 255, .27);
 
         border-radius:
             999px;
 
         background:
-            rgba(11, 12, 14, .74);
+            rgba(17, 17, 15, .66);
 
         backdrop-filter:
-            blur(10px);
+            blur(12px);
 
-        color: white;
+        color:
+            white;
 
-        font-size: 10px;
+        font-size: 9px;
 
-        font-weight: 900;
+        font-weight: 600;
 
     }
 
 
     .featured-content {
 
+        position: relative;
+
         padding:
-            50px 42px;
+            62px 48px;
 
         display: flex;
 
@@ -292,11 +363,33 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
     }
 
 
+    .featured-content::before {
+
+        content: "";
+
+        position: absolute;
+
+        top: 42px;
+
+        left: 48px;
+
+        width: 42px;
+
+        height: 1px;
+
+        background:
+            var(--kalxa-gold);
+
+    }
+
+
     .featured-content
     .story-meta {
 
+        margin-top: 26px;
+
         color:
-            rgba(255, 255, 255, .55);
+            rgba(255, 255, 255, .5);
 
     }
 
@@ -304,19 +397,24 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
     .featured-content h2 {
 
         margin:
-            17px 0 18px;
+            20px 0 22px;
+
+        font-family:
+            var(--kalxa-serif);
 
         font-size:
             clamp(
-                34px,
+                38px,
                 4vw,
-                54px
+                59px
             );
 
-        line-height: .98;
+        font-weight: 500;
+
+        line-height: 1.01;
 
         letter-spacing:
-            -2.5px;
+            -2px;
 
     }
 
@@ -324,14 +422,14 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
     .featured-content p {
 
         margin:
-            0 0 28px;
+            0 0 32px;
 
         color:
-            rgba(255, 255, 255, .67);
+            rgba(255, 255, 255, .62);
 
-        font-size: 14px;
+        font-size: 13px;
 
-        line-height: 1.7;
+        line-height: 1.8;
 
     }
 
@@ -339,7 +437,14 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
     .featured-content
     .read-link {
 
-        color: white;
+        padding-bottom: 6px;
+
+        border-bottom:
+            1px solid
+            rgba(255, 255, 255, .28);
+
+        color:
+            #f7f2e9;
 
     }
 
@@ -350,9 +455,96 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
     .latest-section {
 
-        padding-top: 55px;
+        padding-top: 60px;
 
-        padding-bottom: 80px;
+        padding-bottom: 100px;
+
+    }
+
+
+    .latest-heading-title {
+
+        margin:
+            0;
+
+        font-family:
+            var(--kalxa-serif);
+
+        font-size:
+            clamp(
+                34px,
+                4vw,
+                49px
+            );
+
+        font-weight: 500;
+
+        letter-spacing:
+            -1.5px;
+
+    }
+
+
+    .latest-header {
+
+        margin-bottom: 38px;
+
+        padding-bottom: 20px;
+
+        display: flex;
+
+        align-items: flex-end;
+
+        justify-content:
+            space-between;
+
+        gap: 20px;
+
+        border-bottom:
+            1px solid
+            var(--kalxa-border);
+
+    }
+
+
+    .latest-header-copy span {
+
+        display: block;
+
+        margin-bottom: 8px;
+
+        color:
+            var(--kalxa-gold-dark);
+
+        font-size: 9px;
+
+        font-weight: 700;
+
+        letter-spacing:
+            2px;
+
+        text-transform:
+            uppercase;
+
+    }
+
+
+    .latest-header > a {
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size: 11px;
+
+        font-weight: 600;
+
+    }
+
+
+    .latest-header > a:hover {
+
+        color:
+            var(--kalxa-gold-dark);
 
     }
 
@@ -374,17 +566,20 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
         .featured-image {
-
-            min-height: 440px;
-
+            min-height: 500px;
         }
 
 
         .featured-content {
 
             padding:
-                38px 34px 42px;
+                60px 38px 48px;
 
+        }
+
+
+        .featured-content::before {
+            left: 38px;
         }
 
     }
@@ -397,26 +592,24 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
         .home-hero {
 
             padding:
-                68px 0 60px;
+                82px 0 70px;
 
         }
 
 
         .home-hero h1 {
 
-            max-width: 95%;
-
-            margin-bottom: 19px;
+            max-width: 100%;
 
             font-size:
                 clamp(
-                    46px,
-                    15vw,
-                    67px
+                    52px,
+                    16vw,
+                    72px
                 );
 
             letter-spacing:
-                -3.5px;
+                -3px;
 
         }
 
@@ -430,17 +623,22 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
         }
 
 
-        .featured-story {
+        .hero-edition {
+            margin-top: 34px;
+        }
 
-            border-radius:
-                20px;
+
+        .featured-section {
+
+            padding:
+                45px 0 38px;
 
         }
 
 
         .featured-image {
 
-            min-height: 330px;
+            min-height: 380px;
 
         }
 
@@ -448,24 +646,44 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
         .featured-content {
 
             padding:
-                28px 22px 31px;
+                55px 24px 34px;
+
+        }
+
+
+        .featured-content::before {
+
+            top: 34px;
+
+            left: 24px;
 
         }
 
 
         .featured-content h2 {
 
-            font-size: 34px;
+            font-size: 38px;
 
             letter-spacing:
-                -1.7px;
+                -1.3px;
 
         }
 
 
         .latest-section {
 
-            padding-bottom: 50px;
+            padding-top: 42px;
+
+            padding-bottom: 65px;
+
+        }
+
+
+        .latest-header {
+
+            align-items: flex-start;
+
+            flex-direction: column;
 
         }
 
@@ -479,27 +697,37 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 {% block content %}
 
 
-<!-- ========================================================
-     HERO
-========================================================= -->
-
 <section class="home-hero">
 
     <div class="page-container">
 
         <div class="hero-label">
-            KALXA STORIES
+            Kalxa Stories
         </div>
+
 
         <h1>
             Taste what's
-            happening around you.
+            <em>happening</em>
+            around you.
         </h1>
 
+
         <p class="hero-copy">
-            Restaurant stories, local food,
-            hidden spots and experiences worth discovering.
+            Stories from the restaurants, people,
+            flavours and local places worth discovering.
         </p>
+
+
+        <div class="hero-edition">
+
+            <span class="hero-edition-dot"></span>
+
+            <span>
+                Food · People · Places · Experiences
+            </span>
+
+        </div>
 
     </div>
 
@@ -509,18 +737,15 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 {% if featured_article %}
 
-<!-- ========================================================
-     FEATURED STORY
-========================================================= -->
-
-<section class="section">
+<section class="featured-section">
 
     <div class="page-container">
+
 
         <div class="section-heading">
 
             <span>
-                Featured story
+                The featured story
             </span>
 
         </div>
@@ -534,10 +759,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
             class="featured-story"
         >
 
-
-            <!-- =================================================
-                 FEATURED IMAGE
-            ================================================== -->
 
             <div class="featured-image">
 
@@ -557,10 +778,17 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                         featured_article.images | length > 1
                     %}
 
-                        <span class="featured-photo-count">
-                            {{ featured_article.images | length }}
+                    <span class="featured-photo-count">
+
+                        {{ featured_article.images | length }}
+
+                        {% if featured_article.images | length == 1 %}
+                            photo
+                        {% else %}
                             photos
-                        </span>
+                        {% endif %}
+
+                    </span>
 
                     {% endif %}
 
@@ -571,6 +799,7 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                         src="{{ featured_article.cover_image_url }}"
                         alt="{{ featured_article.title }}"
                     >
+
 
                 {% else %}
 
@@ -587,19 +816,17 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
             </div>
 
 
-            <!-- =================================================
-                 FEATURED COPY
-            ================================================== -->
 
             <div class="featured-content">
+
 
                 <div class="story-meta">
 
                     {% if featured_article.is_sponsored %}
 
-                        <span class="sponsored-label">
-                            Sponsored
-                        </span>
+                    <span class="sponsored-label">
+                        Sponsored
+                    </span>
 
                     {% endif %}
 
@@ -624,15 +851,16 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                 {% if featured_article.excerpt %}
 
-                    <p>
-                        {{ featured_article.excerpt }}
-                    </p>
+                <p>
+                    {{ featured_article.excerpt }}
+                </p>
 
                 {% endif %}
 
 
                 <span class="read-link">
-                    Read story →
+                    Read the story
+                    <span>→</span>
                 </span>
 
             </div>
@@ -647,25 +875,28 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
 
-<!-- ========================================================
-     LATEST STORIES
-========================================================= -->
-
-<section class="section latest-section">
+<section class="latest-section">
 
     <div class="page-container">
 
-        <div class="section-heading">
 
-            <span>
-                Latest stories
-            </span>
+        <div class="latest-header">
+
+            <div class="latest-header-copy">
+
+                <span>
+                    From the journal
+                </span>
+
+                <h2 class="latest-heading-title">
+                    Latest stories
+                </h2>
+
+            </div>
 
 
-            <a
-                href="{{ url_for('public.stories') }}"
-            >
-                View all →
+            <a href="{{ url_for('public.stories') }}">
+                View all stories →
             </a>
 
         </div>
@@ -681,10 +912,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
             <article class="story-card">
 
 
-                <!-- =============================================
-                     IMAGE
-                ============================================== -->
-
                 <a
                     href="{{ url_for(
                         'public.article_detail',
@@ -696,64 +923,61 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                     <div class="story-image">
 
+
                         {% if
                             article.images
                             and
                             article.images | length > 0
                         %}
 
-                            <img
-                                src="{{ article.images[0].image_url }}"
-                                alt="{{ article.title }}"
-                                loading="lazy"
-                            >
+                        <img
+                            src="{{ article.images[0].image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
 
 
-                            {% if
-                                article.images | length > 1
-                            %}
+                        {% if
+                            article.images | length > 1
+                        %}
 
-                                <span class="story-image-count">
+                        <span class="story-image-count">
 
-                                    {{
-                                        article.images
-                                        | length
-                                    }}
-                                    photos
+                            {{ article.images | length }}
+                            photos
 
-                                </span>
+                        </span>
 
-                            {% endif %}
+                        {% endif %}
 
 
                         {% elif article.cover_image_url %}
 
-                            <img
-                                src="{{ article.cover_image_url }}"
-                                alt="{{ article.title }}"
-                                loading="lazy"
-                            >
+                        <img
+                            src="{{ article.cover_image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
+
 
                         {% else %}
 
-                            <div class="image-placeholder small">
+                        <div class="image-placeholder small">
 
-                                <span>
-                                    K
-                                </span>
+                            <span>
+                                K
+                            </span>
 
-                            </div>
+                        </div>
 
                         {% endif %}
+
 
                     </div>
 
                 </a>
 
 
-                <!-- =============================================
-                     CONTENT
-                ============================================== -->
 
                 <div class="story-card-content">
 
@@ -762,9 +986,9 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                         {% if article.is_sponsored %}
 
-                            <span class="sponsored-label">
-                                Sponsored
-                            </span>
+                        <span class="sponsored-label">
+                            Sponsored
+                        </span>
 
                         {% endif %}
 
@@ -798,9 +1022,9 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                     {% if article.excerpt %}
 
-                        <p>
-                            {{ article.excerpt }}
-                        </p>
+                    <p>
+                        {{ article.excerpt }}
+                    </p>
 
                     {% endif %}
 
@@ -812,7 +1036,8 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                             slug=article.slug
                         ) }}"
                     >
-                        Read story →
+                        Read story
+                        <span>→</span>
                     </a>
 
 
@@ -827,7 +1052,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
         {% else %}
-
 
         <div class="empty-state">
 
@@ -845,7 +1069,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
             </p>
 
         </div>
-
 
         {% endif %}
 
