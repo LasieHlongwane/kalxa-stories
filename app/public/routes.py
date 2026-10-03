@@ -1616,6 +1616,25 @@ def article_detail(
 # TRACK RESTAURANT CLICK
 # ============================================================
 
+# ============================================================
+# TRACK RESTAURANT CLICK
+# ============================================================
+#
+# IMPORTANT:
+#
+# This route deliberately does NOT call get_restaurant().
+#
+# The ArticleRestaurant relationship already proves that the
+# restaurant is linked to this published story.
+#
+# This prevents temporary Kalxa Ticketing API problems such as
+# HTTP 429 from breaking the "View restaurant" button.
+#
+# The visitor can therefore still continue to Kalxa Ticketing
+# even when the Ticketing API enrichment request is temporarily
+# unavailable.
+# ============================================================
+
 @public_bp.route(
     (
         "/stories/<string:slug>"
@@ -1626,6 +1645,10 @@ def restaurant_click(
     slug,
     restaurant_id,
 ):
+
+    # ========================================================
+    # ARTICLE
+    # ========================================================
 
     article = (
         Article.query
@@ -1641,11 +1664,48 @@ def restaurant_click(
         .first_or_404()
     )
 
-    linked_restaurant_ids = {
-        relation.kalxa_restaurant_id
-        for relation
-        in article.restaurants
-    }
+
+    # ========================================================
+    # VERIFY RESTAURANT BELONGS TO STORY
+    # ========================================================
+    #
+    # Do not allow this route to become an open redirect to
+    # arbitrary Kalxa restaurant IDs.
+    # ========================================================
+
+    linked_restaurant_ids = set()
+
+
+    for relation in article.restaurants:
+
+        linked_id = (
+            relation.kalxa_restaurant_id
+        )
+
+
+        if linked_id is None:
+
+            continue
+
+
+        try:
+
+            linked_id = int(
+                linked_id
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            continue
+
+
+        linked_restaurant_ids.add(
+            linked_id
+        )
+
 
     if (
         restaurant_id
@@ -1656,38 +1716,101 @@ def restaurant_click(
             404
         )
 
-    restaurant = (
-        get_restaurant(
-            restaurant_id
+
+    # ========================================================
+    # TICKETING BASE URL
+    # ========================================================
+    #
+    # Example:
+    #
+    # KALXA_TICKETING_URL=https://tickets.kalxa.co.za
+    #
+    # We intentionally avoid get_restaurant() here because
+    # clicking the CTA should not depend on another API call.
+    # ========================================================
+
+    ticketing_base_url = (
+        current_app.config.get(
+            "KALXA_TICKETING_URL"
+        )
+        or ""
+    ).strip()
+
+
+    if not ticketing_base_url:
+
+        current_app.logger.error(
+            (
+                "[Kalxa Stories] "
+                "KALXA_TICKETING_URL is not configured."
+            )
+        )
+
+        abort(
+            500
+        )
+
+
+    ticketing_base_url = (
+        ticketing_base_url.rstrip(
+            "/"
         )
     )
 
-    if not restaurant:
 
-        abort(
-            404
-        )
+    # ========================================================
+    # RESTAURANT PROFILE URL
+    # ========================================================
+    #
+    # IMPORTANT:
+    #
+    # Use the actual public restaurant profile route used by
+    # Kalxa Ticketing.
+    #
+    # If your Ticketing restaurant pages are:
+    #
+    #   /restaurants/5
+    #
+    # keep this as-is.
+    #
+    # If Ticketing uses another path such as:
+    #
+    #   /restaurant/5
+    #   /r/5
+    #
+    # change ONLY this line.
+    # ========================================================
 
     profile_url = (
-        restaurant.get(
-            "profile_url"
-        )
+        f"{ticketing_base_url}"
+        f"/restaurants/{restaurant_id}"
     )
 
-    if not profile_url:
 
-        abort(
-            404
-        )
+    # ========================================================
+    # ANALYTICS SESSION
+    # ========================================================
 
     analytics_session_id = (
         get_analytics_session_id()
     )
 
+
+    # ========================================================
+    # RECORD RESTAURANT CLICK
+    # ========================================================
+
     record_analytics_event(
         article=article,
-        event_type="restaurant_click",
-        restaurant_id=restaurant_id,
+
+        event_type=(
+            "restaurant_click"
+        ),
+
+        restaurant_id=(
+            restaurant_id
+        ),
+
         metadata={
             "source":
                 "article_restaurant_card",
@@ -1695,30 +1818,69 @@ def restaurant_click(
             "destination":
                 "kalxa_ticketing",
         },
+
         deduplicate=False,
     )
 
+
+    # ========================================================
+    # ATTRIBUTION
+    # ========================================================
+
     attributed_url = (
         build_attributed_ticketing_url(
-            profile_url=profile_url,
-            article=article,
-            restaurant_id=restaurant_id,
+
+            profile_url=(
+                profile_url
+            ),
+
+            article=(
+                article
+            ),
+
+            restaurant_id=(
+                restaurant_id
+            ),
+
             analytics_session_id=(
                 analytics_session_id
             ),
         )
     )
 
+
     if not attributed_url:
 
-        abort(
-            404
+        current_app.logger.error(
+            (
+                "[Kalxa Stories] "
+                "Unable to build attributed Ticketing URL "
+                "for article_id=%s restaurant_id=%s."
+            ),
+            article.id,
+            restaurant_id,
         )
+
+        # ----------------------------------------------------
+        # FALLBACK
+        # ----------------------------------------------------
+        #
+        # Even if attribution construction fails, don't prevent
+        # the reader from reaching the restaurant.
+        # ----------------------------------------------------
+
+        attributed_url = (
+            profile_url
+        )
+
+
+    # ========================================================
+    # REDIRECT
+    # ========================================================
 
     return redirect(
         attributed_url
     )
-
 
 # ============================================================
 # SITEMAP
