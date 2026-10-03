@@ -148,6 +148,10 @@
 <article class="article-page">
 
 
+<!-- =========================================================
+     HERO
+========================================================= -->
+
 <section class="article-hero">
 
     <div class="article-container">
@@ -250,6 +254,10 @@
 
 
 
+<!-- =========================================================
+     COVER IMAGE
+========================================================= -->
+
 {% set hero_image =
     article.display_cover_image_url
 %}
@@ -292,6 +300,10 @@
 
 
 
+<!-- =========================================================
+     ARTICLE BODY
+========================================================= -->
+
 <section class="article-body-section">
 
     <div class="article-container">
@@ -304,6 +316,10 @@
         </div>
 
 
+
+        <!-- =================================================
+             SUPPORTING IMAGES
+        ================================================== -->
 
         {% if article.images | length > 1 %}
 
@@ -384,6 +400,8 @@
             >
 
 
+                <!-- WHATSAPP -->
+
                 <button
                     class="share-button share-whatsapp"
                     type="button"
@@ -424,6 +442,8 @@
 
 
 
+                <!-- FACEBOOK -->
+
                 <button
                     class="share-button share-facebook"
                     type="button"
@@ -455,6 +475,8 @@
                 </button>
 
 
+
+                <!-- COPY -->
 
                 <button
                     class="share-button share-copy"
@@ -509,6 +531,10 @@
 
 
 
+        <!-- =================================================
+             EDITORIAL DIVIDER
+        ================================================== -->
+
         <div class="story-divider">
 
             <span>
@@ -520,27 +546,30 @@
 
 
         <!-- =================================================
-             RESTAURANTS
+             RESTAURANTS / CONTINUE ON KALXA
         ================================================== -->
 
         {% if featured_restaurants %}
 
-        <section class="restaurant-discovery">
+        <section
+            class="restaurant-discovery"
+            aria-labelledby="restaurant-discovery-heading"
+        >
 
 
             <div class="discovery-heading">
 
                 <span class="editorial-eyebrow">
-                    Discover on Kalxa
+                    Continue on Kalxa
                 </span>
 
-                <h2>
+                <h2 id="restaurant-discovery-heading">
                     Places from this story
                 </h2>
 
                 <p>
-                    Continue from the story into the restaurants,
-                    experiences and useful actions available on Kalxa.
+                    Discover the restaurants featured in this story,
+                    explore their experiences and continue on Kalxa.
                 </p>
 
             </div>
@@ -555,15 +584,24 @@
                 <article class="restaurant-reference">
 
 
-                    <div class="restaurant-reference-number">
+                    <!-- NUMBER -->
+
+                    <div
+                        class="restaurant-reference-number"
+                        aria-hidden="true"
+                    >
                         {{ "%02d"|format(loop.index) }}
                     </div>
 
 
+
+                    <!-- RESTAURANT INFORMATION -->
+
                     <div class="restaurant-reference-content">
 
+
                         <span class="restaurant-reference-label">
-                            Featured restaurant
+                            Featured on Kalxa
                         </span>
 
 
@@ -595,19 +633,79 @@
                         {% endif %}
 
 
+
+                        {% if
+                            restaurant.area
+                            or
+                            restaurant.address
+                            or
+                            restaurant.price_text
+                        %}
+
                         <div class="restaurant-details">
 
 
                             {% if restaurant.area %}
 
-                            <span>
+                            <span class="restaurant-location">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+
+                                    <circle
+                                        cx="12"
+                                        cy="10"
+                                        r="2.5"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                    />
+                                </svg>
+
                                 {{ restaurant.area }}
+
                             </span>
+
 
                             {% elif restaurant.address %}
 
-                            <span>
+                            <span class="restaurant-location">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+
+                                    <circle
+                                        cx="12"
+                                        cy="10"
+                                        r="2.5"
+                                        stroke="currentColor"
+                                        stroke-width="1.7"
+                                    />
+                                </svg>
+
                                 {{ restaurant.address }}
+
                             </span>
 
                             {% endif %}
@@ -615,7 +713,7 @@
 
                             {% if restaurant.price_text %}
 
-                            <span>
+                            <span class="restaurant-price">
                                 {{ restaurant.price_text }}
                             </span>
 
@@ -623,25 +721,45 @@
 
                         </div>
 
+                        {% endif %}
+
                     </div>
 
+
+
+                    <!-- VIEW RESTAURANT CTA -->
 
                     {% if restaurant.id %}
 
                     <a
                         class="restaurant-view-button"
+
                         href="{{ url_for(
                             'public.restaurant_click',
                             slug=article.slug,
                             restaurant_id=restaurant.id
                         ) }}"
+
+                        aria-label="View {% if restaurant.business_name %}{{ restaurant.business_name }}{% elif restaurant.name %}{{ restaurant.name }}{% else %}restaurant{% endif %} on Kalxa"
                     >
 
-                        <span>
-                            View restaurant
+                        <span class="restaurant-view-copy">
+
+                            <small>
+                                Explore on Kalxa
+                            </small>
+
+                            <strong>
+                                View restaurant
+                            </strong>
+
                         </span>
 
-                        <span class="restaurant-arrow">
+
+                        <span
+                            class="restaurant-arrow"
+                            aria-hidden="true"
+                        >
                             →
                         </span>
 
@@ -649,9 +767,11 @@
 
                     {% endif %}
 
+
                 </article>
 
                 {% endfor %}
+
 
             </div>
 
@@ -963,6 +1083,10 @@
 
 
 
+<!-- =========================================================
+     RELATED STORIES
+========================================================= -->
+
 {% if related_articles %}
 
 <section class="related-section">
@@ -1107,6 +1231,10 @@
 
 
 
+<!-- =========================================================
+     IMAGE LIGHTBOX
+========================================================= -->
+
 <div
     class="story-lightbox"
     id="story-lightbox"
@@ -1134,6 +1262,10 @@
 
 <style>
 
+/* =========================================================
+   ARTICLE
+========================================================= */
+
 .article-page {
 
     background:
@@ -1155,6 +1287,10 @@
 
 }
 
+
+/* =========================================================
+   HERO
+========================================================= */
 
 .article-hero {
 
@@ -1574,7 +1710,9 @@
 
 
 .article-supporting-image {
+
     margin: 0;
+
 }
 
 
@@ -1900,13 +2038,21 @@
 
 
 /* =========================================================
-   RESTAURANTS
+   RESTAURANTS / CONTINUE ON KALXA
 ========================================================= */
 
 .restaurant-discovery {
 
     margin-top:
         25px;
+
+}
+
+
+.discovery-heading {
+
+    margin-bottom:
+        34px;
 
 }
 
@@ -1927,7 +2073,8 @@
     font-size:
         37px;
 
-    font-weight: 500;
+    font-weight:
+        500;
 
     letter-spacing:
         -1px;
@@ -1942,55 +2089,151 @@
         570px;
 
     margin:
-        0 0 32px;
+        0;
 
     color:
         var(--kalxa-text-soft);
 
-    font-size: 12px;
+    font-size:
+        12px;
 
-    line-height: 1.75;
+    line-height:
+        1.75;
 
 }
 
+
+/* =========================================================
+   RESTAURANT LIST
+========================================================= */
 
 .featured-restaurant-list {
 
-    display: grid;
+    display:
+        grid;
 
-    gap: 0;
-
-    border-top:
-        1px solid
-        var(--kalxa-border);
+    gap:
+        14px;
 
 }
 
+
+/* =========================================================
+   RESTAURANT CARD
+========================================================= */
 
 .restaurant-reference {
 
-    display: grid;
+    position:
+        relative;
+
+    display:
+        grid;
 
     grid-template-columns:
-        45px
+        48px
         minmax(0, 1fr)
         auto;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 20px;
+    gap:
+        22px;
 
     padding:
-        27px 0;
+        25px;
 
-    border-bottom:
+    overflow:
+        hidden;
+
+    border:
         1px solid
         var(--kalxa-border);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--kalxa-paper) 0%,
+            var(--kalxa-cream) 100%
+        );
+
+    transition:
+        transform .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
 
 }
 
 
+.restaurant-reference::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    bottom:
+        0;
+
+    left:
+        0;
+
+    width:
+        3px;
+
+    background:
+        var(--kalxa-gold);
+
+    opacity:
+        0;
+
+    transition:
+        opacity .2s ease;
+
+}
+
+
+.restaurant-reference:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        #cfc1aa;
+
+    box-shadow:
+        0
+        18px
+        45px
+        rgba(32, 27, 19, .07);
+
+}
+
+
+.restaurant-reference:hover::before {
+
+    opacity:
+        1;
+
+}
+
+
+/* =========================================================
+   RESTAURANT NUMBER
+========================================================= */
+
 .restaurant-reference-number {
+
+    align-self:
+        flex-start;
+
+    padding-top:
+        4px;
 
     color:
         var(--kalxa-gold);
@@ -1998,22 +2241,46 @@
     font-family:
         var(--kalxa-serif);
 
-    font-size: 16px;
+    font-size:
+        17px;
+
+    font-style:
+        italic;
+
+}
+
+
+/* =========================================================
+   RESTAURANT CONTENT
+========================================================= */
+
+.restaurant-reference-content {
+
+    min-width:
+        0;
 
 }
 
 
 .restaurant-reference-label {
 
+    display:
+        block;
+
+    margin-bottom:
+        7px;
+
     color:
-        var(--kalxa-muted);
+        var(--kalxa-gold-dark);
 
-    font-size: 8px;
+    font-size:
+        7px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 
     letter-spacing:
-        1.3px;
+        1.6px;
 
     text-transform:
         uppercase;
@@ -2024,7 +2291,7 @@
 .restaurant-reference h3 {
 
     margin:
-        6px 0 7px;
+        0 0 7px;
 
     color:
         var(--kalxa-ink);
@@ -2032,56 +2299,168 @@
     font-family:
         var(--kalxa-serif);
 
-    font-size: 24px;
+    font-size:
+        27px;
 
-    font-weight: 600;
+    font-weight:
+        600;
+
+    line-height:
+        1.1;
+
+    letter-spacing:
+        -.5px;
 
 }
 
 
 .restaurant-reference-headline {
 
+    max-width:
+        470px;
+
     margin:
-        0 0 8px;
+        0 0 10px;
 
     color:
         var(--kalxa-text-soft);
 
-    font-size: 12px;
+    font-size:
+        12px;
+
+    line-height:
+        1.6;
 
 }
 
 
+/* =========================================================
+   RESTAURANT DETAILS
+========================================================= */
+
 .restaurant-details {
 
-    display: flex;
+    display:
+        flex;
 
-    flex-wrap: wrap;
+    flex-wrap:
+        wrap;
+
+    align-items:
+        center;
 
     gap:
-        7px 16px;
+        8px 16px;
 
     color:
         var(--kalxa-muted);
 
-    font-size: 9px;
+    font-size:
+        9px;
 
 }
 
 
+.restaurant-location {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+
+}
+
+
+.restaurant-location svg {
+
+    width:
+        13px;
+
+    height:
+        13px;
+
+    flex:
+        0 0 13px;
+
+    color:
+        var(--kalxa-gold-dark);
+
+}
+
+
+.restaurant-price {
+
+    position:
+        relative;
+
+    padding-left:
+        14px;
+
+}
+
+
+.restaurant-price::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    left:
+        0;
+
+    width:
+        3px;
+
+    height:
+        3px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--kalxa-gold);
+
+    transform:
+        translateY(-50%);
+
+}
+
+
+/* =========================================================
+   VIEW RESTAURANT CTA
+========================================================= */
+
 .restaurant-view-button {
 
+    min-width:
+        178px;
+
     min-height:
-        45px;
+        58px;
 
-    display: inline-flex;
+    display:
+        inline-flex;
 
-    align-items: center;
+    align-items:
+        center;
 
-    gap: 14px;
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
 
     padding:
-        0 17px;
+        10px 17px;
 
     border:
         1px solid
@@ -2091,18 +2470,115 @@
         var(--kalxa-black);
 
     color:
-        white;
+        #ffffff;
 
-    font-size: 10px;
+    text-decoration:
+        none;
 
-    font-weight: 700;
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        transform .18s ease;
+
+}
+
+
+.restaurant-view-button:hover {
+
+    background:
+        #29271f;
+
+    border-color:
+        #29271f;
+
+    transform:
+        translateX(2px);
+
+}
+
+
+.restaurant-view-button:focus-visible {
+
+    outline:
+        2px solid
+        var(--kalxa-gold);
+
+    outline-offset:
+        3px;
+
+}
+
+
+.restaurant-view-copy {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        flex-start;
+
+    gap:
+        3px;
+
+}
+
+
+.restaurant-view-copy small {
+
+    color:
+        rgba(255, 255, 255, .58);
+
+    font-size:
+        7px;
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        1px;
+
+    line-height:
+        1;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.restaurant-view-copy strong {
+
+    color:
+        #ffffff;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+
+    line-height:
+        1.2;
 
 }
 
 
 .restaurant-arrow {
 
-    font-size: 17px;
+    flex:
+        0 0 auto;
+
+    color:
+        #e5c99e;
+
+    font-size:
+        21px;
+
+    line-height:
+        1;
 
     transition:
         transform .18s ease;
@@ -2134,6 +2610,14 @@
     border-top:
         1px solid
         var(--kalxa-border);
+
+}
+
+
+.comments-heading p {
+
+    margin-bottom:
+        32px;
 
 }
 
@@ -2292,7 +2776,9 @@
 
 
 .comment-note {
+
     margin: 0;
+
 }
 
 
@@ -2767,7 +3253,9 @@
 
 
 .story-lightbox.open {
+
     display: flex;
+
 }
 
 
@@ -2822,7 +3310,7 @@
 
 
 /* =========================================================
-   MOBILE
+   TABLET
 ========================================================= */
 
 @media (
@@ -2892,11 +3380,35 @@
     }
 
 
+    /* RESTAURANT */
+
     .restaurant-reference {
 
         grid-template-columns:
-            38px
+            36px
             minmax(0, 1fr);
+
+        gap:
+            16px;
+
+        padding:
+            22px 20px;
+
+    }
+
+
+    .restaurant-reference-number {
+
+        font-size:
+            15px;
+
+    }
+
+
+    .restaurant-reference h3 {
+
+        font-size:
+            25px;
 
     }
 
@@ -2906,8 +3418,14 @@
         grid-column:
             1 / -1;
 
-        justify-content:
-            space-between;
+        width:
+            100%;
+
+        min-height:
+            58px;
+
+        margin-top:
+            3px;
 
     }
 
@@ -2924,6 +3442,10 @@
 
 }
 
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (
     max-width: 480px
@@ -2972,6 +3494,8 @@
     }
 
 
+    /* SHARE */
+
     .story-share {
 
         margin-top:
@@ -3000,7 +3524,10 @@
 
 
     .share-whatsapp {
-        grid-column: auto;
+
+        grid-column:
+            auto;
+
     }
 
 
@@ -3014,6 +3541,73 @@
 
     }
 
+
+    /* RESTAURANTS */
+
+    .discovery-heading {
+
+        margin-bottom:
+            25px;
+
+    }
+
+
+    .discovery-heading h2 {
+
+        font-size:
+            31px;
+
+    }
+
+
+    .restaurant-reference {
+
+        grid-template-columns:
+            30px
+            minmax(0, 1fr);
+
+        gap:
+            12px;
+
+        padding:
+            20px 17px;
+
+    }
+
+
+    .restaurant-reference h3 {
+
+        font-size:
+            23px;
+
+    }
+
+
+    .restaurant-reference-headline {
+
+        font-size:
+            11px;
+
+    }
+
+
+    .restaurant-details {
+
+        gap:
+            7px 12px;
+
+    }
+
+
+    .restaurant-view-button {
+
+        padding:
+            10px 16px;
+
+    }
+
+
+    /* COMMENTS */
 
     .comment-form {
 
@@ -3035,7 +3629,9 @@
 
 
     .comment-submit {
+
         width: 100%;
+
     }
 
 
@@ -3062,6 +3658,7 @@
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
 
         // ====================================================
         // READING PROGRESS
@@ -3198,11 +3795,15 @@ document.addEventListener(
 
 
                             if (feedback) {
-                                feedback.textContent = "";
+
+                                feedback.textContent =
+                                    "";
+
                             }
 
 
-                            button.disabled = true;
+                            button.disabled =
+                                true;
 
 
                             try {
@@ -3211,7 +3812,8 @@ document.addEventListener(
                                     await fetch(
                                         upvoteUrl,
                                         {
-                                            method: "POST",
+                                            method:
+                                                "POST",
 
                                             credentials:
                                                 "same-origin",
@@ -3224,7 +3826,8 @@ document.addEventListener(
                                     );
 
 
-                                let data = null;
+                                let data =
+                                    null;
 
 
                                 try {
@@ -3235,7 +3838,8 @@ document.addEventListener(
                                 }
                                 catch (error) {
 
-                                    data = null;
+                                    data =
+                                        null;
 
                                 }
 
@@ -3388,10 +3992,12 @@ document.addEventListener(
                 "story-share-actions"
             );
 
+
         const shareFeedback =
             document.getElementById(
                 "share-feedback"
             );
+
 
         const copyLabel =
             document.getElementById(
@@ -3527,7 +4133,9 @@ document.addEventListener(
                         );
 
 
-                    textarea.value = url;
+                    textarea.value =
+                        url;
+
 
                     textarea.setAttribute(
                         "readonly",
@@ -3626,6 +4234,10 @@ document.addEventListener(
                                     "Kalxa Story";
 
 
+                                // =========================================
+                                // WHATSAPP
+                                // =========================================
+
                                 if (
                                     channel
                                     ===
@@ -3666,6 +4278,10 @@ document.addEventListener(
                                 }
 
 
+                                // =========================================
+                                // FACEBOOK
+                                // =========================================
+
                                 else if (
                                     channel
                                     ===
@@ -3697,6 +4313,10 @@ document.addEventListener(
 
                                 }
 
+
+                                // =========================================
+                                // COPY LINK
+                                // =========================================
 
                                 else if (
                                     channel
@@ -3735,10 +4355,12 @@ document.addEventListener(
                 "story-lightbox"
             );
 
+
         const lightboxImage =
             document.getElementById(
                 "story-lightbox-image"
             );
+
 
         const closeButton =
             document.getElementById(
@@ -3757,10 +4379,12 @@ document.addEventListener(
                 "open"
             );
 
+
             lightbox.setAttribute(
                 "aria-hidden",
                 "true"
             );
+
 
             document.body.style.overflow =
                 "";
