@@ -1,0 +1,10 @@
+{% extends 'admin/base.html' %}
+{% block title %}Story Notifications | Kalxa{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Story Notifications</h1><p>Email published stories to opted-in local subscribers.</p></div><a class="button" href="{{ url_for('story_notifications.new') }}">New Notification</a></div>
+<div class="panel" style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;text-align:left"><thead><tr><th>Story</th><th>Locations</th><th>Recipients</th><th>Status</th><th>Action</th></tr></thead><tbody>
+{% for campaign in campaigns %}<tr style="border-top:1px solid #ddd"><td style="padding:14px 8px">{{ campaign.article_title }}</td><td>{{ campaign.target_locations }}</td><td>{{ campaign.total_recipients }}</td><td>{{ campaign.status }}</td><td><a href="{{ url_for('story_notifications.detail', campaign_id=campaign.id) }}">View →</a></td></tr>
+{% else %}<tr><td colspan="5" style="padding:22px">No notifications created yet.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

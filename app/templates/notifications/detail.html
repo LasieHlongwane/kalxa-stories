@@ -1,0 +1,21 @@
+{% extends 'admin/base.html' %}
+{% block title %}Notification {{ campaign.id }} | Kalxa{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Notification #{{ campaign.id }}</h1><p>{{ campaign.article_title }}</p></div><a class="button secondary" href="{{ url_for('story_notifications.listing') }}">All Notifications</a></div>
+<div class="panel" style="max-width:780px">
+<p><strong>Audience:</strong> {{ campaign.target_locations }} · <strong>Recipients selected:</strong> {{ campaign.total_recipients }} · <strong>Status:</strong> {{ campaign.status }}</p>
+<p><strong>SMTP-accepted:</strong> {{ stats.get('sent', 0) }} · <strong>Queued:</strong> {{ stats.get('queued', 0) }} · <strong>Sending / requires review:</strong> {{ stats.get('sending', 0) }} · <strong>Failed:</strong> {{ stats.get('failed', 0) }} · <strong>Skipped:</strong> {{ stats.get('skipped', 0) }}</p>
+<hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
+<h2 style="font-size:18px">Email preview</h2><p><strong>Subject:</strong> {{ campaign.subject }}</p>
+<div style="background:#f3f4f5;border-radius:10px;padding:20px;white-space:pre-wrap;overflow-wrap:anywhere">{{ campaign.message }}</div>
+<p style="font-size:12px;color:#666">The full story link and each subscriber's unsubscribe link are automatically appended when sending.</p>
+{% if campaign.status not in ('completed','cancelled') %}
+{% if stats.get('queued', 0) > 0 %}
+<form method="POST" action="{{ url_for('story_notifications.send_batch', campaign_id=campaign.id) }}" style="display:inline-block;margin:12px 10px 12px 0" onsubmit="return confirm('Send up to {{ batch_size }} queued emails now?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="button" type="submit">Send Next {{ batch_size }} Emails</button></form>
+{% endif %}
+<form method="POST" action="{{ url_for('story_notifications.cancel', campaign_id=campaign.id) }}" style="display:inline-block" onsubmit="return confirm('Cancel remaining queued emails?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="button secondary" type="submit">Cancel Remaining</button></form>
+{% endif %}
+<p style="font-size:12px;color:#666">Emails are sent only when you click Send. A failed or interrupted send is not automatically retried, to reduce duplicate-email risk. SMTP acceptance does not guarantee inbox delivery.</p>
+</div>{% endblock %}
