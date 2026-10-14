@@ -1,0 +1,27 @@
+{% extends 'admin/base.html' %}
+{% block title %}New Story Notification | Kalxa{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Notify Subscribers</h1><p>Select a published story and target locations.</p></div></div>
+<div class="panel" style="max-width:760px">
+<form method="POST" id="notification-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<label for="article" style="display:block;margin-bottom:8px;font-weight:700">Published Story</label>
+<select id="article" name="article_id" required style="width:100%;padding:12px;margin-bottom:24px">
+<option value="">Choose a story</option>{% for article in articles %}<option value="{{ article.id }}" data-title="{{ article.title }}" data-excerpt="{{ article.excerpt or '' }}" {% if selected_id == article.id %}selected{% endif %}>{{ article.title }}</option>{% endfor %}</select>
+<fieldset style="border:1px solid #d7dade;border-radius:10px;padding:18px;margin-bottom:24px"><legend><strong>Locations</strong></legend>
+<label style="display:block;margin:8px 0"><input type="checkbox" name="areas" value="all" id="all-areas"> All Locations</label>
+{% for area in areas %}<label style="display:block;margin:8px 0"><input type="checkbox" name="areas" value="{{ area }}" class="area-box"> {{ area }}</label>{% endfor %}
+<small>Only subscribers with confirmed, active subscriptions receive emails. You may select multiple locations.</small>
+</fieldset>
+<label for="subject" style="display:block;margin-bottom:8px;font-weight:700">Email Subject</label>
+<input id="subject" type="text" name="subject" maxlength="200" required style="width:100%;padding:12px;margin-bottom:24px" placeholder="New on KALXA Stories: ...">
+<label for="message" style="display:block;margin-bottom:8px;font-weight:700">Email Message</label>
+<textarea id="message" name="message" maxlength="2000" rows="7" required style="width:100%;padding:12px;margin-bottom:8px" placeholder="A short introduction to the article..."></textarea>
+<p style="font-size:12px;color:#666">The article link and an individual unsubscribe link are added automatically. Your text is sent as plain text.</p>
+<button class="button" type="submit">Create Campaign &amp; Preview</button>
+</form></div>
+<script>
+const a=document.getElementById('article');a.addEventListener('change',()=>{const o=a.selectedOptions[0];if(o&&o.value){if(!document.getElementById('subject').value)document.getElementById('subject').value='New on KALXA Stories: '+o.dataset.title;if(!document.getElementById('message').value)document.getElementById('message').value=o.dataset.excerpt||'Discover this new story on KALXA.';}});
+const all=document.getElementById('all-areas');const boxes=[...document.querySelectorAll('.area-box')];all.addEventListener('change',()=>boxes.forEach(b=>{b.checked=all.checked;b.disabled=all.checked;}));boxes.forEach(b=>b.addEventListener('change',()=>{all.checked=false;boxes.forEach(x=>x.disabled=false);}));
+</script>
+{% endblock %}
