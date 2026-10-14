@@ -172,6 +172,33 @@ class Article(db.Model):
         ),
     )
 
+    # ============================================================
+# STORY CATEGORY
+# ============================================================
+#
+# Separate from article_type.
+#
+# Existing Premium Restaurant articles can continue using
+# article_type="restaurant_story".
+#
+# Nullable to preserve existing articles.
+# ============================================================
+
+    category_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+         "story_categories.id",
+         ondelete="SET NULL",
+        ),
+        nullable=True,
+        index=True,
+    )
+
+    category = db.relationship(
+        "StoryCategory",
+        back_populates="articles",
+    )
+
     # ==========================================
     # RESTAURANTS
     # ==========================================
