@@ -52,6 +52,7 @@ from app.models.article_comment import (
     ArticleComment,
     CommentUpvote,
 )
+from app.models.story_category import StoryCategory
 
 from app.kalxa.client import (
     get_restaurant,
@@ -1054,6 +1055,46 @@ def toggle_comment_upvote(
         }
     ), 200
 
+# ============================================================
+# KALXA STORIES - CATEGORY ARTICLES
+# ============================================================
+
+@public_bp.route(
+    "/stories/category/<string:category_slug>"
+)
+def story_category(category_slug):
+
+    category = (
+        StoryCategory.query
+
+        .filter_by(
+            slug=category_slug,
+            is_active=True,
+        )
+
+        .first_or_404()
+    )
+
+    articles = (
+        active_published_article_query()
+
+        .filter(
+            Article.category_id == category.id
+        )
+
+        .order_by(
+            Article.published_at.desc(),
+            Article.created_at.desc(),
+        )
+
+        .all()
+    )
+
+    return render_template(
+        "category.html",
+        category=category,
+        articles=articles,
+    )
 
 # ============================================================
 # ARTICLE
