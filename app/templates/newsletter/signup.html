@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Subscribe by Area | KALXA Stories{% endblock %}
+{% block meta_description %}Subscribe to KALXA Stories updates for KwaMhlanga, Kwaggafontein or Siyabuswa.{% endblock %}
+{% block extra_head %}
+<style>
+.newsletter-wrap{max-width:720px;margin:65px auto 90px;padding:0 20px}
+.newsletter-wrap h1{font:500 clamp(36px,6vw,64px)/1.12 var(--kalxa-serif);letter-spacing:-1.4px}
+.newsletter-card{background:var(--kalxa-paper);border:1px solid var(--kalxa-border);padding:clamp(22px,5vw,44px)}
+.newsletter-card label{display:block;font-weight:700;font-size:13px;margin:20px 0 8px}
+.newsletter-card input[type=email],.newsletter-card select{width:100%;min-height:50px;padding:12px;border:1px solid var(--kalxa-border);border-radius:4px;background:#fff;font:inherit}
+.newsletter-consent{display:flex;align-items:flex-start;gap:10px;margin:22px 0;font-size:12px;line-height:1.6;color:var(--kalxa-text-soft)}
+.newsletter-consent input{margin-top:4px;flex:none}
+.newsletter-submit{background:var(--kalxa-black);color:#fff;border:0;padding:16px 28px;cursor:pointer;font-weight:700}
+.newsletter-note{font-size:12px;line-height:1.7;color:var(--kalxa-text-soft)}
+.newsletter-flash{padding:12px;margin:15px 0;background:#f2eadc;border:1px solid var(--kalxa-border)}
+.newsletter-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+</style>
+{% endblock %}
+{% block content %}
+<section class="newsletter-wrap">
+  <span class="hero-label">YOUR AREA · YOUR STORIES</span>
+  <h1>Stay connected to what matters <em>near you.</em></h1>
+  <p class="newsletter-note">Get KALXA Stories updates by email, based on the area you select. Subscribe for free and unsubscribe whenever you want.</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}<div class="newsletter-flash" role="status">{{ message }}</div>{% endfor %}
+  {% endwith %}
+  <form class="newsletter-card" method="POST" action="{{ url_for('story_newsletter.subscribe') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="newsletter-hp" aria-hidden="true"><label for="nl-website">Website</label><input id="nl-website" type="text" name="website" tabindex="-1" autocomplete="off"></div>
+    <label for="nl-email">Email address</label>
+    <input id="nl-email" name="email" type="email" maxlength="254" placeholder="you@example.com" autocomplete="email" required>
+    <label for="nl-area">Your closest area</label>
+    <select id="nl-area" name="area" required>
+      <option value="" selected disabled>Select your area</option>
+      {% for area in areas %}<option value="{{ area }}">{{ area }}</option>{% endfor %}
+    </select>
+    <label class="newsletter-consent" for="nl-consent">
+      <input id="nl-consent" type="checkbox" name="consent" value="yes" required>
+      <span>I agree to receive KALXA Stories email updates related to my selected area. I understand I can unsubscribe at any time.</span>
+    </label>
+    <button class="newsletter-submit" type="submit">Subscribe to local stories →</button>
+    <p class="newsletter-note">We collect your email and selected area only for these updates. You will receive a confirmation email before your subscription becomes active.</p>
+  </form>
+</section>
+{% endblock %}
