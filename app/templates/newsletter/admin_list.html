@@ -1,0 +1,19 @@
+{% extends 'admin/base.html' %}
+{% block title %}Local Subscribers | KALXA Stories{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>Email Subscribers</h1><p>Opt-in readers by nearest area. Only confirmed subscribers should receive newsletters.</p></div></div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:25px">
+{% for area in areas %}<a class="button secondary small" href="{{ url_for('story_newsletter.admin_subscribers',area=area) }}">{{ area }} · {{ counts[area] }} active</a>{% endfor %}
+<a class="button secondary small" href="{{ url_for('story_newsletter.admin_subscribers') }}">All areas</a>
+</div>
+<div class="panel" style="overflow:auto">
+  <h2>Subscriber records{% if selected_area %} — {{ selected_area }}{% endif %}</h2>
+  <p style="color:#747982;font-size:12px">Showing up to 500 recent records. Do not send newsletters to pending or unsubscribed addresses.</p>
+  <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px">
+    <thead><tr><th style="padding:12px;border-bottom:1px solid #ddd">Email</th><th style="padding:12px;border-bottom:1px solid #ddd">Area</th><th style="padding:12px;border-bottom:1px solid #ddd">Status</th><th style="padding:12px;border-bottom:1px solid #ddd">Joined</th></tr></thead>
+    <tbody>{% for item in subscribers %}
+      <tr><td style="padding:12px;border-bottom:1px solid #eee">{{ item.email }}</td><td style="padding:12px;border-bottom:1px solid #eee">{{ item.area }}</td><td style="padding:12px;border-bottom:1px solid #eee">{{ item.status }}</td><td style="padding:12px;border-bottom:1px solid #eee">{{ item.created_at.strftime('%Y-%m-%d') if item.created_at else '' }}</td></tr>
+    {% else %}<tr><td colspan="4" style="padding:20px">No subscribers found.</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+{% endblock %}
