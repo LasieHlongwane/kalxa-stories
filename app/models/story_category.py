@@ -2,7 +2,7 @@ from app.extensions import db
 
 
 # ============================================================
-# KALXA STORIES - ARTICLE CATEGORY
+# KALXA STORIES - ARTICLE CATEGORIES
 # ============================================================
 
 class StoryCategory(db.Model):
@@ -21,8 +21,8 @@ class StoryCategory(db.Model):
 
     slug = db.Column(
         db.String(100),
-        unique=True,
         nullable=False,
+        unique=True,
         index=True,
     )
 
@@ -41,6 +41,12 @@ class StoryCategory(db.Model):
         db.Integer,
         nullable=False,
         default=0,
+    )
+
+    articles = db.relationship(
+        "Article",
+        back_populates="category",
+        lazy=True,
     )
 
     def __repr__(self):
