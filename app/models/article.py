@@ -132,6 +132,27 @@ class Article(db.Model):
         index=True,
     )
 
+    # ============================================================
+# STORY CATEGORY
+# ============================================================
+
+    category_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+         "story_categories.id"
+        ),
+        nullable=True,
+        index=True,
+    )
+
+    category = db.relationship(
+        "StoryCategory",
+        backref=db.backref(
+         "articles",
+         lazy=True,
+        ),
+    )
+
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
