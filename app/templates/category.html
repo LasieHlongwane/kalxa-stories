@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ category.name }} | Kalxa Stories
+{% endblock %}
+
+{% block meta_description %}
+{{ category.description or "Discover stories on Kalxa." }}
+{% endblock %}
+
+{% block extra_head %}
+
+<style>
+
+    .category-hero {
+        padding: 90px 0 75px;
+
+        background:
+            var(--kalxa-cream);
+
+        border-bottom:
+            1px solid
+            var(--kalxa-border);
+    }
+
+    .category-label {
+        margin-bottom: 20px;
+
+        color:
+            var(--kalxa-gold-dark);
+
+        font-size: 11px;
+        font-weight: 700;
+
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .category-title {
+        max-width: 900px;
+
+        margin: 0 0 25px;
+
+        font-family:
+            var(--kalxa-serif);
+
+        font-size:
+            clamp(45px, 7vw, 85px);
+
+        font-weight: 500;
+
+        line-height: 1.05;
+        letter-spacing: -2px;
+    }
+
+    .category-description {
+        max-width: 620px;
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    .category-articles {
+        padding: 75px 0 100px;
+    }
+
+    .category-back {
+        display: inline-flex;
+
+        margin-top: 35px;
+
+        color:
+            var(--kalxa-gold-dark);
+
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 650px) {
+
+        .category-hero {
+            padding: 65px 0 50px;
+        }
+
+        .category-articles {
+            padding: 45px 0 65px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="category-hero">
+
+    <div class="page-container">
+
+        <div class="category-label">
+            KALXA STORIES / EXPLORE
+        </div>
+
+        <h1 class="category-title">
+            {{ category.name }}
+        </h1>
+
+        {% if category.description %}
+
+        <p class="category-description">
+            {{ category.description }}
+        </p>
+
+        {% endif %}
+
+        <a
+            class="category-back"
+            href="{{ url_for('public.home') }}"
+        >
+            ← Back to Stories
+        </a>
+
+    </div>
+
+</section>
+
+
+<section class="category-articles">
+
+    <div class="page-container">
+
+        <div class="section-heading">
+
+            <span>
+                Stories in this category
+            </span>
+
+            <span>
+                {{ articles | length }} Articles
+            </span>
+
+        </div>
+
+
+        {% if articles %}
+
+        <div class="story-grid">
+
+            {% for article in articles %}
+
+            <article class="story-card">
+
+                <a
+                    class="story-image-link"
+                    href="{{ url_for(
+                        'public.article_detail',
+                        slug=article.slug
+                    ) }}"
+                >
+
+                    <div class="story-image">
+
+                        {% if article.display_cover_image_url %}
+
+                        <img
+                            src="{{ article.display_cover_image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
+
+                        {% else %}
+
+                        <div class="image-placeholder small">
+                            <span>K</span>
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </a>
+
+
+                <div class="story-card-content">
+
+                    <div class="story-meta">
+
+                        {% if article.is_sponsored %}
+
+                        <span class="sponsored-label">
+                            Sponsored
+                        </span>
+
+                        {% endif %}
+
+                        <span>
+                            {{ category.name }}
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+
+                        <a href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}">
+                            {{ article.title }}
+                        </a>
+
+                    </h3>
+
+
+                    {% if article.excerpt %}
+
+                    <p>
+                        {{ article.excerpt }}
+                    </p>
+
+                    {% endif %}
+
+
+                    <a
+                        class="read-link"
+                        href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}"
+                    >
+                        Read Story →
+                    </a>
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                K
+            </div>
+
+            <h2>
+                Stories are coming.
+            </h2>
+
+            <p>
+                New stories will appear here
+                as they are published.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
