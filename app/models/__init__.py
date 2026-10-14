@@ -1,5 +1,6 @@
 from app.models.article import Article
 from app.models.article_image import ArticleImage
+from app.models.story_category import StoryCategory
 from app.models.article_restaurant import ArticleRestaurant
 from app.models.analytics_event import StoryAnalyticsEvent
 from app.models.article_comment import (
