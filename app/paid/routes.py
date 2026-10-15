@@ -1,5 +1,5 @@
 """Independent paid editorial application; does not touch restaurant subscription rules."""
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from hashlib import sha256
 from secrets import token_urlsafe
 from uuid import uuid4
@@ -10,7 +10,7 @@ from app.extensions import db
 from app.models import Article
 from app.paid.models import (PaidStorySubmission, PaidStoryPayment,
                              PaidStoryWebhookEvent, PaidStoryPublication)
-from app.paid.service import (ARTICLE_PRICES, FEATURE_PRICES, CATEGORIES, quote,
+from app.paid.service import (PUBLISHING_PRICE_CENTS, CATEGORIES,
                               create_checkout, verify_signature)
 
 paid_bp = Blueprint('paid_stories', __name__)
@@ -32,20 +32,13 @@ def access_allowed(submission):
 @paid_bp.route('/stories/submit', methods=['GET', 'POST'])
 def submit_story():
     if request.method == 'GET':
-        return render_template('paid/submit.html', article_prices=ARTICLE_PRICES,
-                               feature_prices=FEATURE_PRICES, categories=CATEGORIES)
+        return render_template('paid/submit.html', publishing_price_cents=PUBLISHING_PRICE_CENTS,
+                               categories=CATEGORIES)
     if request.content_length and request.content_length > 30_000:
         abort(413)
     fields = {name: request.form.get(name, '').strip() for name in (
         'applicant_type', 'applicant_name', 'contact_name', 'email', 'whatsapp',
         'location', 'category_slug', 'title', 'description', 'website')}
-    try:
-        duration = int(request.form.get('duration_days', ''))
-        featured = int(request.form.get('featured_days', ''))
-        price = quote(duration, featured)
-    except (ValueError, TypeError):
-        flash('Choose a valid duration and featured option.', 'error')
-        return redirect(url_for('paid_stories.submit_story'))
     if (fields['applicant_type'] not in ('business', 'creator', 'organiser')
             or fields['category_slug'] not in CATEGORIES
             or not all(fields[k] for k in ('applicant_name', 'contact_name', 'email', 'whatsapp', 'location', 'title', 'description'))
@@ -61,8 +54,8 @@ def submit_story():
         return redirect(url_for('paid_stories.submit_story'))
     token = token_urlsafe(32)
     sub = PaidStorySubmission(reference='KS-' + uuid4().hex[:18].upper(),
-        access_token_hash=token_hash(token), duration_days=duration, featured_days=featured,
-        amount_cents=price, **fields)
+        access_token_hash=token_hash(token),
+        amount_cents=PUBLISHING_PRICE_CENTS, **fields)
     db.session.add(sub)
     db.session.commit()
     return redirect(url_for('paid_stories.start_checkout', reference=sub.reference, token=token))
@@ -223,14 +216,31 @@ def admin_publish(submission_id):
     article.status = 'published'
     article.is_sponsored = True
     article.published_at = now
-    # Paid-only publication lifecycle, independent from Premium restaurant expiry.
-    end = now + timedelta(days=sub.duration_days)
-    article.expires_at = end
-    pub = PaidStoryPublication(submission_id=sub.id, article_id=article.id,
-           starts_at=now, ends_at=end,
-           featured_until=now + timedelta(days=sub.featured_days) if sub.featured_days else None)
+    # Paid publications are permanent: no automatic expiry.
+    article.expires_at = None
+    pub = PaidStoryPublication(
+        submission_id=sub.id,
+        article_id=article.id,
+        starts_at=now,
+        featured_until=None,  # Admin may feature manually.
+    )
     db.session.add(pub)
     sub.review_status = 'published'
     db.session.commit()
-    flash('Paid article published. Duration starts now.', 'success')
+    flash('Permanent paid story published.', 'success')
+    return redirect(url_for('paid_stories.admin_submission', submission_id=sub.id))
+
+@paid_bp.post('/admin/paid-stories/<int:submission_id>/feature')
+def admin_toggle_feature(submission_id):
+    """Curated trending toggle, no time-limited upsell or extra charge."""
+    require_admin()
+    sub = db.session.get(PaidStorySubmission, submission_id)
+    if not sub or sub.payment_status != 'paid' or sub.review_status != 'published':
+        abort(409)
+    pub = PaidStoryPublication.query.filter_by(submission_id=sub.id).first()
+    if not pub or not pub.article or pub.article.status != 'published':
+        abort(409)
+    pub.featured_until = None if pub.featured_until else datetime.max.replace(tzinfo=timezone.utc)
+    db.session.commit()
+    flash('Trending placement updated.', 'success')
     return redirect(url_for('paid_stories.admin_submission', submission_id=sub.id))
