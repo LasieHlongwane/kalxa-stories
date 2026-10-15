@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+#from datetime import datetime, timezone
 from app.extensions import db
 
 def utcnow():
@@ -19,8 +19,6 @@ class PaidStorySubmission(db.Model):
     title = db.Column(db.String(250), nullable=False)
     description = db.Column(db.Text, nullable=False)
     website = db.Column(db.String(500))
-    duration_days = db.Column(db.Integer, nullable=False)
-    featured_days = db.Column(db.Integer, nullable=False, default=0)
     amount_cents = db.Column(db.Integer, nullable=False)
     payment_status = db.Column(db.String(25), nullable=False, default='pending', index=True)
     review_status = db.Column(db.String(25), nullable=False, default='awaiting_payment', index=True)
@@ -53,7 +51,6 @@ class PaidStoryPublication(db.Model):
     submission_id = db.Column(db.Integer, db.ForeignKey('paid_story_submissions.id'), nullable=False, unique=True)
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id'), nullable=False, unique=True)
     starts_at = db.Column(db.DateTime(timezone=True), nullable=False)
-    ends_at = db.Column(db.DateTime(timezone=True), nullable=False)
     featured_until = db.Column(db.DateTime(timezone=True))
     submission = db.relationship('PaidStorySubmission')
     article = db.relationship('Article')
