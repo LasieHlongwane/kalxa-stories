@@ -8,20 +8,15 @@ from urllib.parse import urlparse
 import requests
 from flask import current_app
 
-# Introductory prices, in cents. Customize only here before launching.
-ARTICLE_PRICES = {7: 4900, 14: 8900, 30: 14900, 60: 24900, 90: 34900}
-FEATURE_PRICES = {0: 0, 7: 4900, 14: 8900, 30: 14900}
+# Fixed, once-off charge for one permanent sponsored article.
+PUBLISHING_PRICE_CENTS = 20000  # R200.00 ZAR
 CATEGORIES = {
     'local': "What's happening locally?",
     'experiences': 'What experiences can people attend?',
     'food': 'Where can people eat, socialise and explore?',
     'creators': 'Who is creating, entertaining and influencing locally?',
+    'news-kwandebele': 'Latest news in KwaNdebele',
 }
-
-def quote(duration, featured):
-    if duration not in ARTICLE_PRICES or featured not in FEATURE_PRICES or featured > duration:
-        raise ValueError('Invalid publishing duration or featured placement.')
-    return ARTICLE_PRICES[duration] + FEATURE_PRICES[featured]
 
 def checkout_url_is_safe(url):
     u = urlparse(url or '')
