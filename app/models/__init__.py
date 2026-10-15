@@ -13,6 +13,7 @@ from app.models.restaurant_analytics_event import (
 
 
 __all__ = [
+    "StoryCategory",
     "Article",
     "ArticleImage",
     "ArticleRestaurant",

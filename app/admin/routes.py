@@ -25,6 +25,7 @@ from app.models import (
     Article,
     ArticleImage,
     ArticleRestaurant,
+    StoryCategory,
     StoryAnalyticsEvent,
 )
 
@@ -1968,6 +1969,23 @@ def articles():
 
 
 # ============================================================
+# AVAILABLE EDITORIAL CATEGORIES
+# ============================================================
+
+def available_story_categories():
+
+    return (
+        StoryCategory.query
+        .filter_by(is_active=True)
+        .order_by(
+            StoryCategory.display_order.asc(),
+            StoryCategory.name.asc(),
+        )
+        .all()
+    )
+
+
+# ============================================================
 # CREATE ARTICLE
 # ============================================================
 
@@ -1995,6 +2013,7 @@ def article_new():
 
             return render_template(
                 "admin/article_form.html",
+                story_categories=available_story_categories(),
                 article=article,
                 restaurant_ids=(
                     request.form.get(
@@ -2041,6 +2060,7 @@ def article_new():
 
             return render_template(
                 "admin/article_form.html",
+                story_categories=available_story_categories(),
                 article=article,
                 restaurant_ids=(
                     request.form.get(
@@ -2069,6 +2089,7 @@ def article_new():
 
     return render_template(
         "admin/article_form.html",
+                story_categories=available_story_categories(),
         article=None,
         restaurant_ids="",
         page_mode="new",
@@ -2130,6 +2151,7 @@ def article_edit(
 
             return render_template(
                 "admin/article_form.html",
+                story_categories=available_story_categories(),
                 article=article,
                 restaurant_ids=(
                     request.form.get(
@@ -2185,6 +2207,7 @@ def article_edit(
 
             return render_template(
                 "admin/article_form.html",
+                story_categories=available_story_categories(),
                 article=article,
                 restaurant_ids=(
                     request.form.get(
@@ -2237,6 +2260,7 @@ def article_edit(
 
     return render_template(
         "admin/article_form.html",
+                story_categories=available_story_categories(),
         article=article,
         restaurant_ids=restaurant_ids,
         page_mode="edit",
@@ -2640,6 +2664,65 @@ def populate_article_from_form(
 
 
     # --------------------------------------------------------
+    # OPTIONAL EDITORIAL CATEGORY
+    # --------------------------------------------------------
+
+    raw_category_id = (
+        request.form.get(
+            "category_id",
+            "",
+        )
+        .strip()
+    )
+
+    category_id = None
+
+    if raw_category_id:
+
+        try:
+
+            category_id = int(
+                raw_category_id
+            )
+
+        except ValueError:
+
+            flash(
+                "Invalid story category.",
+                "error",
+            )
+
+            return False
+
+        if category_id <= 0:
+
+            flash(
+                "Invalid story category.",
+                "error",
+            )
+
+            return False
+
+        category_exists = (
+            StoryCategory.query
+            .filter_by(
+                id=category_id,
+                is_active=True,
+            )
+            .first()
+        )
+
+        if category_exists is None:
+
+            flash(
+                "Selected story category does not exist.",
+                "error",
+            )
+
+            return False
+
+
+    # --------------------------------------------------------
     # DUPLICATE SLUG
     # --------------------------------------------------------
 
@@ -2671,6 +2754,102 @@ def populate_article_from_form(
 
 
     # --------------------------------------------------------
+    # PAID ARTICLE LIFECYCLE GUARD
+    # --------------------------------------------------------
+    #
+    # Existing Premium Restaurant articles are unaffected.
+    #
+    # Paid articles must not be published before their
+    # payment and review lifecycle has been completed.
+    # --------------------------------------------------------
+
+    from app.paid.models import PaidStorySubmission
+
+    if article.id is not None:
+
+        paid_submission = (
+            PaidStorySubmission.query
+            .filter_by(
+                article_id=article.id
+            )
+            .first()
+        )
+
+        if (
+            paid_submission is not None
+            and status == "published"
+            and paid_submission.review_status
+                != "published"
+        ):
+
+            flash(
+                "Publish paid stories through the "
+                "Paid Submissions admin screen after "
+                "payment verification.",
+                "error",
+            )
+
+            return False
+
+
+    # --------------------------------------------------------
+    # PERMANENT PAID STORY GUARD R200
+    # --------------------------------------------------------
+    # Only articles associated with paid submissions are
+    # affected. Premium Restaurant articles are unchanged.
+
+    from app.paid.models import PaidStorySubmission
+
+    if article.id is not None:
+
+        paid_record = (
+            PaidStorySubmission.query
+            .filter_by(article_id=article.id)
+            .first()
+        )
+
+        if paid_record is not None:
+
+            # Paid stories cannot receive an expiry.
+            if expires_at is not None:
+
+                flash(
+                    "Permanent paid stories cannot "
+                    "have an expiration date.",
+                    "error",
+                )
+                return False
+
+            # Preserve original published URL.
+            if (
+                article.status == "published"
+                and slug != article.slug
+            ):
+
+                flash(
+                    "Published paid story URLs "
+                    "cannot be changed.",
+                    "error",
+                )
+                return False
+
+            # Admin editor cannot bypass the paid
+            # submission approval process.
+            if (
+                status == "published"
+                and paid_record.review_status
+                != "published"
+            ):
+
+                flash(
+                    "Publish this paid story through "
+                    "Paid Submissions after verification.",
+                    "error",
+                )
+                return False
+
+
+    # --------------------------------------------------------
     # ASSIGN
     # --------------------------------------------------------
 
@@ -2695,6 +2874,8 @@ def populate_article_from_form(
     article.article_type = (
         article_type
     )
+
+    article.category_id = category_id
 
     article.status = (
         status
@@ -3368,6 +3549,35 @@ def article_publish(
     if article is None:
 
         abort(404)
+
+
+    # --------------------------------------------------------
+    # QUICK PUBLISH PAID SAFETY GUARD R200
+    # --------------------------------------------------------
+    # Paid articles must use the independent approval flow.
+
+    from app.paid.models import PaidStorySubmission
+
+    paid_submission = (
+        PaidStorySubmission.query
+        .filter_by(article_id=article.id)
+        .first()
+    )
+
+    if paid_submission is not None:
+
+        flash(
+            "Use Paid Submissions to publish "
+            "this permanent paid article.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
 
 
     article.status = (

@@ -208,6 +208,98 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
     /* =====================================================
+       EDITORIAL CATEGORY NAVIGATION
+    ====================================================== */
+
+    .story-categories {
+        padding: 65px 0 10px;
+    }
+
+    .story-categories-heading {
+        margin: 0 0 12px;
+        font-family: var(--kalxa-serif);
+        font-size: clamp(32px, 4vw, 48px);
+        font-weight: 500;
+    }
+
+    .story-categories-intro {
+        margin: 0 0 29px;
+        color: var(--kalxa-text-soft);
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .story-categories-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .story-category-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        min-height: 135px;
+        padding: 25px 28px;
+        background: var(--kalxa-paper);
+        border: 1px solid var(--kalxa-border);
+        transition:
+            border-color .2s,
+            transform .2s,
+            box-shadow .2s;
+    }
+
+    .story-category-button:hover {
+        border-color: var(--kalxa-gold);
+        transform: translateY(-2px);
+        box-shadow: var(--kalxa-shadow);
+    }
+
+    .story-category-button small {
+        display: block;
+        margin-bottom: 11px;
+        color: var(--kalxa-gold-dark);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    .story-category-button strong {
+        display: block;
+        color: var(--kalxa-ink);
+        font-family: var(--kalxa-serif);
+        font-size: clamp(19px, 2.2vw, 27px);
+        font-weight: 500;
+        line-height: 1.2;
+    }
+
+    .story-category-button .category-arrow {
+        flex-shrink: 0;
+        color: var(--kalxa-gold-dark);
+        font-size: 26px;
+    }
+
+    @media (max-width: 650px) {
+
+        .story-categories {
+            padding: 42px 0 5px;
+        }
+
+        .story-categories-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .story-category-button {
+            min-height: 112px;
+            padding: 21px;
+        }
+
+    }
+
+
+    /* =====================================================
        FEATURED
     ====================================================== */
 
@@ -738,6 +830,290 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
 
+<!-- =========================================================
+     STORY CATEGORIES
+========================================================== -->
+
+<section
+    class="story-categories"
+    aria-labelledby="story-categories-heading"
+>
+
+    <div class="page-container">
+
+        <div class="section-heading">
+            <span>Explore the journal</span>
+        </div>
+
+        <h2
+            class="story-categories-heading"
+            id="story-categories-heading"
+        >
+            What would you like to discover?
+        </h2>
+
+        <p class="story-categories-intro">
+            Explore the local people, places, events
+            and experiences shaping our communities.
+        </p>
+
+        <div class="story-categories-grid">
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='local'
+                ) }}"
+            >
+                <span>
+                    <small>Local Discoveries</small>
+                    <strong>
+                        What is happening locally?
+                    </strong>
+                </span>
+
+                <span class="category-arrow" aria-hidden="true">
+                    ↗
+                </span>
+            </a>
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='experiences'
+                ) }}"
+            >
+                <span>
+                    <small>Events &amp; Experiences</small>
+                    <strong>
+                        What experiences can people attend?
+                    </strong>
+                </span>
+
+                <span class="category-arrow" aria-hidden="true">
+                    ↗
+                </span>
+            </a>
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='food'
+                ) }}"
+            >
+                <span>
+                    <small>Food &amp; Lifestyle</small>
+                    <strong>
+                        Where can people eat,
+                        socialise and explore?
+                    </strong>
+                </span>
+
+                <span class="category-arrow" aria-hidden="true">
+                    ↗
+                </span>
+            </a>
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='creators'
+                ) }}"
+            >
+                <span>
+                    <small>Creators &amp; Culture</small>
+                    <strong>
+                        Who is creating, entertaining
+                        and influencing locally?
+                    </strong>
+                </span>
+
+                <span class="category-arrow" aria-hidden="true">
+                    ↗
+                </span>
+            </a>
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='news-kwandebele'
+                ) }}"
+            >
+                <span>
+                    <small>KwaNdebele News</small>
+
+                    <strong>
+                        Latest news in KwaNdebele
+                    </strong>
+                </span>
+
+                <span
+                    class="category-arrow"
+                    aria-hidden="true"
+                >
+                    ↗
+                </span>
+            </a>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     KALXA TRENDING STORIES
+
+     Curated restaurant-linked stories and featured paid stories.
+
+     Featured visibility is independent of the permanent
+     publication lifetime of a paid story.
+========================================================== -->
+
+{% if trending_articles %}
+
+<section
+    class="latest-section trending-section"
+    aria-labelledby="trending-stories-heading"
+>
+
+    <div class="page-container">
+
+        <div class="latest-header">
+
+            <div class="latest-header-copy">
+
+                <span>
+                    From our community
+                </span>
+
+                <h2
+                    class="latest-heading-title"
+                    id="trending-stories-heading"
+                >
+                    Trending Stories
+                </h2>
+
+            </div>
+
+            <a href="{{ url_for('public.stories') }}">
+                Explore all stories →
+            </a>
+
+        </div>
+
+        <div class="story-grid">
+
+            {% for article in trending_articles %}
+
+            <article class="story-card">
+
+                <a
+                    class="story-image-link"
+                    href="{{ url_for(
+                        'public.article_detail',
+                        slug=article.slug
+                    ) }}"
+                    aria-label="Read {{ article.title }}"
+                >
+
+                    <div class="story-image">
+
+                        {% if article.display_cover_image_url %}
+
+                        <img
+                            src="{{ article.display_cover_image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
+
+                        {% else %}
+
+                        <div class="image-placeholder small">
+                            <span>K</span>
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </a>
+
+                <div class="story-card-content">
+
+                    <div class="story-meta">
+
+                        {% if article.is_sponsored %}
+
+                        <span class="sponsored-label">
+                            Sponsored
+                        </span>
+
+                        {% endif %}
+
+                        <span>
+                            {{ article.category.name
+                               if article.category
+                               else article.article_type
+                                   .replace('_', ' ')
+                                   .title() }}
+                        </span>
+
+                    </div>
+
+                    <h3>
+
+                        <a href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}">
+                            {{ article.title }}
+                        </a>
+
+                    </h3>
+
+                    {% if article.excerpt %}
+
+                    <p>
+                        {{ article.excerpt }}
+                    </p>
+
+                    {% endif %}
+
+                    <a
+                        class="read-link"
+                        href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}"
+                    >
+                        Read story <span>→</span>
+                    </a>
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+
 {% if featured_article %}
 
 <section class="featured-section">
@@ -1080,5 +1456,166 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 </section>
 
+
+
+<!-- =========================================================
+     KALXA STORIES — LOCATION-BASED NEWSLETTER
+========================================================== -->
+
+<section
+    id="kalxa-area-newsletter"
+    style="
+        padding:80px 0;
+        background:var(--kalxa-cream);
+        border-top:1px solid var(--kalxa-border);
+    "
+    aria-labelledby="kalxa-newsletter-title"
+>
+
+    <div
+        class="page-container"
+        style="
+            max-width:780px;
+            text-align:center;
+        "
+    >
+
+        <span class="hero-label">
+            LOCAL STORIES · YOUR INBOX
+        </span>
+
+        <h2
+            id="kalxa-newsletter-title"
+            style="
+                font:500 clamp(34px,5vw,55px)/1.12
+                var(--kalxa-serif);
+                margin:12px 0 22px;
+            "
+        >
+            Stay connected to your community.
+        </h2>
+
+        <p
+            style="
+                color:var(--kalxa-text-soft);
+                line-height:1.75;
+            "
+        >
+            Subscribe for local KALXA Stories updates.
+            Choose your closest area:
+            KwaMhlanga, Kwaggafontein or Siyabuswa.
+        </p>
+
+        <a
+            href="{{ url_for('story_newsletter.signup_page') }}"
+            style="
+                display:inline-block;
+                background:var(--kalxa-black);
+                color:white;
+                padding:16px 28px;
+                margin-top:16px;
+                font-weight:700;
+                font-size:13px;
+                text-decoration:none;
+            "
+        >
+            Subscribe to local stories →
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<!-- KALXA PAID STORIES CALL TO ACTION -->
+
+<section
+    id="kalxa-paid-stories-cta"
+    style="
+        background:var(--kalxa-black);
+        color:#f5efe3;
+        padding:85px 0;
+        text-align:center;
+    "
+>
+    <div
+        class="page-container"
+        style="max-width:760px"
+    >
+        <span
+            style="
+                font-size:11px;
+                letter-spacing:2px;
+                text-transform:uppercase;
+                color:#d0ab70;
+            "
+        >
+            PUBLISH WITH KALXA
+        </span>
+
+        <h2
+            style="
+                font-family:var(--kalxa-serif);
+                font-size:clamp(37px,5vw,65px);
+                font-weight:500;
+                margin:20px 0;
+            "
+        >
+            Your story deserves a permanent home.
+        </h2>
+
+        <p
+            style="
+                line-height:1.8;
+                color:#c6bdb0;
+                margin:20px auto 25px;
+            "
+        >
+            Showcase your business, brand or
+            creative journey on KALXA Stories.
+
+            Publish once and keep sharing your
+            story link without renewal fees.
+        </p>
+
+        <div
+            style="
+                font-family:var(--kalxa-serif);
+                font-size:50px;
+                color:#e6d4b7;
+                margin-bottom:8px;
+            "
+        >
+            R200
+        </div>
+
+        <p
+            style="
+                color:#c6bdb0;
+                font-size:13px;
+                margin-bottom:32px;
+            "
+        >
+            Once-off publishing fee.
+            No article expiry or renewal.
+            Subject to editorial approval.
+        </p>
+
+        <a
+            href="{{ url_for('paid_stories.submit_story') }}"
+            style="
+                display:inline-block;
+                background:#e6d4b7;
+                color:#181511;
+                padding:16px 28px;
+                font-weight:700;
+                text-decoration:none;
+            "
+        >
+            Submit your story →
+        </a>
+    </div>
+</section>
 
 {% endblock %}
