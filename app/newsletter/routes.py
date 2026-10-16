@@ -70,10 +70,11 @@ newsletter_bp = Blueprint(
 # ============================================================
 
 AREAS = (
+    "All Areas",
     "KwaMhlanga",
     "Kwaggafontein",
     "Siyabuswa",
-    "all",
+    
 )
 
 
