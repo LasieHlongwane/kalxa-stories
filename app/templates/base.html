@@ -12,7 +12,7 @@
 
     <meta
         name="theme-color"
-        content="#f5f0e6"
+        content="#0753bd"
     >
 
     <meta
@@ -35,13 +35,13 @@
 
     <title>
         {% block title %}
-            Kalxa Stories
+            KwaNdebele Kalxa Hub | Kalxa Stories
         {% endblock %}
     </title>
 
     <meta
         name="description"
-        content="{% block meta_description %}Discover local stories, restaurants and experiences on Kalxa.{% endblock %}"
+        content="{% block meta_description %}Discover local stories, restaurants, businesses, creators and experiences on KwaNdebele Kalxa Hub.{% endblock %}"
     >
 
     {% block canonical %}
@@ -56,12 +56,12 @@
 
     <meta
         property="og:title"
-        content="Kalxa Stories"
+        content="KwaNdebele Kalxa Hub | Kalxa Stories"
     >
 
     <meta
         property="og:description"
-        content="Discover local stories, restaurants and experiences on Kalxa."
+        content="Discover the people, businesses, creators, restaurants and experiences shaping KwaNdebele."
     >
 
     <meta
@@ -74,8 +74,9 @@
     {% block structured_data %}
     {% endblock %}
 
+
     <!-- =====================================================
-         FONTS
+         GOOGLE FONTS
     ====================================================== -->
 
     <link
@@ -94,6 +95,11 @@
         rel="stylesheet"
     >
 
+
+    <!-- =====================================================
+         MAIN STYLESHEET
+    ====================================================== -->
+
     <link
         rel="stylesheet"
         href="{{ url_for(
@@ -102,11 +108,16 @@
         ) }}"
     >
 
+
     {% block extra_head %}
     {% endblock %}
 
 
     <style>
+
+        /* =====================================================
+           GLOBAL DESIGN VARIABLES
+        ====================================================== */
 
         :root {
 
@@ -195,8 +206,39 @@
                 0 30px 90px
                 rgba(37, 31, 22, .13);
 
+
+            /* ===============================================
+               KWANDEBELE CULTURAL COLOURS
+            =============================================== */
+
+            --ndebele-blue:
+                #0753bd;
+
+            --ndebele-red:
+                #d52032;
+
+            --ndebele-yellow:
+                #f4c430;
+
+            --ndebele-dark:
+                #101d38;
+
+            --ndebele-gradient:
+                linear-gradient(
+                    110deg,
+                    #0753bd 0%,
+                    #1765d5 24%,
+                    #d52032 61%,
+                    #e63739 75%,
+                    #f4c430 100%
+                );
+
         }
 
+
+        /* =====================================================
+           GLOBAL RESET
+        ====================================================== */
 
         * {
             box-sizing: border-box;
@@ -280,7 +322,10 @@
 
 
         /* =====================================================
-           HEADER
+           KWANDEBELE KALXA HUB
+           GLOBAL CULTURAL HEADER
+
+           Blue → Red → Yellow
         ====================================================== */
 
         .site-header {
@@ -291,21 +336,25 @@
 
             z-index: 1000;
 
-            border-bottom:
-                1px solid
-                rgba(92, 78, 57, .11);
+            width: 100%;
 
             background:
-                rgba(250, 248, 243, .91);
+                var(--ndebele-gradient);
 
-            backdrop-filter:
-                blur(20px);
+            border-bottom:
+                3px solid
+                var(--ndebele-dark);
 
-            -webkit-backdrop-filter:
-                blur(20px);
+            box-shadow:
+                0 5px 22px
+                rgba(12, 24, 50, .15);
 
         }
 
+
+        /* =====================================================
+           HEADER INNER
+        ====================================================== */
 
         .header-inner {
 
@@ -315,7 +364,7 @@
                     var(--kalxa-max-width)
                 );
 
-            min-height: 78px;
+            min-height: 82px;
 
             margin:
                 0 auto;
@@ -327,10 +376,14 @@
             justify-content:
                 space-between;
 
-            gap: 30px;
+            gap: 24px;
 
         }
 
+
+        /* =====================================================
+           BRAND WRAPPER
+        ====================================================== */
 
         .brand {
 
@@ -340,8 +393,16 @@
 
             gap: 13px;
 
+            min-width: 0;
+
+            flex-shrink: 1;
+
         }
 
+
+        /* =====================================================
+           KWANDEBELE KALXA HUB BRAND NAME
+        ====================================================== */
 
         .brand-name {
 
@@ -351,42 +412,85 @@
 
             justify-content: center;
 
-            min-height: 38px;
+            min-height: 43px;
 
             padding:
-                0 14px;
+                9px 16px;
 
             background:
-                var(--kalxa-black);
+                rgba(8, 22, 48, .32);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, .32);
+
+            border-radius:
+                5px;
 
             color:
-                #fffdf8;
+                #ffffff;
+
+            font-family:
+                var(--kalxa-sans);
 
             font-size: 17px;
 
             font-weight: 700;
 
+            line-height: 1.25;
+
             letter-spacing:
-                -.65px;
+                -.45px;
+
+            text-align: center;
+
+            text-shadow:
+                0 1px 2px
+                rgba(0, 0, 0, .2);
+
+            transition:
+                background .2s ease,
+                border-color .2s ease;
 
         }
 
+
+        .brand:hover .brand-name {
+
+            background:
+                rgba(8, 22, 48, .48);
+
+            border-color:
+                rgba(255, 255, 255, .6);
+
+        }
+
+
+        /* =====================================================
+           STORIES BRAND SECTION
+        ====================================================== */
 
         .brand-section {
 
             position: relative;
 
-            padding-left: 13px;
+            padding-left: 14px;
 
             color:
-                var(--kalxa-ink);
+                #ffffff;
 
             font-family:
                 var(--kalxa-serif);
 
-            font-size: 19px;
+            font-size: 20px;
 
             font-weight: 600;
+
+            white-space: nowrap;
+
+            text-shadow:
+                0 1px 3px
+                rgba(0, 0, 0, .25);
 
         }
 
@@ -403,10 +507,10 @@
 
             width: 1px;
 
-            height: 21px;
+            height: 22px;
 
             background:
-                var(--kalxa-border);
+                rgba(255, 255, 255, .65);
 
             transform:
                 translateY(-50%);
@@ -414,13 +518,19 @@
         }
 
 
+        /* =====================================================
+           MAIN NAVIGATION
+        ====================================================== */
+
         .main-nav {
 
             display: flex;
 
             align-items: center;
 
-            gap: 25px;
+            gap: 26px;
+
+            flex-shrink: 0;
 
         }
 
@@ -430,17 +540,26 @@
             position: relative;
 
             padding:
-                9px 0;
+                10px 0;
 
             color:
-                var(--kalxa-text-soft);
+                #ffffff;
 
             font-size: 12px;
 
-            font-weight: 600;
+            font-weight: 700;
 
             letter-spacing:
                 .25px;
+
+            white-space: nowrap;
+
+            text-shadow:
+                0 1px 3px
+                rgba(0, 0, 0, .3);
+
+            transition:
+                opacity .2s ease;
 
         }
 
@@ -455,12 +574,12 @@
 
             right: 100%;
 
-            bottom: 3px;
+            bottom: 4px;
 
-            height: 1px;
+            height: 2px;
 
             background:
-                var(--kalxa-gold);
+                #ffffff;
 
             transition:
                 right .2s ease;
@@ -471,13 +590,34 @@
         .main-nav a:hover {
 
             color:
-                var(--kalxa-black);
+                #ffffff;
+
+            opacity: .9;
 
         }
 
 
         .main-nav a:hover::after {
+
             right: 0;
+
+        }
+
+
+        /* =====================================================
+           ACCESSIBILITY
+        ====================================================== */
+
+        .site-header a:focus-visible {
+
+            outline:
+                3px solid
+                #ffffff;
+
+            outline-offset: 4px;
+
+            border-radius: 3px;
+
         }
 
 
@@ -595,6 +735,10 @@
 
         }
 
+
+        /* =====================================================
+           STORY META
+        ====================================================== */
 
         .story-meta {
 
@@ -929,7 +1073,7 @@
 
 
         /* =====================================================
-           PLACEHOLDER
+           IMAGE PLACEHOLDER
         ====================================================== */
 
         .image-placeholder {
@@ -987,7 +1131,9 @@
 
 
         .image-placeholder.small {
+
             min-height: 100%;
+
         }
 
 
@@ -1003,7 +1149,7 @@
 
 
         /* =====================================================
-           EMPTY
+           EMPTY STATE
         ====================================================== */
 
         .empty-state {
@@ -1098,6 +1244,8 @@
 
         .site-footer {
 
+            position: relative;
+
             margin-top: 30px;
 
             padding:
@@ -1108,6 +1256,28 @@
 
             color:
                 #f7f0e4;
+
+        }
+
+
+        /* SUBTLE CULTURAL ACCENT ON FOOTER */
+
+        .site-footer::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            right: 0;
+
+            height: 4px;
+
+            background:
+                var(--ndebele-gradient);
 
         }
 
@@ -1182,12 +1352,10 @@
 
 
         /* =====================================================
-           RESPONSIVE
+           TABLET RESPONSIVE
         ====================================================== */
 
-        @media (
-            max-width: 950px
-        ) {
+        @media (max-width: 950px) {
 
             .story-grid {
 
@@ -1202,9 +1370,48 @@
         }
 
 
-        @media (
-            max-width: 650px
-        ) {
+        @media (max-width: 800px) {
+
+            .header-inner {
+
+                min-height: 74px;
+
+                gap: 16px;
+
+            }
+
+
+            .brand-name {
+
+                font-size: 14px;
+
+                padding:
+                    9px 11px;
+
+            }
+
+
+            .brand-section {
+
+                font-size: 17px;
+
+            }
+
+
+            .main-nav {
+
+                gap: 15px;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           MOBILE RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 650px) {
 
             .page-container,
             .header-inner,
@@ -1219,54 +1426,87 @@
             }
 
 
+            .site-header {
+
+                background:
+                    linear-gradient(
+                        115deg,
+                        #0753bd 0%,
+                        #1765d5 22%,
+                        #d52032 63%,
+                        #f4c430 100%
+                    );
+
+            }
+
+
             .header-inner {
-                min-height: 66px;
+
+                min-height: 72px;
+
+                gap: 10px;
+
             }
 
 
             .brand {
-                gap: 9px;
+
+                gap: 7px;
+
             }
 
 
             .brand-name {
 
-                min-height: 32px;
+                min-height: 36px;
 
                 padding:
-                    0 10px;
+                    7px 8px;
 
-                font-size: 15px;
+                font-size: 11px;
+
+                line-height: 1.25;
+
+                letter-spacing:
+                    -.25px;
 
             }
 
 
             .brand-section {
 
-                padding-left: 9px;
+                padding-left: 8px;
 
-                font-size: 16px;
+                font-size: 15px;
 
             }
 
 
             .brand-section::before {
+
                 height: 18px;
+
             }
 
 
             .main-nav {
-                gap: 14px;
+
+                gap: 10px;
+
             }
 
 
             .main-nav a {
+
                 font-size: 10px;
+
             }
 
 
             .section {
+
                 padding: 40px 0;
+
             }
 
 
@@ -1308,13 +1548,68 @@
         }
 
 
+        /* =====================================================
+           VERY SMALL PHONE SCREENS
+        ====================================================== */
+
+        @media (max-width: 380px) {
+
+            .header-inner {
+
+                gap: 7px;
+
+            }
+
+
+            .brand-name {
+
+                max-width: 120px;
+
+                white-space: normal;
+
+                text-align: left;
+
+                font-size: 10px;
+
+            }
+
+
+            .brand-section {
+
+                font-size: 13px;
+
+            }
+
+
+            .main-nav {
+
+                gap: 8px;
+
+            }
+
+
+            .main-nav a {
+
+                font-size: 9px;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           REDUCED MOTION
+        ====================================================== */
+
         @media (
             prefers-reduced-motion:
             reduce
         ) {
 
             html {
+
                 scroll-behavior: auto;
+
             }
 
 
@@ -1343,18 +1638,30 @@
 <body>
 
 
+<!-- =========================================================
+     KWANDEBELE KALXA HUB
+     GLOBAL HEADER
+
+     All public templates extending base.html
+     automatically inherit this header.
+========================================================== -->
+
 <header class="site-header">
 
     <div class="header-inner">
 
+        <!-- ===============================================
+             BRAND
+        =============================================== -->
+
         <a
             href="{{ url_for('public.home') }}"
             class="brand"
-            aria-label="Kalxa Stories home"
+            aria-label="KwaNdebele Kalxa Hub home"
         >
 
             <span class="brand-name">
-                Our Kalxa 
+                KwaNdebele Kalxa Hub
             </span>
 
             <span class="brand-section">
@@ -1363,6 +1670,10 @@
 
         </a>
 
+
+        <!-- ===============================================
+             NAVIGATION
+        =============================================== -->
 
         <nav
             class="main-nav"
@@ -1384,6 +1695,11 @@
 </header>
 
 
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================== -->
+
 <main>
 
     {% block content %}
@@ -1391,6 +1707,11 @@
 
 </main>
 
+
+
+<!-- =========================================================
+     GLOBAL FOOTER
+========================================================== -->
 
 <footer class="site-footer">
 
@@ -1403,8 +1724,12 @@
             </div>
 
             <p>
-                Stories about the food, people and places
-                shaping what's happening around us
+
+                Stories about the food, people,
+                businesses, creators and places
+                shaping KwaNdebele and the
+                communities around us.
+
             </p>
 
         </div>
@@ -1418,6 +1743,11 @@
 
 </footer>
 
+
+
+<!-- =========================================================
+     PAGE-SPECIFIC SCRIPTS
+========================================================== -->
 
 {% block scripts %}
 {% endblock %}
