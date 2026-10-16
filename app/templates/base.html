@@ -216,9 +216,9 @@
 
 
             /* =================================================
-               NEW FOOTER LIGHT-GREY GRADIENT
+               FOOTER LIGHT-GREY GRADIENT
 
-               Soft silver → light grey → white-grey
+               UNCHANGED
             ================================================= */
 
             --kalxa-footer-gradient:
@@ -232,7 +232,9 @@
 
 
             /* =================================================
-               NEW DONATION BUTTON LIGHT-GREEN GRADIENT
+               DONATION BUTTON LIGHT-GREEN GRADIENT
+
+               UNCHANGED
             ================================================= */
 
             --kalxa-donation-gradient:
@@ -247,6 +249,8 @@
 
             /* =================================================
                DONATION BUTTON HOVER GRADIENT
+
+               UNCHANGED
             ================================================= */
 
             --kalxa-donation-hover-gradient:
@@ -259,16 +263,21 @@
 
 
             /* =================================================
-               PUBLISH WITH KALXA WHITE GRADIENT
+               PUBLISH WITH KALXA
+
+               UPDATED WHITE GRADIENT
+
+               Pure white → soft white → pearl white
             ================================================= */
 
             --kalxa-publish-gradient:
                 linear-gradient(
                     135deg,
                     #ffffff 0%,
-                    #fcfcfd 35%,
-                    #f7f8fa 70%,
-                    #eef1f4 100%
+                    #ffffff 25%,
+                    #fafbfc 55%,
+                    #f3f5f7 80%,
+                    #e9edf1 100%
                 );
 
         }
@@ -966,10 +975,6 @@
             padding:
                 0 11px;
 
-            display: inline-flex;
-
-            align-items: center;
-
             border:
                 1px solid rgba(255, 255, 255, .25);
 
@@ -985,6 +990,10 @@
             font-size: 9px;
 
             font-weight: 600;
+
+            display: inline-flex;
+
+            align-items: center;
 
         }
 
@@ -1241,16 +1250,22 @@
         /* =====================================================
            PUBLISH WITH KALXA
 
-           NEW WHITE GRADIENT CARD
+           UPDATED: WHITE GRADIENT CARD BACKGROUND
 
-           Apply class="publish-with-kalxa" to the
-           publishing card in its page template.
+           This targets the publishing card without changing
+           its layout, text, or submission button.
+
+           The actual card must use:
+           class="publish-with-kalxa"
         ====================================================== */
 
         .publish-with-kalxa {
 
             background:
-                var(--kalxa-publish-gradient);
+                var(--kalxa-publish-gradient) !important;
+
+            background-color:
+                #ffffff;
 
             border:
                 1px solid #e4e7eb;
@@ -1269,7 +1284,7 @@
         /* =====================================================
            PUBLISH CARD TEXT
 
-           Keep text readable against white gradient.
+           UNCHANGED
         ====================================================== */
 
         .publish-with-kalxa h2,
@@ -1292,7 +1307,9 @@
         /* =====================================================
            FOOTER
 
-           UPDATED: LIGHT-GREY GRADIENT BACKGROUND
+           LIGHT-GREY GRADIENT BACKGROUND
+
+           UNCHANGED
         ====================================================== */
 
         .site-footer {
@@ -1402,7 +1419,9 @@
         /* =====================================================
            DONATION BUTTON
 
-           UPDATED: LIGHT-GREEN GRADIENT
+           LIGHT-GREEN GRADIENT
+
+           UNCHANGED
         ====================================================== */
 
         .footer-donate-button {
@@ -1959,7 +1978,7 @@
 
 
 <!-- =========================================================
-     UPDATED GLOBAL FOOTER
+     GLOBAL FOOTER
 
      LIGHT-GREY GRADIENT SUPPORT SECTION
 ========================================================== -->
