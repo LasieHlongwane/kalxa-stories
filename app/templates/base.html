@@ -97,10 +97,10 @@
         rel="stylesheet"
     >
 
-    <!-- HAND-DRAWN / PAINTED BRAND FONT -->
+    <!-- FUTURISTIC / IRON MAN-INSPIRED FONT -->
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Knewave&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&display=swap"
         rel="stylesheet"
     >
 
@@ -207,14 +207,16 @@
                 "Segoe UI",
                 sans-serif;
 
-            /* ===============================================
-               NEW ARTISTIC BRAND FONT
-            =============================================== */
+
+            /* =================================================
+               IRON MAN-INSPIRED BRAND FONT
+            ================================================= */
 
             --ndebele-art-font:
-                "Knewave",
+                "Orbitron",
                 "DM Sans",
                 sans-serif;
+
 
             --kalxa-shadow:
                 0 24px 70px
@@ -229,6 +231,8 @@
                KWANDEBELE CULTURAL COLOURS
 
                Dark Brown · Yellow · Blue · Red · Green
+
+               UNCHANGED
             ================================================= */
 
             --ndebele-brown:
@@ -370,6 +374,8 @@
            Dark Brown → Yellow → Blue → Red → Green
 
            BACKGROUND COLOURS UNCHANGED
+
+           DESKTOP WIDTH REDUCED BY 40%
         ====================================================== */
 
         .site-header {
@@ -380,7 +386,13 @@
 
             z-index: 1000;
 
-            width: 100%;
+            width: 60%;
+
+            max-width: 100%;
+
+            margin-left: auto;
+
+            margin-right: auto;
 
             background:
                 var(--ndebele-gradient);
@@ -408,22 +420,27 @@
 
             width:
                 min(
-                    calc(100% - 56px),
+                    calc(100% - 36px),
                     var(--kalxa-max-width)
                 );
 
-            min-height: 130px;
+            min-height: 145px;
 
             margin:
                 0 auto;
 
+            padding:
+                18px 0 14px;
+
             display: flex;
+
+            flex-direction: column;
 
             align-items: center;
 
             justify-content: center;
 
-            gap: 24px;
+            gap: 12px;
 
         }
 
@@ -438,21 +455,25 @@
 
             display: inline-flex;
 
+            flex-direction: column;
+
             align-items: center;
 
             justify-content: center;
 
-            gap: 12px;
+            gap: 5px;
 
             min-width: 0;
 
-            max-width: 100%;
+            width: 100%;
 
-            flex-shrink: 1;
+            max-width: 100%;
 
             margin: 0 auto;
 
             background: transparent;
+
+            text-align: center;
 
         }
 
@@ -460,12 +481,12 @@
         /* =====================================================
            KWANDEBELE KALXA HUB BRAND NAME
 
-           NEW DESIGN:
+           IRON MAN-INSPIRED DESIGN
 
-           - Hand-drawn / painted lettering
-           - Knewave display font
-           - Completely transparent background
-           - Slightly narrower typography
+           - Futuristic angular typography
+           - Orbitron ExtraBold
+           - Metallic white lettering
+           - Transparent background
            - Centered
            - Responsive
         ====================================================== */
@@ -478,10 +499,14 @@
 
             justify-content: center;
 
-            min-height: 75px;
+            width: 100%;
+
+            max-width: 100%;
+
+            min-height: 64px;
 
             padding:
-                6px 2px;
+                4px 0;
 
             background: transparent;
 
@@ -494,39 +519,53 @@
             color:
                 #ffffff;
 
-            /* HAND-PAINTED FONT */
-
             font-family:
                 var(--ndebele-art-font);
 
             font-size:
                 clamp(
-                    32px,
-                    3.3vw,
-                    49px
+                    22px,
+                    2.8vw,
+                    46px
                 );
 
-            font-weight: 400;
+            font-weight: 900;
 
             font-style: normal;
 
             line-height: 1.12;
 
             letter-spacing:
-                -1.4px;
+                -1.8px;
+
+            text-transform: uppercase;
 
             text-align: center;
 
-            white-space: nowrap;
+            white-space: normal;
 
-            /* SOFT PAINTED DEPTH */
+            overflow-wrap: normal;
+
+            word-break: normal;
+
+
+            /* ===============================================
+               METALLIC / ARMOUR-STYLE TEXT EFFECT
+            =============================================== */
 
             text-shadow:
-                1px 2px 0
-                rgba(38, 20, 14, .30),
+                0 1px 0
+                rgba(255, 255, 255, .65),
 
-                0 3px 7px
-                rgba(0, 0, 0, .35);
+                1px 2px 0
+                rgba(30, 25, 25, .7),
+
+                2px 3px 0
+                rgba(20, 20, 20, .5),
+
+                0 5px 10px
+                rgba(0, 0, 0, .55);
+
 
             transition:
                 opacity .2s ease;
@@ -534,7 +573,7 @@
         }
 
 
-        /* KEEP TRANSPARENT ON HOVER */
+        /* KEEP BRAND TRANSPARENT ON HOVER */
 
         .brand:hover .brand-name {
 
@@ -551,13 +590,18 @@
 
         /* =====================================================
            STORIES BRAND SECTION
+
+           POSITIONED BELOW MAIN BRAND TO GIVE
+           THE LARGER TITLE MORE HORIZONTAL SPACE
         ====================================================== */
 
         .brand-section {
 
             position: relative;
 
-            padding-left: 13px;
+            display: inline-block;
+
+            padding-left: 0;
 
             color:
                 #ffffff;
@@ -565,7 +609,7 @@
             font-family:
                 var(--kalxa-serif);
 
-            font-size: 25px;
+            font-size: 21px;
 
             font-weight: 700;
 
@@ -580,45 +624,32 @@
 
         .brand-section::before {
 
-            content: "";
-
-            position: absolute;
-
-            left: 0;
-
-            top: 50%;
-
-            width: 1px;
-
-            height: 25px;
-
-            background:
-                rgba(255, 255, 255, .75);
-
-            transform:
-                translateY(-50%);
+            display: none;
 
         }
 
 
         /* =====================================================
            MAIN NAVIGATION
+
+           CENTERED BELOW BRAND
         ====================================================== */
 
         .main-nav {
 
-            position: absolute;
+            position: static;
 
-            right: 0;
+            right: auto;
 
-            top: 50%;
+            top: auto;
 
-            transform:
-                translateY(-50%);
+            transform: none;
 
             display: flex;
 
             align-items: center;
+
+            justify-content: center;
 
             gap: 26px;
 
@@ -632,7 +663,7 @@
             position: relative;
 
             padding:
-                10px 0;
+                6px 0;
 
             color:
                 #ffffff;
@@ -666,7 +697,7 @@
 
             right: 100%;
 
-            bottom: 4px;
+            bottom: 2px;
 
             height: 2px;
 
@@ -1444,75 +1475,8 @@
 
 
         /* =====================================================
-           TABLET RESPONSIVE
-
-           Navigation moves beneath the artistic title
-           to prevent overlapping.
+           RESPONSIVE STORY GRID
         ====================================================== */
-
-        @media (max-width: 1450px) {
-
-            .header-inner {
-
-                min-height: 145px;
-
-                padding:
-                    15px 0;
-
-                flex-direction: column;
-
-                justify-content: center;
-
-                gap: 12px;
-
-            }
-
-
-            .brand {
-
-                margin: 0 auto;
-
-            }
-
-
-            .brand-name {
-
-                font-size:
-                    clamp(
-                        32px,
-                        3.6vw,
-                        47px
-                    );
-
-                min-height: 65px;
-
-                padding:
-                    6px 2px;
-
-            }
-
-
-            .brand-section {
-
-                font-size: 25px;
-
-            }
-
-
-            .main-nav {
-
-                position: static;
-
-                transform: none;
-
-                justify-content: center;
-
-                gap: 25px;
-
-            }
-
-        }
-
 
         @media (max-width: 950px) {
 
@@ -1529,11 +1493,27 @@
         }
 
 
-        @media (max-width: 800px) {
+        /* =====================================================
+           TABLET RESPONSIVE
+
+           Keep the narrower header usable.
+        ====================================================== */
+
+        @media (max-width: 1100px) {
+
+            .site-header {
+
+                width: 60%;
+
+            }
+
 
             .header-inner {
 
-                min-height: 135px;
+                min-height: 140px;
+
+                padding:
+                    16px 0 12px;
 
                 gap: 10px;
 
@@ -1544,20 +1524,22 @@
 
                 font-size:
                     clamp(
-                        28px,
-                        4vw,
-                        38px
+                        20px,
+                        3.1vw,
+                        34px
                     );
 
-                padding:
-                    6px 2px;
+                min-height: 56px;
+
+                letter-spacing:
+                    -1.3px;
 
             }
 
 
             .brand-section {
 
-                font-size: 22px;
+                font-size: 19px;
 
             }
 
@@ -1573,12 +1555,16 @@
 
         /* =====================================================
            MOBILE RESPONSIVE
+
+           On phones the header expands to the screen
+           width to prevent text and navigation overflow.
+
+           BACKGROUND COLOURS UNCHANGED.
         ====================================================== */
 
         @media (max-width: 650px) {
 
             .page-container,
-            .header-inner,
             .footer-inner {
 
                 width:
@@ -1590,11 +1576,9 @@
             }
 
 
-            /* =================================================
-               CULTURAL HEADER COLOURS UNCHANGED
-            ================================================= */
-
             .site-header {
+
+                width: 100%;
 
                 background:
                     linear-gradient(
@@ -1616,10 +1600,13 @@
 
             .header-inner {
 
-                min-height: 132px;
+                width:
+                    calc(100% - 30px);
+
+                min-height: 125px;
 
                 padding:
-                    14px 0 12px;
+                    13px 0 11px;
 
                 flex-direction: column;
 
@@ -1627,7 +1614,7 @@
 
                 justify-content: center;
 
-                gap: 12px;
+                gap: 8px;
 
             }
 
@@ -1636,7 +1623,7 @@
 
                 width: 100%;
 
-                gap: 7px;
+                gap: 3px;
 
                 margin: 0 auto;
 
@@ -1646,22 +1633,21 @@
 
 
             /* ===============================================
-               HAND-PAINTED MOBILE BRAND
-
-               Smaller width, bold artistic appearance
+               FUTURISTIC MOBILE BRAND
             =============================================== */
 
             .brand-name {
 
+                width: 100%;
+
                 min-width: 0;
 
-                min-height: 52px;
+                max-width: 100%;
 
-                max-width:
-                    calc(100% - 75px);
+                min-height: 48px;
 
                 padding:
-                    5px 0;
+                    3px 0;
 
                 background: transparent;
 
@@ -1674,17 +1660,17 @@
 
                 font-size:
                     clamp(
-                        20px,
-                        5.1vw,
-                        29px
+                        19px,
+                        5.2vw,
+                        30px
                     );
 
-                font-weight: 400;
+                font-weight: 900;
 
                 line-height: 1.12;
 
                 letter-spacing:
-                    -1px;
+                    -1.2px;
 
                 white-space: normal;
 
@@ -1697,7 +1683,7 @@
 
             .brand-section {
 
-                padding-left: 9px;
+                padding-left: 0;
 
                 font-size: 17px;
 
@@ -1706,7 +1692,7 @@
 
             .brand-section::before {
 
-                height: 20px;
+                display: none;
 
             }
 
@@ -1789,24 +1775,25 @@
 
             .header-inner {
 
-                min-height: 138px;
+                min-height: 128px;
 
-                gap: 10px;
+                gap: 7px;
 
             }
 
 
             .brand {
 
-                gap: 6px;
+                gap: 3px;
 
             }
 
 
             .brand-name {
 
-                max-width:
-                    calc(100% - 60px);
+                width: 100%;
+
+                max-width: 100%;
 
                 white-space: normal;
 
@@ -1814,21 +1801,21 @@
 
                 font-size:
                     clamp(
-                        19px,
-                        5.5vw,
-                        24px
+                        17px,
+                        5.1vw,
+                        21px
                     );
 
                 font-family:
                     var(--ndebele-art-font);
 
-                font-weight: 400;
+                font-weight: 900;
 
                 letter-spacing:
-                    -.9px;
+                    -1px;
 
                 padding:
-                    5px 0;
+                    4px 0;
 
                 background: transparent;
 
@@ -1843,7 +1830,7 @@
 
                 font-size: 15px;
 
-                padding-left: 7px;
+                padding-left: 0;
 
             }
 
@@ -1918,7 +1905,7 @@
     <div class="header-inner">
 
         <!-- ===============================================
-             CENTERED HAND-PAINTED BRAND
+             CENTERED FUTURISTIC BRAND
         =============================================== -->
 
         <a
