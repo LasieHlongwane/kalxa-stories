@@ -1,19 +1,573 @@
 {% extends 'admin/base.html' %}
-{% block title %}Local Subscribers | KALXA Stories{% endblock %}
+
+{% block title %}
+Newsletter Subscribers | KwaNdebele Kalxa Hub
+{% endblock %}
+
+
 {% block content %}
-<div class="page-header"><div><h1>Email Subscribers</h1><p>Opt-in readers by nearest area. Only confirmed subscribers should receive newsletters.</p></div></div>
-<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:25px">
-{% for area in areas %}<a class="button secondary small" href="{{ url_for('story_newsletter.admin_subscribers',area=area) }}">{{ area }} · {{ counts[area] }} active</a>{% endfor %}
-<a class="button secondary small" href="{{ url_for('story_newsletter.admin_subscribers') }}">All areas</a>
+
+<style>
+
+    /* =====================================================
+       NEWSLETTER ADMIN
+    ====================================================== */
+
+    .newsletter-admin-intro {
+
+        color: #747982;
+
+        font-size: 13px;
+
+        line-height: 1.7;
+
+    }
+
+
+    /* =====================================================
+       FILTER BUTTONS
+    ====================================================== */
+
+    .newsletter-filters {
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 10px;
+
+        margin-bottom: 25px;
+
+    }
+
+
+    .newsletter-filter-active {
+
+        background: #161511 !important;
+
+        color: #ffffff !important;
+
+        border-color: #161511 !important;
+
+    }
+
+
+    /* =====================================================
+       SUMMARY
+    ====================================================== */
+
+    .newsletter-admin-summary {
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 15px;
+
+        margin-bottom: 25px;
+
+    }
+
+
+    .newsletter-admin-stat {
+
+        flex:
+            1 1 180px;
+
+        padding: 20px;
+
+        background: #ffffff;
+
+        border:
+            1px solid #e5e5e5;
+
+        border-radius: 6px;
+
+    }
+
+
+    .newsletter-admin-stat strong {
+
+        display: block;
+
+        font-size: 27px;
+
+        margin-bottom: 5px;
+
+        color: #17191d;
+
+    }
+
+
+    .newsletter-admin-stat span {
+
+        font-size: 12px;
+
+        color: #747982;
+
+    }
+
+
+    /* =====================================================
+       SUBSCRIBER TABLE
+    ====================================================== */
+
+    .newsletter-table-wrap {
+
+        overflow-x: auto;
+
+    }
+
+
+    .newsletter-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        text-align: left;
+
+        font-size: 13px;
+
+    }
+
+
+    .newsletter-table th {
+
+        padding: 12px;
+
+        border-bottom:
+            1px solid #dddddd;
+
+        white-space: nowrap;
+
+    }
+
+
+    .newsletter-table td {
+
+        padding: 12px;
+
+        border-bottom:
+            1px solid #eeeeee;
+
+        vertical-align: middle;
+
+    }
+
+
+    /* =====================================================
+       STATUS BADGES
+    ====================================================== */
+
+    .newsletter-status {
+
+        display: inline-block;
+
+        padding:
+            5px 10px;
+
+        border-radius: 999px;
+
+        font-size: 11px;
+
+        font-weight: 700;
+
+        text-transform: capitalize;
+
+    }
+
+
+    .newsletter-status.active {
+
+        background: #e4f5e9;
+
+        color: #23613c;
+
+    }
+
+
+    .newsletter-status.pending {
+
+        background: #fff3d9;
+
+        color: #946300;
+
+    }
+
+
+    .newsletter-status.unsubscribed {
+
+        background: #f5e3e3;
+
+        color: #a13e3e;
+
+    }
+
+
+    /* =====================================================
+       TABLE DESCRIPTION
+    ====================================================== */
+
+    .newsletter-table-note {
+
+        color: #747982;
+
+        font-size: 12px;
+
+        line-height: 1.7;
+
+        margin-bottom: 20px;
+
+    }
+
+</style>
+
+
+<!-- =========================================================
+     PAGE HEADER
+========================================================== -->
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Email Subscribers
+        </h1>
+
+        <p class="newsletter-admin-intro">
+
+            Manage KwaNdebele Kalxa Hub
+            newsletter subscribers by area.
+
+            Subscribers become active immediately
+            after completing the subscription form.
+
+            Email confirmation is not required.
+
+        </p>
+
+    </div>
+
 </div>
-<div class="panel" style="overflow:auto">
-  <h2>Subscriber records{% if selected_area %} — {{ selected_area }}{% endif %}</h2>
-  <p style="color:#747982;font-size:12px">Showing up to 500 recent records. Do not send newsletters to pending or unsubscribed addresses.</p>
-  <table style="width:100%;border-collapse:collapse;text-align:left;font-size:13px">
-    <thead><tr><th style="padding:12px;border-bottom:1px solid #ddd">Email</th><th style="padding:12px;border-bottom:1px solid #ddd">Area</th><th style="padding:12px;border-bottom:1px solid #ddd">Status</th><th style="padding:12px;border-bottom:1px solid #ddd">Joined</th></tr></thead>
-    <tbody>{% for item in subscribers %}
-      <tr><td style="padding:12px;border-bottom:1px solid #eee">{{ item.email }}</td><td style="padding:12px;border-bottom:1px solid #eee">{{ item.area }}</td><td style="padding:12px;border-bottom:1px solid #eee">{{ item.status }}</td><td style="padding:12px;border-bottom:1px solid #eee">{{ item.created_at.strftime('%Y-%m-%d') if item.created_at else '' }}</td></tr>
-    {% else %}<tr><td colspan="4" style="padding:20px">No subscribers found.</td></tr>{% endfor %}</tbody>
-  </table>
+
+
+<!-- =========================================================
+     FILTER BUTTONS
+========================================================== -->
+
+<div class="newsletter-filters">
+
+    <!-- ===============================================
+         ALL RECORDS
+    =============================================== -->
+
+    <a
+        class="button secondary small {% if not selected_area %}newsletter-filter-active{% endif %}"
+        href="{{ url_for('story_newsletter.admin_subscribers') }}"
+    >
+
+        All Subscribers
+
+    </a>
+
+
+    <!-- ===============================================
+         ALL AREAS SUBSCRIPTIONS
+    =============================================== -->
+
+    <a
+        class="button secondary small {% if selected_area == 'All Areas' %}newsletter-filter-active{% endif %}"
+        href="{{ url_for(
+            'story_newsletter.admin_subscribers',
+            area='All Areas'
+        ) }}"
+    >
+
+        All Areas
+
+        ·
+
+        {{ counts.get('All Areas', 0) }} active
+
+    </a>
+
+
+    <!-- ===============================================
+         INDIVIDUAL AREA FILTERS
+    =============================================== -->
+
+    {% for area in areas %}
+
+        {% if area != "All Areas" %}
+
+            <a
+                class="button secondary small {% if selected_area == area %}newsletter-filter-active{% endif %}"
+                href="{{ url_for(
+                    'story_newsletter.admin_subscribers',
+                    area=area
+                ) }}"
+            >
+
+                {{ area }}
+
+                ·
+
+                {{ counts.get(area, 0) }} active
+
+            </a>
+
+        {% endif %}
+
+    {% endfor %}
+
 </div>
+
+
+<!-- =========================================================
+     SUBSCRIBER SUMMARY
+========================================================== -->
+
+<div class="newsletter-admin-summary">
+
+    <!-- ===============================================
+         TOTAL ACTIVE SUBSCRIBERS
+    =============================================== -->
+
+    <div class="newsletter-admin-stat">
+
+        <strong>
+
+            {{
+                (
+                    counts.values()
+                    | sum
+                )
+            }}
+
+        </strong>
+
+        <span>
+            Total Active Subscribers
+        </span>
+
+    </div>
+
+
+    <!-- ===============================================
+         ALL AREAS SUBSCRIBERS
+    =============================================== -->
+
+    <div class="newsletter-admin-stat">
+
+        <strong>
+
+            {{ counts.get('All Areas', 0) }}
+
+        </strong>
+
+        <span>
+            Subscribed to All Areas
+        </span>
+
+    </div>
+
+
+    <!-- ===============================================
+         RECORDS DISPLAYED
+    =============================================== -->
+
+    <div class="newsletter-admin-stat">
+
+        <strong>
+
+            {{ subscribers | length }}
+
+        </strong>
+
+        <span>
+            Records Displayed
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SUBSCRIBER TABLE
+========================================================== -->
+
+<div class="panel">
+
+    <h2>
+
+        Subscriber Records
+
+        {% if selected_area %}
+
+            — {{ selected_area }}
+
+        {% endif %}
+
+    </h2>
+
+
+    <p class="newsletter-table-note">
+
+        Showing up to 500 recent records.
+
+        Only subscribers with an
+
+        <strong>active</strong>
+
+        status should receive newsletters.
+
+        Pending and unsubscribed addresses
+        must be excluded from newsletter delivery.
+
+    </p>
+
+
+    <div class="newsletter-table-wrap">
+
+        <table class="newsletter-table">
+
+            <!-- ===========================================
+                 TABLE HEADER
+            ============================================ -->
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Area
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Joined
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <!-- ===========================================
+                 TABLE BODY
+            ============================================ -->
+
+            <tbody>
+
+                {% for item in subscribers %}
+
+                    <tr>
+
+                        <!-- =================================
+                             EMAIL
+                        ================================== -->
+
+                        <td>
+                            {{ item.email }}
+                        </td>
+
+
+                        <!-- =================================
+                             AREA
+                        ================================== -->
+
+                        <td>
+
+                            {% if item.area == "All Areas" %}
+
+                                <strong>
+                                    All Areas
+                                </strong>
+
+                            {% else %}
+
+                                {{ item.area }}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- =================================
+                             STATUS
+                        ================================== -->
+
+                        <td>
+
+                            <span
+                                class="newsletter-status {{ item.status }}"
+                            >
+
+                                {{ item.status }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- =================================
+                             SUBSCRIPTION DATE
+                        ================================== -->
+
+                        <td>
+
+                            {% if item.created_at %}
+
+                                {{
+                                    item.created_at.strftime(
+                                        '%Y-%m-%d'
+                                    )
+                                }}
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+
+                {% else %}
+
+                    <!-- ===================================
+                         EMPTY STATE
+                    ==================================== -->
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            style="padding:20px;text-align:center;color:#747982"
+                        >
+
+                            No subscribers found.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
 {% endblock %}
