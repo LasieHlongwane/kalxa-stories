@@ -49,6 +49,10 @@ def create_app():
         public_bp
     )
 
+    from app.donations.routes import donations_bp
+
+    app.register_blueprint(donations_bp)
+
     # ========================================================
     # PUBLIC API BLUEPRINT
     # ========================================================
