@@ -10,6 +10,9 @@ from urllib.parse import (
     urlsplit,
     urlunsplit,
 )
+import secrets
+
+from app.models.story_reaction import StoryReaction
 
 from uuid import uuid4
 
@@ -648,6 +651,316 @@ def kalxa_trending_articles(limit=6):
     )
 
     return candidates[:limit]
+
+
+
+
+
+# ============================================================
+# STORY REACTIONS — CSRF TOKEN
+# ============================================================
+
+STORY_REACTION_CSRF_KEY = (
+    "kalxa_story_reaction_csrf"
+)
+
+
+def story_reaction_csrf_token():
+
+    token = session.get(
+        STORY_REACTION_CSRF_KEY
+    )
+
+    if not token:
+
+        token = secrets.token_urlsafe(32)
+
+        session[
+            STORY_REACTION_CSRF_KEY
+        ] = token
+
+    return token
+
+
+# ============================================================
+# STORY ENGAGEMENT COUNTS
+# ============================================================
+
+def get_story_engagement(article_id):
+
+    view_count = (
+        StoryAnalyticsEvent.query
+        .filter(
+            StoryAnalyticsEvent.article_id == article_id,
+            StoryAnalyticsEvent.event_type == "article_view",
+            StoryAnalyticsEvent.kalxa_restaurant_id.is_(None),
+        )
+        .count()
+    )
+
+    like_count = (
+        StoryReaction.query
+        .filter_by(
+            article_id=article_id,
+            reaction_type="like",
+        )
+        .count()
+    )
+
+    return {
+        "view_count": view_count,
+        "like_count": like_count,
+    }
+
+
+# ============================================================
+# CURRENT VISITOR LIKED STATE
+# ============================================================
+
+def visitor_liked_story(article_id):
+
+    anonymous_session_id = (
+        get_anonymous_session_id()
+    )
+
+    return (
+        StoryReaction.query
+        .filter_by(
+            article_id=article_id,
+            anonymous_session_id=anonymous_session_id,
+            reaction_type="like",
+        )
+        .first()
+        is not None
+    )
+
+
+# ============================================================
+# TOGGLE STORY LIKE
+#
+# POST /stories/<slug>/like
+# ============================================================
+
+@public_bp.post(
+    "/stories/<string:slug>/like"
+)
+def toggle_story_like(slug):
+
+    # --------------------------------------------------------
+    # REQUEST SIZE
+    # --------------------------------------------------------
+
+    if (
+        request.content_length
+        and request.content_length > 10000
+    ):
+        abort(413)
+
+    # --------------------------------------------------------
+    # VALIDATE CSRF
+    # --------------------------------------------------------
+
+    submitted_token = (
+        request.headers.get(
+            "X-CSRF-Token",
+            "",
+        )
+    )
+
+    expected_token = session.get(
+        STORY_REACTION_CSRF_KEY,
+        "",
+    )
+
+    if (
+        not expected_token
+        or not secrets.compare_digest(
+            submitted_token,
+            expected_token,
+        )
+    ):
+
+        return jsonify({
+            "ok": False,
+            "error": "invalid_csrf",
+            "message": "Please refresh the page and try again.",
+        }), 400
+
+    # --------------------------------------------------------
+    # PUBLISHED ARTICLE
+    #
+    # Expired published articles may still receive likes.
+    # Their comments remain governed by comments_open.
+    # --------------------------------------------------------
+
+    article = (
+        Article.query
+        .filter_by(
+            slug=slug,
+            status="published",
+        )
+        .first()
+    )
+
+    if article is None:
+
+        return jsonify({
+            "ok": False,
+            "error": "story_not_found",
+        }), 404
+
+    # --------------------------------------------------------
+    # ANONYMOUS SESSION
+    # --------------------------------------------------------
+
+    anonymous_session_id = (
+        get_anonymous_session_id()
+    )
+
+    # --------------------------------------------------------
+    # CHECK EXISTING LIKE
+    # --------------------------------------------------------
+
+    existing_reaction = (
+        StoryReaction.query
+        .filter_by(
+            article_id=article.id,
+            anonymous_session_id=anonymous_session_id,
+        )
+        .first()
+    )
+
+    # --------------------------------------------------------
+    # REMOVE EXISTING LIKE
+    # --------------------------------------------------------
+
+    if existing_reaction is not None:
+
+        try:
+
+            db.session.delete(
+                existing_reaction
+            )
+
+            db.session.commit()
+
+        except Exception:
+
+            db.session.rollback()
+
+            current_app.logger.exception(
+                "Unable to remove story like."
+            )
+
+            return jsonify({
+                "ok": False,
+                "error": "like_remove_failed",
+            }), 500
+
+        engagement = get_story_engagement(
+            article.id
+        )
+
+        return jsonify({
+            "ok": True,
+            "article_id": article.id,
+            "liked": False,
+            **engagement,
+        }), 200
+
+    # --------------------------------------------------------
+    # ADD NEW LIKE
+    # --------------------------------------------------------
+
+    reaction = StoryReaction(
+        article_id=article.id,
+        anonymous_session_id=anonymous_session_id,
+        reaction_type="like",
+    )
+
+    try:
+
+        db.session.add(reaction)
+
+        db.session.commit()
+
+    except IntegrityError:
+
+        # A concurrent request may have inserted the like.
+        # Return the actual stored state.
+
+        db.session.rollback()
+
+        engagement = get_story_engagement(
+            article.id
+        )
+
+        return jsonify({
+            "ok": True,
+            "article_id": article.id,
+            "liked": visitor_liked_story(article.id),
+            **engagement,
+        }), 200
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to create story like."
+        )
+
+        return jsonify({
+            "ok": False,
+            "error": "like_save_failed",
+        }), 500
+
+    # --------------------------------------------------------
+    # SUCCESS
+    # --------------------------------------------------------
+
+    engagement = get_story_engagement(
+        article.id
+    )
+
+    return jsonify({
+        "ok": True,
+        "article_id": article.id,
+        "liked": True,
+        **engagement,
+    }), 200
+
+
+# ============================================================
+# GET STORY ENGAGEMENT
+#
+# GET /stories/<slug>/engagement
+# ============================================================
+
+@public_bp.get(
+    "/stories/<string:slug>/engagement"
+)
+def story_engagement(slug):
+
+    article = (
+        Article.query
+        .filter_by(
+            slug=slug,
+            status="published",
+        )
+        .first_or_404()
+    )
+
+    engagement = get_story_engagement(
+        article.id
+    )
+
+    return jsonify({
+        "ok": True,
+        "article_id": article.id,
+        "liked": visitor_liked_story(article.id),
+        **engagement,
+    }), 200
 
 # ============================================================
 # HOME
