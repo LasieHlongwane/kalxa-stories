@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-
 {% block title %}
 {% if article.meta_title %}
     {{ article.meta_title }}
@@ -22,16 +21,10 @@
 
 
 {% block canonical %}
-
 <link
     rel="canonical"
-    href="{{ url_for(
-        'public.article_detail',
-        slug=article.slug,
-        _external=True
-    ) }}"
+    href="{{ url_for('public.article_detail', slug=article.slug, _external=True) }}"
 >
-
 {% endblock %}
 
 
@@ -44,11 +37,7 @@
 
 <meta
     property="og:url"
-    content="{{ url_for(
-        'public.article_detail',
-        slug=article.slug,
-        _external=True
-    ) }}"
+    content="{{ url_for('public.article_detail', slug=article.slug, _external=True) }}"
 >
 
 {% if article.display_cover_image_url %}
@@ -131,13 +120,16 @@
 
 {% block content %}
 
-
 {% set canonical_story_url = url_for(
     'public.article_detail',
     slug=article.slug,
     _external=True
 ) %}
 
+
+<!-- =========================================================
+     READING PROGRESS
+========================================================= -->
 
 <div
     class="reading-progress"
@@ -148,940 +140,1033 @@
 <article class="article-page">
 
 
-<!-- =========================================================
-     HERO
-========================================================= -->
+    <!-- =====================================================
+         ARTICLE HERO
+    ====================================================== -->
 
-<section class="article-hero">
+    <section class="article-hero">
 
-    <div class="article-container">
+        <div class="article-container">
 
+            <div class="article-kicker">
 
-        <div class="article-kicker">
+                <span class="article-type">
 
-            <span class="article-type">
+                    {{ article.article_type
+                        .replace("_", " ")
+                        .title()
+                    }}
 
-                {{ article.article_type
-                    .replace("_", " ")
-                    .title()
-                }}
+                </span>
 
-            </span>
+                {% if article.is_sponsored %}
 
-
-            {% if article.is_sponsored %}
-
-            <span class="article-sponsored">
-                Sponsored
-            </span>
-
-            {% endif %}
-
-        </div>
-
-
-        <h1 class="article-title">
-            {{ article.title }}
-        </h1>
-
-
-        {% if article.excerpt %}
-
-        <p class="article-excerpt">
-            {{ article.excerpt }}
-        </p>
-
-        {% endif %}
-
-
-        <div class="article-byline">
-
-            <div class="kalxa-author-mark">
-                K
-            </div>
-
-
-            <div>
-
-                <strong>
-                    Kalxa Stories
-                </strong>
-
-
-                <div class="article-byline-meta">
-
-                    {% if article.published_at %}
-
-                    <span>
-                        {{ article.published_at.strftime(
-                            "%d %B %Y"
-                        ) }}
-                    </span>
-
-                    {% endif %}
-
-
-                    {% if reading_minutes %}
-
-                    <span>•</span>
-
-                    <span>
-                        {{ reading_minutes }} min read
-                    </span>
-
-                    {% endif %}
-
-
-                    {% if article.is_expired %}
-
-                    <span>•</span>
-
-                    <span class="story-conversation-ended">
-                        Conversation closed
-                    </span>
-
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     COVER IMAGE
-========================================================= -->
-
-{% set hero_image =
-    article.display_cover_image_url
-%}
-
-
-{% if hero_image %}
-
-<section class="article-cover">
-
-    <div class="article-image-container">
-
-        <button
-            class="article-image-button"
-            type="button"
-            data-story-image="{{ hero_image }}"
-            aria-label="View image"
-        >
-
-            <img
-                src="{{ hero_image }}"
-                alt="{{ article.title }}"
-            >
-
-        </button>
-
-
-        {% if article.images and article.images[0].caption %}
-
-        <div class="image-caption">
-            {{ article.images[0].caption }}
-        </div>
-
-        {% endif %}
-
-    </div>
-
-</section>
-
-{% endif %}
-
-
-
-<!-- =========================================================
-     ARTICLE BODY
-========================================================= -->
-
-<section class="article-body-section">
-
-    <div class="article-container">
-
-
-        <div class="article-body">
-
-            {{ article.body | safe }}
-
-        </div>
-
-
-
-        <!-- =================================================
-             SUPPORTING IMAGES
-        ================================================== -->
-
-        {% if article.images | length > 1 %}
-
-        <div class="article-supporting-images">
-
-            {% for image in article.images[1:] %}
-
-            <figure class="article-supporting-image">
-
-                <button
-                    class="article-image-button"
-                    type="button"
-                    data-story-image="{{ image.image_url }}"
-                    aria-label="View story image"
-                >
-
-                    <img
-                        src="{{ image.image_url }}"
-                        alt="{{ article.title }}"
-                        loading="lazy"
-                    >
-
-                </button>
-
-
-                {% if image.caption %}
-
-                <figcaption>
-                    {{ image.caption }}
-                </figcaption>
+                <span class="article-sponsored">
+                    Sponsored
+                </span>
 
                 {% endif %}
 
-            </figure>
-
-            {% endfor %}
-
-        </div>
-
-        {% endif %}
-
-
-
-
-
-                <!-- =================================================
-             RESTAURANTS / CONTINUE ON KALXA
-        ================================================== -->
-
-        {% if featured_restaurants %}
-
-        <section
-            class="restaurant-discovery"
-            aria-labelledby="restaurant-discovery-heading"
-        >
-
-
-            <div class="discovery-heading">
-
-                <span class="editorial-eyebrow">
-                    Continue on Kalxa
-                </span>
-
-                <h2 id="restaurant-discovery-heading">
-                    For more
-                </h2>
-
-                <p>
-                    Location, Operational Hours & Reviews
-                </p>
-
             </div>
 
 
+            <!-- =============================================
+                 ARTICLE TITLE
+            ============================================== -->
 
-            <div class="featured-restaurant-list">
+            <h1 class="article-title">
+                {{ article.title }}
+            </h1>
 
 
-                {% for restaurant in featured_restaurants %}
+            {% if article.excerpt %}
 
-                <article class="restaurant-reference">
+            <p class="article-excerpt">
+                {{ article.excerpt }}
+            </p>
 
+            {% endif %}
 
-                    <!-- NUMBER -->
 
-                    <div
-                        class="restaurant-reference-number"
-                        aria-hidden="true"
-                    >
-                        {{ "%02d"|format(loop.index) }}
-                    </div>
+            <!-- =============================================
+                 AUTHOR INFORMATION
+            ============================================== -->
 
+            <div class="article-byline">
 
-
-                    <!-- RESTAURANT INFORMATION -->
-
-                    <div class="restaurant-reference-content">
-
-
-                        <span class="restaurant-reference-label">
-                            Featured on Kalxa
-                        </span>
-
-
-                        <h3>
-
-                            {% if restaurant.business_name %}
-
-                                {{ restaurant.business_name }}
-
-                            {% elif restaurant.name %}
-
-                                {{ restaurant.name }}
-
-                            {% else %}
-
-                                Kalxa Restaurant
-
-                            {% endif %}
-
-                        </h3>
-
-
-                        {% if restaurant.headline %}
-
-                        <p class="restaurant-reference-headline">
-                            {{ restaurant.headline }}
-                        </p>
-
-                        {% endif %}
-
-
-
-                        {% if
-                            restaurant.area
-                            or
-                            restaurant.address
-                            or
-                            restaurant.price_text
-                        %}
-
-                        <div class="restaurant-details">
-
-
-                            {% if restaurant.area %}
-
-                            <span class="restaurant-location">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
-                                        stroke="currentColor"
-                                        stroke-width="1.7"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    />
-
-                                    <circle
-                                        cx="12"
-                                        cy="10"
-                                        r="2.5"
-                                        stroke="currentColor"
-                                        stroke-width="1.7"
-                                    />
-                                </svg>
-
-                                {{ restaurant.area }}
-
-                            </span>
-
-
-                            {% elif restaurant.address %}
-
-                            <span class="restaurant-location">
-
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
-                                        stroke="currentColor"
-                                        stroke-width="1.7"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    />
-
-                                    <circle
-                                        cx="12"
-                                        cy="10"
-                                        r="2.5"
-                                        stroke="currentColor"
-                                        stroke-width="1.7"
-                                    />
-                                </svg>
-
-                                {{ restaurant.address }}
-
-                            </span>
-
-                            {% endif %}
-
-
-                            {% if restaurant.price_text %}
-
-                            <span class="restaurant-price">
-                                {{ restaurant.price_text }}
-                            </span>
-
-                            {% endif %}
-
-                        </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-
-                    <!-- VIEW RESTAURANT CTA -->
-
-                    {% if restaurant.id %}
-
-                    <a
-                        class="restaurant-view-button"
-
-                        href="{{ url_for(
-                            'public.restaurant_click',
-                            slug=article.slug,
-                            restaurant_id=restaurant.id
-                        ) }}"
-
-                        aria-label="View {% if restaurant.business_name %}{{ restaurant.business_name }}{% elif restaurant.name %}{{ restaurant.name }}{% else %}restaurant{% endif %} on Kalxa"
-                    >
-
-                        <span class="restaurant-view-copy">
-
-                            <small>
-                                Explore on Kalxa
-                            </small>
-
-                            <strong>
-                                View restaurant
-                            </strong>
-
-                        </span>
-
-
-                        <span
-                            class="restaurant-arrow"
-                            aria-hidden="true"
-                        >
-                            →
-                        </span>
-
-                    </a>
-
-                    {% endif %}
-
-
-                </article>
-
-                {% endfor %}
-
-
-            </div>
-
-        </section>
-
-        {% endif %}
-
-
-
-                <!-- =================================================
-             COMMENTS
-        ================================================== -->
-
-        <section
-            class="story-comments"
-            id="comments"
-        >
-
-            <div class="comments-heading">
-
-                <span class="editorial-eyebrow">
-                    Conversation
-                </span>
-
-                <h2>
-                    Leave a comment...
-                </h2>
-
-                <p>
-                    Share your thoughts with the community.
-                    No account is required.
-                </p>
-
-            </div>
-
-
-            {% if article.comments_open %}
-
-            <form
-                class="comment-form"
-                method="POST"
-                action="{{ url_for(
-                    'public.article_comment',
-                    slug=article.slug
-                ) }}"
-            >
-
-                <div class="comment-field">
-
-                    <label for="display_name">
-                        Your name
-                    </label>
-
-                    <input
-                        id="display_name"
-                        name="display_name"
-                        type="text"
-                        maxlength="80"
-                        autocomplete="name"
-                        placeholder="How should we display your name?"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="comment-field">
-
-                    <label for="comment_text">
-                        Comment
-                    </label>
-
-                    <textarea
-                        id="comment_text"
-                        name="comment_text"
-                        maxlength="1000"
-                        rows="5"
-                        placeholder="What do you think about this story?"
-                        required
-                    ></textarea>
-
-                </div>
-
-
-                <div class="comment-form-footer">
-
-                    <button
-                        class="comment-submit"
-                        type="submit"
-                    >
-                        Post comment
-                        <span>→</span>
-                    </button>
-
-                    <span class="comment-counter">
-                        Maximum 1,000 characters
-                    </span>
-
-                </div>
-
-
-                <p class="comment-note">
-                    Comments are reviewed before appearing publicly.
-                </p>
-
-            </form>
-
-
-            {% else %}
-
-            <div class="comments-closed">
-
-                <div class="comments-closed-icon">
+                <div class="kalxa-author-mark">
                     K
                 </div>
 
                 <div>
 
                     <strong>
-                        This conversation has ended.
+                        Kalxa Stories
                     </strong>
 
-                    <p>
-                        Comments closed when this story expired.
-                    </p>
+                    <div class="article-byline-meta">
 
-                </div>
+                        {% if article.published_at %}
 
-            </div>
+                        <span>
+                            {{ article.published_at.strftime("%d %B %Y") }}
+                        </span>
 
-            {% endif %}
-
-
-
-            {% if approved_comments %}
-
-            <div class="comment-list">
+                        {% endif %}
 
 
-                <div class="comment-list-heading">
+                        {% if reading_minutes %}
 
-                    <strong>
-                        Community comments
-                    </strong>
+                        <span>•</span>
 
-                    <span>
-                        {{ approved_comments | length }}
-                    </span>
+                        <span>
+                            {{ reading_minutes }} min read
+                        </span>
 
-                </div>
+                        {% endif %}
 
 
-                {% for comment in approved_comments %}
+                        {% if article.is_expired %}
 
-                {% set comment_is_upvoted =
-                    comment_upvote_state.get(
-                        comment.id,
-                        false
-                    )
-                %}
+                        <span>•</span>
 
-                <article
-                    class="story-comment"
-                    id="comment-{{ comment.id }}"
-                >
-
-                    <div class="comment-avatar">
-
-                        {% if comment.display_name %}
-
-                            {{ comment.display_name[0] | upper }}
-
-                        {% else %}
-
-                            K
+                        <span class="story-conversation-ended">
+                            Conversation closed
+                        </span>
 
                         {% endif %}
 
                     </div>
 
+                </div>
 
-                    <div class="comment-content">
-
-                        <div class="comment-meta">
-
-                            <strong>
-                                {{ comment.display_name }}
-                            </strong>
-
-                            <span>
-
-                                {% if comment.created_at %}
-
-                                    {{ comment.created_at.strftime(
-                                        "%d %b %Y"
-                                    ) }}
-
-                                {% endif %}
-
-                            </span>
-
-                        </div>
+            </div>
 
 
-                        <p>
-                            {{ comment.comment_text }}
-                        </p>
+            <!-- =================================================
+                 NEW: STORY VIEWS AND LIKES
+
+                 Views display WITHOUT an eye icon.
+            ================================================== -->
+
+            <div
+                class="story-engagement-summary"
+                aria-label="Story views and likes"
+            >
+
+                <span class="story-view-stat">
+
+                    <strong id="story-view-count">
+                        {{ story_view_count | default(0) }}
+                    </strong>
+
+                    <span>
+                        Views
+                    </span>
+
+                </span>
 
 
-                        <div class="comment-actions">
-
-                            <button
-                                class="comment-upvote-button{% if comment_is_upvoted %} is-upvoted{% endif %}"
-                                type="button"
-                                data-comment-upvote
-                                data-comment-id="{{ comment.id }}"
-                                data-upvote-url="{{ url_for(
-                                    'public.toggle_comment_upvote',
-                                    slug=article.slug,
-                                    comment_id=comment.id
-                                ) }}"
-                                aria-pressed="{% if comment_is_upvoted %}true{% else %}false{% endif %}"
-                                aria-label="{% if comment_is_upvoted %}Remove upvote from this comment{% else %}Upvote this comment{% endif %}"
-                            >
-
-                                <span
-                                    class="comment-upvote-icon"
-                                    data-upvote-icon
-                                    aria-hidden="true"
-                                >
-                                    {% if comment_is_upvoted %}
-                                        ♥
-                                    {% else %}
-                                        ♡
-                                    {% endif %}
-                                </span>
-
-                                <span
-                                    class="comment-upvote-label"
-                                    data-upvote-label
-                                >
-                                    {% if comment_is_upvoted %}
-                                        Upvoted
-                                    {% else %}
-                                        Upvote
-                                    {% endif %}
-                                </span>
-
-                                <span
-                                    class="comment-upvote-count"
-                                    data-upvote-count
-                                >
-                                    {{ comment.upvote_count }}
-                                </span>
-
-                            </button>
+                <span
+                    class="story-engagement-separator"
+                    aria-hidden="true"
+                >
+                    ·
+                </span>
 
 
-                            <span
-                                class="comment-upvote-feedback"
-                                data-upvote-feedback
-                                role="status"
-                                aria-live="polite"
-                            ></span>
+                <span class="story-like-stat">
 
-                        </div>
+                    <strong id="story-summary-like-count">
+                        {{ story_like_count | default(0) }}
+                    </strong>
 
-                    </div>
+                    <span>
+                        Likes
+                    </span>
 
-                </article>
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         COVER IMAGE
+    ====================================================== -->
+
+    {% set hero_image = article.display_cover_image_url %}
+
+    {% if hero_image %}
+
+    <section class="article-cover">
+
+        <div class="article-image-container">
+
+            <button
+                class="article-image-button"
+                type="button"
+                data-story-image="{{ hero_image }}"
+                aria-label="View image"
+            >
+
+                <img
+                    src="{{ hero_image }}"
+                    alt="{{ article.title }}"
+                >
+
+            </button>
+
+
+            {% if article.images and article.images[0].caption %}
+
+            <div class="image-caption">
+                {{ article.images[0].caption }}
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         ARTICLE BODY
+    ====================================================== -->
+
+    <section class="article-body-section">
+
+        <div class="article-container">
+
+            <div class="article-body">
+
+                {{ article.body | safe }}
+
+            </div>
+
+
+            <!-- =============================================
+                 SUPPORTING IMAGES
+            ============================================== -->
+
+            {% if article.images | length > 1 %}
+
+            <div class="article-supporting-images">
+
+                {% for image in article.images[1:] %}
+
+                <figure class="article-supporting-image">
+
+                    <button
+                        class="article-image-button"
+                        type="button"
+                        data-story-image="{{ image.image_url }}"
+                        aria-label="View story image"
+                    >
+
+                        <img
+                            src="{{ image.image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
+
+                    </button>
+
+
+                    {% if image.caption %}
+
+                    <figcaption>
+                        {{ image.caption }}
+                    </figcaption>
+
+                    {% endif %}
+
+                </figure>
 
                 {% endfor %}
 
             </div>
 
+            {% endif %}
 
-            {% elif article.comments_open %}
 
-            <div class="no-comments">
+            <!-- =================================================
+                 RESTAURANTS / CONTINUE ON KALXA
+            ================================================== -->
 
-                <div class="no-comments-icon">
-                    ◌
-                </div>
+            {% if featured_restaurants %}
 
-                <div>
+            <section
+                class="restaurant-discovery"
+                aria-labelledby="restaurant-discovery-heading"
+            >
 
-                    <strong>
-                        Start the conversation.
-                    </strong>
+                <div class="discovery-heading">
+
+                    <span class="editorial-eyebrow">
+                        Continue on Kalxa
+                    </span>
+
+                    <h2 id="restaurant-discovery-heading">
+                        For more
+                    </h2>
 
                     <p>
-                        Be the first to comment on this story.
+                        Location, Operational Hours &amp; Reviews
                     </p>
 
                 </div>
 
-            </div>
+
+                <div class="featured-restaurant-list">
+
+                    {% for restaurant in featured_restaurants %}
+
+                    <article class="restaurant-reference">
+
+                        <!-- NUMBER -->
+
+                        <div
+                            class="restaurant-reference-number"
+                            aria-hidden="true"
+                        >
+                            {{ "%02d"|format(loop.index) }}
+                        </div>
+
+
+                        <!-- RESTAURANT INFORMATION -->
+
+                        <div class="restaurant-reference-content">
+
+                            <span class="restaurant-reference-label">
+                                Featured on Kalxa
+                            </span>
+
+
+                            <h3>
+
+                                {% if restaurant.business_name %}
+
+                                    {{ restaurant.business_name }}
+
+                                {% elif restaurant.name %}
+
+                                    {{ restaurant.name }}
+
+                                {% else %}
+
+                                    Kalxa Restaurant
+
+                                {% endif %}
+
+                            </h3>
+
+
+                            {% if restaurant.headline %}
+
+                            <p class="restaurant-reference-headline">
+                                {{ restaurant.headline }}
+                            </p>
+
+                            {% endif %}
+
+
+                            {% if restaurant.area or restaurant.address or restaurant.price_text %}
+
+                            <div class="restaurant-details">
+
+                                {% if restaurant.area or restaurant.address %}
+
+                                <span class="restaurant-location">
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        aria-hidden="true"
+                                    >
+
+                                        <path
+                                            d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+                                            stroke="currentColor"
+                                            stroke-width="1.7"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+
+                                        <circle
+                                            cx="12"
+                                            cy="10"
+                                            r="2.5"
+                                            stroke="currentColor"
+                                            stroke-width="1.7"
+                                        />
+
+                                    </svg>
+
+                                    {% if restaurant.area %}
+
+                                        {{ restaurant.area }}
+
+                                    {% else %}
+
+                                        {{ restaurant.address }}
+
+                                    {% endif %}
+
+                                </span>
+
+                                {% endif %}
+
+
+                                {% if restaurant.price_text %}
+
+                                <span class="restaurant-price">
+                                    {{ restaurant.price_text }}
+                                </span>
+
+                                {% endif %}
+
+                            </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- VIEW RESTAURANT -->
+
+                        {% if restaurant.id %}
+
+                        <a
+                            class="restaurant-view-button"
+                            href="{{ url_for(
+                                'public.restaurant_click',
+                                slug=article.slug,
+                                restaurant_id=restaurant.id
+                            ) }}"
+                            aria-label="View {% if restaurant.business_name %}{{ restaurant.business_name }}{% elif restaurant.name %}{{ restaurant.name }}{% else %}restaurant{% endif %} on Kalxa"
+                        >
+
+                            <span class="restaurant-view-copy">
+
+                                <small>
+                                    Explore on Kalxa
+                                </small>
+
+                                <strong>
+                                    View restaurant
+                                </strong>
+
+                            </span>
+
+
+                            <span
+                                class="restaurant-arrow"
+                                aria-hidden="true"
+                            >
+                                →
+                            </span>
+
+                        </a>
+
+                        {% endif %}
+
+                    </article>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
 
             {% endif %}
 
-        </section>
 
+            <!-- =================================================
+                 NEW: STORY REACTIONS
 
-        <!-- =================================================
-             SHARE
-        ================================================== -->
+                 Visitors can like and unlike without an account.
+            ================================================== -->
 
-        <section
-            class="story-share"
-            aria-labelledby="story-share-heading"
-        >
-
-            <div class="story-share-copy">
-
-                <span class="story-share-eyebrow">
-                    SHARE THE STORY
-                </span>
-
-                <p>
-                    Share with Friends
-                    
-                </p>
-
-            </div>
-
-
-            <div
-                class="story-share-actions"
-                id="story-share-actions"
-                data-story-id="{{ article.id }}"
-                data-story-slug="{{ article.slug }}"
-                data-story-title="{{ article.title }}"
-                data-canonical-url="{{ canonical_story_url }}"
+            <section
+                class="story-reactions"
+                id="story-reactions"
+                aria-labelledby="story-reactions-heading"
             >
 
+                <div class="story-reactions-header">
 
-                <!-- WHATSAPP -->
+                    <span class="editorial-eyebrow">
+                        COMMUNITY REACTIONS
+                    </span>
+
+                    <h2 id="story-reactions-heading">
+                        Enjoyed this story?
+                    </h2>
+
+                    <p>
+                        Show some love for the stories shaping KwaNdebele.
+                    </p>
+
+                </div>
+
+
+                <!-- =========================================
+                     LIKE BUTTON
+                ========================================== -->
 
                 <button
-                    class="share-button share-whatsapp"
+                    class="story-like-button{% if story_is_liked | default(false) %} is-liked{% endif %}"
+                    id="story-like-button"
                     type="button"
-                    data-share-channel="whatsapp"
-                    aria-label="Share this story on WhatsApp"
+                    data-like-url="{{ url_for(
+                        'public.toggle_story_like',
+                        slug=article.slug
+                    ) }}"
+                    data-csrf-token="{{ reaction_csrf_token | default('') }}"
+                    aria-pressed="{% if story_is_liked | default(false) %}true{% else %}false{% endif %}"
+                    aria-label="{% if story_is_liked | default(false) %}Remove your like from this story{% else %}Like this story{% endif %}"
                 >
 
                     <span
-                        class="share-icon"
+                        class="story-like-icon"
+                        id="story-like-icon"
                         aria-hidden="true"
                     >
 
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
+                        {% if story_is_liked | default(false) %}
+                            ♥
+                        {% else %}
+                            ♡
+                        {% endif %}
+
+                    </span>
+
+
+                    <span id="story-like-label">
+
+                        {% if story_is_liked | default(false) %}
+                            Liked
+                        {% else %}
+                            Like this story
+                        {% endif %}
+
+                    </span>
+
+
+                    <span
+                        class="story-like-count"
+                        id="story-like-count"
+                    >
+                        {{ story_like_count | default(0) }}
+                    </span>
+
+                </button>
+
+
+                <p
+                    class="story-like-feedback"
+                    id="story-like-feedback"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+
+            </section>
+
+
+            <!-- =================================================
+                 COMMENTS
+            ================================================== -->
+
+            <section
+                class="story-comments"
+                id="comments"
+            >
+
+                <div class="comments-heading">
+
+                    <span class="editorial-eyebrow">
+                        Conversation
+                    </span>
+
+                    <h2>
+                        Leave a comment...
+                    </h2>
+
+                    <p>
+                        Share your thoughts with the community.
+                        No account is required.
+                    </p>
+
+                </div>
+
+
+                {% if article.comments_open %}
+
+                <form
+                    class="comment-form"
+                    method="POST"
+                    action="{{ url_for(
+                        'public.article_comment',
+                        slug=article.slug
+                    ) }}"
+                >
+
+                    <div class="comment-field">
+
+                        <label for="display_name">
+                            Your name
+                        </label>
+
+                        <input
+                            id="display_name"
+                            name="display_name"
+                            type="text"
+                            maxlength="80"
+                            autocomplete="name"
+                            placeholder="How should we display your name?"
+                            required
                         >
-                            <path
-                                d="M20.5 11.7a8.45 8.45 0 0 1-12.5 7.4L3.5 20.5l1.45-4.35A8.46 8.46 0 1 1 20.5 11.7Z"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                            <path
-                                d="M8.4 7.65c.18-.4.37-.41.68-.42h.57c.18 0 .38.05.48.32l.68 1.64c.08.21.05.4-.08.57l-.51.64c-.15.18-.12.35-.03.51.54.94 1.27 1.69 2.18 2.22.17.1.34.12.5-.06l.66-.76c.16-.19.37-.23.58-.14l1.59.75c.23.11.37.26.33.49-.08.52-.36 1.27-.84 1.66-.45.36-1.05.57-1.67.54-1.06-.05-2.47-.52-4.03-1.88-1.27-1.11-2.16-2.46-2.45-3.56-.27-1.02-.12-1.88.36-2.52Z"
+
+                    </div>
+
+
+                    <div class="comment-field">
+
+                        <label for="comment_text">
+                            Comment
+                        </label>
+
+                        <textarea
+                            id="comment_text"
+                            name="comment_text"
+                            maxlength="1000"
+                            rows="5"
+                            placeholder="What do you think about this story?"
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="comment-form-footer">
+
+                        <button
+                            class="comment-submit"
+                            type="submit"
+                        >
+                            Post comment
+                            <span>→</span>
+                        </button>
+
+                        <span class="comment-counter">
+                            Maximum 1,000 characters
+                        </span>
+
+                    </div>
+
+
+                    <p class="comment-note">
+                        Comments are reviewed before appearing publicly.
+                    </p>
+
+                </form>
+
+
+                {% else %}
+
+                <div class="comments-closed">
+
+                    <div class="comments-closed-icon">
+                        K
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            This conversation has ended.
+                        </strong>
+
+                        <p>
+                            Comments closed when this story expired.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                <!-- =========================================
+                     APPROVED COMMENTS
+                ========================================== -->
+
+                {% if approved_comments %}
+
+                <div class="comment-list">
+
+                    <div class="comment-list-heading">
+
+                        <strong>
+                            Community comments
+                        </strong>
+
+                        <span>
+                            {{ approved_comments | length }}
+                        </span>
+
+                    </div>
+
+
+                    {% for comment in approved_comments %}
+
+                    {% set comment_is_upvoted =
+                        comment_upvote_state.get(comment.id, false)
+                    %}
+
+                    <article
+                        class="story-comment"
+                        id="comment-{{ comment.id }}"
+                    >
+
+                        <div class="comment-avatar">
+
+                            {% if comment.display_name %}
+
+                                {{ comment.display_name[0] | upper }}
+
+                            {% else %}
+
+                                K
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="comment-content">
+
+                            <div class="comment-meta">
+
+                                <strong>
+                                    {{ comment.display_name }}
+                                </strong>
+
+                                <span>
+
+                                    {% if comment.created_at %}
+
+                                        {{ comment.created_at.strftime("%d %b %Y") }}
+
+                                    {% endif %}
+
+                                </span>
+
+                            </div>
+
+
+                            <p>
+                                {{ comment.comment_text }}
+                            </p>
+
+
+                            <!-- COMMENT UPVOTE -->
+
+                            <div class="comment-actions">
+
+                                <button
+                                    class="comment-upvote-button{% if comment_is_upvoted %} is-upvoted{% endif %}"
+                                    type="button"
+                                    data-comment-upvote
+                                    data-comment-id="{{ comment.id }}"
+                                    data-upvote-url="{{ url_for(
+                                        'public.toggle_comment_upvote',
+                                        slug=article.slug,
+                                        comment_id=comment.id
+                                    ) }}"
+                                    aria-pressed="{% if comment_is_upvoted %}true{% else %}false{% endif %}"
+                                    aria-label="{% if comment_is_upvoted %}Remove upvote from this comment{% else %}Upvote this comment{% endif %}"
+                                >
+
+                                    <span
+                                        class="comment-upvote-icon"
+                                        data-upvote-icon
+                                        aria-hidden="true"
+                                    >
+
+                                        {% if comment_is_upvoted %}
+                                            ♥
+                                        {% else %}
+                                            ♡
+                                        {% endif %}
+
+                                    </span>
+
+
+                                    <span
+                                        class="comment-upvote-label"
+                                        data-upvote-label
+                                    >
+
+                                        {% if comment_is_upvoted %}
+                                            Upvoted
+                                        {% else %}
+                                            Upvote
+                                        {% endif %}
+
+                                    </span>
+
+
+                                    <span
+                                        class="comment-upvote-count"
+                                        data-upvote-count
+                                    >
+                                        {{ comment.upvote_count }}
+                                    </span>
+
+                                </button>
+
+
+                                <span
+                                    class="comment-upvote-feedback"
+                                    data-upvote-feedback
+                                    role="status"
+                                    aria-live="polite"
+                                ></span>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                    {% endfor %}
+
+                </div>
+
+
+                {% elif article.comments_open %}
+
+                <div class="no-comments">
+
+                    <div class="no-comments-icon">
+                        ◌
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Start the conversation.
+                        </strong>
+
+                        <p>
+                            Be the first to comment on this story.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- =================================================
+                 SHARE STORY
+            ================================================== -->
+
+            <section
+                class="story-share"
+                aria-labelledby="story-share-heading"
+            >
+
+                <div class="story-share-copy">
+
+                    <span
+                        class="story-share-eyebrow"
+                        id="story-share-heading"
+                    >
+                        SHARE THE STORY
+                    </span>
+
+                    <p>
+                        Share with Friends
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="story-share-actions"
+                    id="story-share-actions"
+                    data-story-id="{{ article.id }}"
+                    data-story-slug="{{ article.slug }}"
+                    data-story-title="{{ article.title }}"
+                    data-canonical-url="{{ canonical_story_url }}"
+                >
+
+                    <!-- WHATSAPP -->
+
+                    <button
+                        class="share-button share-whatsapp"
+                        type="button"
+                        data-share-channel="whatsapp"
+                        aria-label="Share this story on WhatsApp"
+                    >
+
+                        <span
+                            class="share-icon"
+                            aria-hidden="true"
+                        >
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+
+                                <path
+                                    d="M20.5 11.7a8.45 8.45 0 0 1-12.5 7.4L3.5 20.5l1.45-4.35A8.46 8.46 0 1 1 20.5 11.7Z"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+
+                                <path
+                                    d="M8.4 7.65c.18-.4.37-.41.68-.42h.57c.18 0 .38.05.48.32l.68 1.64c.08.21.05.4-.08.57l-.51.64c-.15.18-.12.35-.03.51.54.94 1.27 1.69 2.18 2.22.17.1.34.12.5-.06l.66-.76c.16-.19.37-.23.58-.14l1.59.75c.23.11.37.26.33.49-.08.52-.36 1.27-.84 1.66-.45.36-1.05.57-1.67.54-1.06-.05-2.47-.52-4.03-1.88-1.27-1.11-2.16-2.46-2.45-3.56-.27-1.02-.12-1.88.36-2.52Z"
+                                    fill="currentColor"
+                                />
+
+                            </svg>
+
+                        </span>
+
+                        <span>
+                            WhatsApp
+                        </span>
+
+                    </button>
+
+
+                    <!-- FACEBOOK -->
+
+                    <button
+                        class="share-button share-facebook"
+                        type="button"
+                        data-share-channel="facebook"
+                        aria-label="Share this story on Facebook"
+                    >
+
+                        <span
+                            class="share-icon"
+                            aria-hidden="true"
+                        >
+
+                            <svg
+                                viewBox="0 0 24 24"
                                 fill="currentColor"
-                            />
-                        </svg>
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
 
-                    </span>
+                                <path
+                                    d="M13.7 21v-8h2.7l.4-3.1h-3.1V7.92c0-.9.25-1.52 1.56-1.52h1.67V3.63c-.29-.04-1.28-.13-2.44-.13-2.42 0-4.08 1.48-4.08 4.2v2.2H7.67V13h2.74v8h3.29Z"
+                                />
 
-                    <span>
-                        WhatsApp
-                    </span>
+                            </svg>
 
-                </button>
+                        </span>
+
+                        <span>
+                            Facebook
+                        </span>
+
+                    </button>
 
 
+                    <!-- COPY LINK -->
 
-                <!-- FACEBOOK -->
-
-                <button
-                    class="share-button share-facebook"
-                    type="button"
-                    data-share-channel="facebook"
-                    aria-label="Share this story on Facebook"
-                >
-
-                    <span
-                        class="share-icon"
-                        aria-hidden="true"
+                    <button
+                        class="share-button share-copy"
+                        type="button"
+                        data-share-channel="copy_link"
+                        aria-label="Copy story link"
                     >
 
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
+                        <span
+                            class="share-icon"
+                            aria-hidden="true"
                         >
-                            <path
-                                d="M13.7 21v-8h2.7l.4-3.1h-3.1V7.92c0-.9.25-1.52 1.56-1.52h1.67V3.63c-.29-.04-1.28-.13-2.44-.13-2.42 0-4.08 1.48-4.08 4.2v2.2H7.67V13h2.74v8h3.29Z"
-                            />
-                        </svg>
 
-                    </span>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
 
-                    <span>
-                        Facebook
-                    </span>
+                                <path
+                                    d="M10.4 13.6a4 4 0 0 0 5.66 0l2.1-2.1a4 4 0 0 0-5.66-5.66l-1.2 1.2"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                />
 
-                </button>
+                                <path
+                                    d="M13.6 10.4a4 4 0 0 0-5.66 0l-2.1 2.1a4 4 0 1 0 5.66 5.66l1.2-1.2"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                />
+
+                            </svg>
+
+                        </span>
+
+                        <span id="copy-link-label">
+                            Copy link
+                        </span>
+
+                    </button>
+
+                </div>
 
 
+                <div
+                    class="share-feedback"
+                    id="share-feedback"
+                    role="status"
+                    aria-live="polite"
+                ></div>
 
-                <!-- COPY -->
+            </section>
 
-                <button
-                    class="share-button share-copy"
-                    type="button"
-                    data-share-channel="copy_link"
-                    aria-label="Copy story link"
-                >
 
-                    <span
-                        class="share-icon"
-                        aria-hidden="true"
-                    >
+            <!-- =================================================
+                 EDITORIAL DIVIDER
+            ================================================== -->
 
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M10.4 13.6a4 4 0 0 0 5.66 0l2.1-2.1a4 4 0 0 0-5.66-5.66l-1.2 1.2"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                            />
-                            <path
-                                d="M13.6 10.4a4 4 0 0 0-5.66 0l-2.1 2.1a4 4 0 1 0 5.66 5.66l1.2-1.2"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                            />
-                        </svg>
+            <div class="story-divider">
 
-                    </span>
-
-                    <span id="copy-link-label">
-                        Copy link
-                    </span>
-
-                </button>
+                <span>
+                    K
+                </span>
 
             </div>
-
-
-            <div
-                class="share-feedback"
-                id="share-feedback"
-                role="status"
-                aria-live="polite"
-            ></div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             EDITORIAL DIVIDER
-        ================================================== -->
-
-        <div class="story-divider">
-
-            <span>
-               K
-            </span>
 
         </div>
 
-
-
-
-
-
-    </div>
-
-</section>
-
+    </section>
 
 </article>
-
 
 
 <!-- =========================================================
@@ -1093,7 +1178,6 @@
 <section class="related-section">
 
     <div class="page-container">
-
 
         <div class="related-heading">
 
@@ -1112,9 +1196,7 @@
 
             <a
                 class="view-all-stories"
-                href="{{ url_for(
-                    'public.stories'
-                ) }}"
+                href="{{ url_for('public.stories') }}"
             >
                 View all stories →
             </a>
@@ -1122,14 +1204,11 @@
         </div>
 
 
-
         <div class="story-grid">
-
 
             {% for related in related_articles %}
 
             <article class="story-card">
-
 
                 <a
                     class="story-image-link"
@@ -1212,8 +1291,11 @@
                             slug=related.slug
                         ) }}"
                     >
+
                         Read story
+
                         <span>→</span>
+
                     </a>
 
                 </div>
@@ -1229,7 +1311,6 @@
 </section>
 
 {% endif %}
-
 
 
 <!-- =========================================================
@@ -1260,6 +1341,9 @@
 </div>
 
 
+<!-- =========================================================
+     ARTICLE STYLES
+========================================================= -->
 
 <style>
 
@@ -1268,24 +1352,15 @@
 ========================================================= */
 
 .article-page {
-
-    background:
-        var(--kalxa-paper);
-
+    background: var(--kalxa-paper);
 }
 
-
 .article-container {
-
-    width:
-        min(
-            var(--kalxa-reading-width),
-            calc(100% - 40px)
-        );
-
-    margin:
-        0 auto;
-
+    width: min(
+        var(--kalxa-reading-width),
+        calc(100% - 40px)
+    );
+    margin: 0 auto;
 }
 
 
@@ -1294,225 +1369,135 @@
 ========================================================= */
 
 .article-hero {
-
-    padding:
-        100px 0 60px;
-
-    background:
-        var(--kalxa-paper);
-
+    padding: 100px 0 60px;
+    background: var(--kalxa-paper);
 }
-
 
 .article-kicker {
-
     display: flex;
-
     align-items: center;
-
     flex-wrap: wrap;
-
     gap: 10px;
-
     margin-bottom: 27px;
-
 }
-
 
 .article-type,
 .article-sponsored {
-
     display: inline-flex;
-
     align-items: center;
-
     min-height: 27px;
-
-    padding:
-        0 10px;
-
-    border-radius:
-        999px;
-
+    padding: 0 10px;
+    border-radius: 999px;
     font-size: 8px;
-
     font-weight: 700;
-
-    letter-spacing:
-        1.5px;
-
-    text-transform:
-        uppercase;
-
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
-
 
 .article-type {
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        #f7f1e7;
-
+    background: var(--kalxa-black);
+    color: #f7f1e7;
 }
-
 
 .article-sponsored {
-
-    border:
-        1px solid
-        rgba(165, 123, 67, .3);
-
-    background:
-        var(--kalxa-gold-soft);
-
-    color:
-        var(--kalxa-gold-dark);
-
+    border: 1px solid rgba(165, 123, 67, .3);
+    background: var(--kalxa-gold-soft);
+    color: var(--kalxa-gold-dark);
 }
-
 
 .article-title {
-
-    max-width:
-        900px;
-
-    margin:
-        0 0 27px;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(
-            49px,
-            7vw,
-            82px
-        );
-
+    max-width: 900px;
+    margin: 0 0 27px;
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
+    font-size: clamp(49px, 7vw, 82px);
     font-weight: 500;
-
     line-height: .98;
-
-    letter-spacing:
-        -3px;
-
+    letter-spacing: -3px;
 }
-
 
 .article-excerpt {
-
-    max-width:
-        690px;
-
-    margin:
-        0 0 36px;
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size:
-        clamp(
-            17px,
-            2vw,
-            21px
-        );
-
+    max-width: 690px;
+    margin: 0 0 36px;
+    color: var(--kalxa-text-soft);
+    font-size: clamp(17px, 2vw, 21px);
     line-height: 1.65;
-
 }
-
 
 .article-byline {
-
-    padding-top:
-        22px;
-
-    border-top:
-        1px solid
-        var(--kalxa-border-soft);
-
+    padding-top: 22px;
+    border-top: 1px solid var(--kalxa-border-soft);
     display: flex;
-
     align-items: center;
-
     gap: 13px;
-
 }
-
 
 .kalxa-author-mark {
-
     width: 42px;
-
     height: 42px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     border-radius: 50%;
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        #e7d4b7;
-
-    font-family:
-        var(--kalxa-serif);
-
+    background: var(--kalxa-black);
+    color: #e7d4b7;
+    font-family: var(--kalxa-serif);
     font-size: 17px;
-
 }
-
 
 .article-byline strong {
-
     display: block;
-
-    color:
-        var(--kalxa-ink);
-
+    color: var(--kalxa-ink);
     font-size: 11px;
-
 }
-
 
 .article-byline-meta {
-
     display: flex;
-
     flex-wrap: wrap;
-
     gap: 7px;
-
     margin-top: 4px;
-
-    color:
-        var(--kalxa-muted);
-
+    color: var(--kalxa-muted);
     font-size: 9px;
+    letter-spacing: .25px;
+}
 
-    letter-spacing:
-        .25px;
-
+.story-conversation-ended {
+    color: var(--kalxa-gold-dark);
+    font-weight: 700;
 }
 
 
-.story-conversation-ended {
+/* =========================================================
+   NEW: STORY VIEWS AND LIKES
 
-    color:
-        var(--kalxa-gold-dark);
+   NO EYE ICON
+========================================================= */
 
-    font-weight: 700;
+.story-engagement-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+    color: var(--kalxa-text-soft);
+    font-size: 11px;
+    font-weight: 600;
+}
 
+.story-engagement-summary strong {
+    color: var(--kalxa-ink);
+    font-weight: 800;
+}
+
+.story-view-stat,
+.story-like-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.story-engagement-separator {
+    color: var(--kalxa-muted);
 }
 
 
@@ -1521,71 +1506,35 @@
 ========================================================= */
 
 .article-cover {
-
-    width:
-        min(
-            1240px,
-            calc(100% - 40px)
-        );
-
-    margin:
-        0 auto;
-
+    width: min(1240px, calc(100% - 40px));
+    margin: 0 auto;
 }
-
 
 .article-image-container {
-
     overflow: hidden;
-
-    background:
-        #e8e0d4;
-
+    background: #e8e0d4;
 }
-
 
 .article-image-button {
-
     width: 100%;
-
     display: block;
-
     padding: 0;
-
     border: 0;
-
-    background:
-        transparent;
-
-    cursor:
-        zoom-in;
-
+    background: transparent;
+    cursor: zoom-in;
 }
-
 
 .article-image-container img {
-
     width: 100%;
-
     max-height: 760px;
-
     display: block;
-
     object-fit: cover;
-
 }
 
-
 .image-caption {
-
-    padding:
-        11px 1px;
-
-    color:
-        var(--kalxa-muted);
-
+    padding: 11px 1px;
+    color: var(--kalxa-muted);
     font-size: 9px;
-
 }
 
 
@@ -1594,103 +1543,47 @@
 ========================================================= */
 
 .article-body-section {
-
-    padding:
-        70px 0 95px;
-
+    padding: 70px 0 95px;
 }
-
 
 .article-body {
-
-    color:
-        #302d27;
-
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
+    color: #302d27;
+    font-family: Georgia, "Times New Roman", serif;
     font-size: 19px;
-
     line-height: 1.9;
-
 }
-
 
 .article-body p {
-
-    margin:
-        0 0 29px;
-
+    margin: 0 0 29px;
 }
-
 
 .article-body h2 {
-
-    margin:
-        60px 0 21px;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
+    margin: 60px 0 21px;
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
     font-size: 36px;
-
     font-weight: 600;
-
     line-height: 1.15;
-
-    letter-spacing:
-        -1px;
-
+    letter-spacing: -1px;
 }
-
 
 .article-body h3 {
-
-    margin:
-        42px 0 17px;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
+    margin: 42px 0 17px;
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
     font-size: 27px;
-
     font-weight: 600;
-
 }
 
-
 .article-body blockquote {
-
-    margin:
-        48px 0;
-
-    padding:
-        8px 0 8px 29px;
-
-    border-left:
-        2px solid
-        var(--kalxa-gold);
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
+    margin: 48px 0;
+    padding: 8px 0 8px 29px;
+    border-left: 2px solid var(--kalxa-gold);
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
     font-size: 28px;
-
     font-style: italic;
-
     line-height: 1.5;
-
 }
 
 
@@ -1699,342 +1592,175 @@
 ========================================================= */
 
 .article-supporting-images {
-
     display: grid;
-
     gap: 36px;
-
-    margin:
-        60px 0;
-
+    margin: 60px 0;
 }
-
 
 .article-supporting-image {
-
     margin: 0;
-
 }
-
 
 .article-supporting-image img {
-
     width: 100%;
-
     max-height: 620px;
-
     display: block;
-
     object-fit: cover;
-
 }
 
-
 .article-supporting-image figcaption {
-
     margin-top: 10px;
-
-    color:
-        var(--kalxa-muted);
-
+    color: var(--kalxa-muted);
     font-size: 9px;
-
 }
 
 
 /* =========================================================
-   SHARE
+   EDITORIAL LABELS
 ========================================================= */
-
-.story-share {
-
-    margin-top:
-        70px;
-
-    padding:
-        38px;
-
-    border:
-        1px solid
-        var(--kalxa-border);
-
-    background:
-        var(--kalxa-cream);
-
-}
-
-
-.story-share-copy {
-
-    max-width:
-        570px;
-
-}
-
 
 .story-share-eyebrow,
 .editorial-eyebrow {
-
     display: block;
-
-    margin-bottom:
-        10px;
-
-    color:
-        var(--kalxa-gold-dark);
-
+    margin-bottom: 10px;
+    color: var(--kalxa-gold-dark);
     font-size: 8px;
-
     font-weight: 700;
-
-    letter-spacing:
-        2px;
-
-    text-transform:
-        uppercase;
-
-}
-
-
-.story-share h2 {
-
-    margin:
-        0 0 10px;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size: 34px;
-
-    font-weight: 500;
-
-    letter-spacing:
-        -.8px;
-
-}
-
-
-.story-share p {
-
-    max-width:
-        510px;
-
-    margin: 0;
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size: 12px;
-
-    line-height: 1.7;
-
-}
-
-
-.story-share-actions {
-
-    display: grid;
-
-    grid-template-columns:
-        1.35fr
-        1fr
-        1fr;
-
-    gap: 10px;
-
-    margin-top:
-        28px;
-
-}
-
-
-.share-button {
-
-    min-height:
-        52px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    padding:
-        0 16px;
-
-    border:
-        1px solid
-        var(--kalxa-border);
-
-    background:
-        var(--kalxa-paper);
-
-    color:
-        var(--kalxa-ink);
-
-    font-size: 10px;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    transition:
-        transform .15s ease,
-        border-color .15s ease,
-        background .15s ease;
-
-}
-
-
-.share-button:hover {
-
-    transform:
-        translateY(-2px);
-
-    border-color:
-        #b9aa93;
-
-}
-
-
-.share-whatsapp {
-
-    border-color:
-        var(--kalxa-black);
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        white;
-
-}
-
-
-.share-whatsapp:hover {
-
-    background:
-        #28261f;
-
-}
-
-
-.share-icon {
-
-    width: 23px;
-
-    height: 23px;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-}
-
-
-.share-icon svg {
-
-    width: 20px;
-
-    height: 20px;
-
-    display: block;
-
-}
-
-
-.share-feedback {
-
-    min-height:
-        17px;
-
-    margin-top:
-        11px;
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size: 9px;
-
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 
 /* =========================================================
-   DIVIDER
+   NEW: STORY REACTIONS SECTION
 ========================================================= */
 
-.story-divider {
+.story-reactions {
+    margin-top: 65px;
+    padding: 35px;
+    border: 1px solid var(--kalxa-border);
+    border-radius: 8px;
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #f8faf8 50%,
+            #edf5ee 100%
+        );
+}
 
-    position: relative;
+.story-reactions-header h2 {
+    margin: 0 0 9px;
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
+    font-size: 30px;
+    font-weight: 600;
+}
 
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    margin:
-        78px 0;
-
+.story-reactions-header p {
+    margin: 0 0 23px;
+    color: var(--kalxa-text-soft);
+    font-size: 12px;
+    line-height: 1.7;
 }
 
 
-.story-divider::before {
+/* =========================================================
+   STORY LIKE BUTTON
+========================================================= */
 
-    content: "";
+.story-like-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 49px;
+    padding: 12px 21px;
+    border: 1px solid #d6dfe0;
+    border-radius: 7px;
+    background: #ffffff;
+    color: var(--kalxa-ink);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
 
-    position: absolute;
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
 
-    left: 0;
+.story-like-button:hover {
+    transform: translateY(-2px);
+    border-color: #e6b7c0;
+    box-shadow: 0 5px 15px rgba(170, 52, 75, .09);
+}
 
-    right: 0;
+.story-like-button:focus-visible {
+    outline: 3px solid #b95a70;
+    outline-offset: 3px;
+}
 
-    height: 1px;
-
-    background:
-        var(--kalxa-border);
-
+.story-like-button:disabled {
+    cursor: wait;
+    opacity: .7;
 }
 
 
-.story-divider span {
+/* =========================================================
+   HEART ICON
+========================================================= */
 
-    position: relative;
+.story-like-icon {
+    color: #b73c55;
+    font-size: 23px;
+    line-height: 1;
+}
 
-    width: 42px;
-
-    height: 42px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 50%;
-
+.story-like-button.is-liked {
     background:
-        var(--kalxa-paper);
+        linear-gradient(
+            135deg,
+            #fff2f4,
+            #fce3e8
+        );
+    border-color: #e4a4b0;
+    color: #963047;
+}
 
-    border:
-        1px solid
-        var(--kalxa-border);
+.story-like-button.is-liked .story-like-icon {
+    color: #d5204b;
+}
 
-    color:
-        var(--kalxa-gold-dark);
 
-    font-family:
-        var(--kalxa-serif);
+/* =========================================================
+   STORY LIKE COUNTER
+========================================================= */
 
-    font-size: 17px;
+.story-like-count {
+    min-width: 26px;
+    min-height: 24px;
+    padding: 3px 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #f0e6e8;
+    color: #913147;
+    font-size: 10px;
+    font-weight: 800;
+}
 
+.story-like-button.is-liked .story-like-count {
+    background: #f4ccd5;
+}
+
+.story-like-feedback {
+    min-height: 16px;
+    margin: 10px 0 0;
+    color: #9a4253;
+    font-size: 10px;
 }
 
 
@@ -2043,79 +1769,36 @@
 ========================================================= */
 
 .restaurant-discovery {
-
-    margin-top:
-        25px;
-
+    margin-top: 25px;
 }
-
 
 .discovery-heading {
-
-    margin-bottom:
-        34px;
-
+    margin-bottom: 34px;
 }
-
 
 .discovery-heading h2,
 .comments-heading h2,
 .related-heading h2 {
-
-    margin:
-        0 0 11px;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        37px;
-
-    font-weight:
-        500;
-
-    letter-spacing:
-        -1px;
-
+    margin: 0 0 11px;
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
+    font-size: 37px;
+    font-weight: 500;
+    letter-spacing: -1px;
 }
-
 
 .discovery-heading p,
 .comments-heading p {
-
-    max-width:
-        570px;
-
-    margin:
-        0;
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size:
-        12px;
-
-    line-height:
-        1.75;
-
+    max-width: 570px;
+    margin: 0;
+    color: var(--kalxa-text-soft);
+    font-size: 12px;
+    line-height: 1.75;
 }
 
-
-/* =========================================================
-   RESTAURANT LIST
-========================================================= */
-
 .featured-restaurant-list {
-
-    display:
-        grid;
-
-    gap:
-        14px;
-
+    display: grid;
+    gap: 14px;
 }
 
 
@@ -2124,33 +1807,14 @@
 ========================================================= */
 
 .restaurant-reference {
-
-    position:
-        relative;
-
-    display:
-        grid;
-
-    grid-template-columns:
-        48px
-        minmax(0, 1fr)
-        auto;
-
-    align-items:
-        center;
-
-    gap:
-        22px;
-
-    padding:
-        25px;
-
-    overflow:
-        hidden;
-
-    border:
-        1px solid
-        var(--kalxa-border);
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 22px;
+    padding: 25px;
+    overflow: hidden;
+    border: 1px solid var(--kalxa-border);
 
     background:
         linear-gradient(
@@ -2163,436 +1827,178 @@
         transform .2s ease,
         border-color .2s ease,
         box-shadow .2s ease;
-
 }
-
 
 .restaurant-reference::before {
-
-    content:
-        "";
-
-    position:
-        absolute;
-
-    top:
-        0;
-
-    bottom:
-        0;
-
-    left:
-        0;
-
-    width:
-        3px;
-
-    background:
-        var(--kalxa-gold);
-
-    opacity:
-        0;
-
-    transition:
-        opacity .2s ease;
-
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--kalxa-gold);
+    opacity: 0;
+    transition: opacity .2s ease;
 }
-
 
 .restaurant-reference:hover {
-
-    transform:
-        translateY(-2px);
-
-    border-color:
-        #cfc1aa;
-
-    box-shadow:
-        0
-        18px
-        45px
-        rgba(32, 27, 19, .07);
-
+    transform: translateY(-2px);
+    border-color: #cfc1aa;
+    box-shadow: 0 18px 45px rgba(32, 27, 19, .07);
 }
-
 
 .restaurant-reference:hover::before {
-
-    opacity:
-        1;
-
+    opacity: 1;
 }
-
-
-/* =========================================================
-   RESTAURANT NUMBER
-========================================================= */
 
 .restaurant-reference-number {
-
-    align-self:
-        flex-start;
-
-    padding-top:
-        4px;
-
-    color:
-        var(--kalxa-gold);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        17px;
-
-    font-style:
-        italic;
-
+    align-self: flex-start;
+    padding-top: 4px;
+    color: var(--kalxa-gold);
+    font-family: var(--kalxa-serif);
+    font-size: 17px;
+    font-style: italic;
 }
-
-
-/* =========================================================
-   RESTAURANT CONTENT
-========================================================= */
 
 .restaurant-reference-content {
-
-    min-width:
-        0;
-
+    min-width: 0;
 }
-
 
 .restaurant-reference-label {
-
-    display:
-        block;
-
-    margin-bottom:
-        7px;
-
-    color:
-        var(--kalxa-gold-dark);
-
-    font-size:
-        7px;
-
-    font-weight:
-        700;
-
-    letter-spacing:
-        1.6px;
-
-    text-transform:
-        uppercase;
-
+    display: block;
+    margin-bottom: 7px;
+    color: var(--kalxa-gold-dark);
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
 }
-
 
 .restaurant-reference h3 {
-
-    margin:
-        0 0 7px;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        27px;
-
-    font-weight:
-        600;
-
-    line-height:
-        1.1;
-
-    letter-spacing:
-        -.5px;
-
+    margin: 0 0 7px;
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
+    font-size: 27px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.5px;
 }
-
 
 .restaurant-reference-headline {
-
-    max-width:
-        470px;
-
-    margin:
-        0 0 10px;
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size:
-        12px;
-
-    line-height:
-        1.6;
-
+    max-width: 470px;
+    margin: 0 0 10px;
+    color: var(--kalxa-text-soft);
+    font-size: 12px;
+    line-height: 1.6;
 }
-
-
-/* =========================================================
-   RESTAURANT DETAILS
-========================================================= */
 
 .restaurant-details {
-
-    display:
-        flex;
-
-    flex-wrap:
-        wrap;
-
-    align-items:
-        center;
-
-    gap:
-        8px 16px;
-
-    color:
-        var(--kalxa-muted);
-
-    font-size:
-        9px;
-
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    color: var(--kalxa-muted);
+    font-size: 9px;
 }
-
 
 .restaurant-location {
-
-    display:
-        inline-flex;
-
-    align-items:
-        center;
-
-    gap:
-        5px;
-
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
-
 
 .restaurant-location svg {
-
-    width:
-        13px;
-
-    height:
-        13px;
-
-    flex:
-        0 0 13px;
-
-    color:
-        var(--kalxa-gold-dark);
-
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+    color: var(--kalxa-gold-dark);
 }
-
 
 .restaurant-price {
-
-    position:
-        relative;
-
-    padding-left:
-        14px;
-
+    position: relative;
+    padding-left: 14px;
 }
 
-
 .restaurant-price::before {
-
-    content:
-        "";
-
-    position:
-        absolute;
-
-    top:
-        50%;
-
-    left:
-        0;
-
-    width:
-        3px;
-
-    height:
-        3px;
-
-    border-radius:
-        50%;
-
-    background:
-        var(--kalxa-gold);
-
-    transform:
-        translateY(-50%);
-
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--kalxa-gold);
+    transform: translateY(-50%);
 }
 
 
 /* =========================================================
-   VIEW RESTAURANT CTA
+   VIEW RESTAURANT BUTTON
 ========================================================= */
 
 .restaurant-view-button {
-
-    min-width:
-        178px;
-
-    min-height:
-        58px;
-
-    display:
-        inline-flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        space-between;
-
-    gap:
-        20px;
-
-    padding:
-        10px 17px;
-
-    border:
-        1px solid
-        var(--kalxa-black);
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        #ffffff;
-
-    text-decoration:
-        none;
+    min-width: 178px;
+    min-height: 58px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 17px;
+    border: 1px solid var(--kalxa-black);
+    background: var(--kalxa-black);
+    color: #ffffff;
+    text-decoration: none;
 
     transition:
         background .18s ease,
         border-color .18s ease,
         transform .18s ease;
-
 }
-
 
 .restaurant-view-button:hover {
-
-    background:
-        #29271f;
-
-    border-color:
-        #29271f;
-
-    transform:
-        translateX(2px);
-
+    background: #29271f;
+    border-color: #29271f;
+    transform: translateX(2px);
 }
-
 
 .restaurant-view-button:focus-visible {
-
-    outline:
-        2px solid
-        var(--kalxa-gold);
-
-    outline-offset:
-        3px;
-
+    outline: 2px solid var(--kalxa-gold);
+    outline-offset: 3px;
 }
-
 
 .restaurant-view-copy {
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    align-items:
-        flex-start;
-
-    gap:
-        3px;
-
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
 }
-
 
 .restaurant-view-copy small {
-
-    color:
-        rgba(255, 255, 255, .58);
-
-    font-size:
-        7px;
-
-    font-weight:
-        600;
-
-    letter-spacing:
-        1px;
-
-    line-height:
-        1;
-
-    text-transform:
-        uppercase;
-
+    color: rgba(255, 255, 255, .58);
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-transform: uppercase;
 }
-
 
 .restaurant-view-copy strong {
-
-    color:
-        #ffffff;
-
-    font-size:
-        10px;
-
-    font-weight:
-        700;
-
-    line-height:
-        1.2;
-
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
-
 .restaurant-arrow {
-
-    flex:
-        0 0 auto;
-
-    color:
-        #e5c99e;
-
-    font-size:
-        21px;
-
-    line-height:
-        1;
-
-    transition:
-        transform .18s ease;
-
+    flex: 0 0 auto;
+    color: #e5c99e;
+    font-size: 21px;
+    line-height: 1;
+    transition: transform .18s ease;
 }
 
-
-.restaurant-view-button:hover
-.restaurant-arrow {
-
-    transform:
-        translateX(4px);
-
+.restaurant-view-button:hover .restaurant-arrow {
+    transform: translateX(4px);
 }
 
 
@@ -2601,712 +2007,466 @@
 ========================================================= */
 
 .story-comments {
-
-    margin-top:
-        85px;
-
-    padding-top:
-        65px;
-
-    border-top:
-        1px solid
-        var(--kalxa-border);
-
+    margin-top: 85px;
+    padding-top: 65px;
+    border-top: 1px solid var(--kalxa-border);
 }
-
 
 .comments-heading p {
-
-    margin-bottom:
-        32px;
-
+    margin-bottom: 32px;
 }
-
 
 .comment-form {
-
     display: grid;
-
     gap: 20px;
-
-    padding:
-        30px;
-
-    border:
-        1px solid
-        var(--kalxa-border);
-
-    background:
-        var(--kalxa-cream);
-
+    padding: 30px;
+    border: 1px solid var(--kalxa-border);
+    background: var(--kalxa-cream);
 }
-
 
 .comment-field {
-
     display: grid;
-
     gap: 8px;
-
 }
-
 
 .comment-field label {
-
-    color:
-        var(--kalxa-text);
-
+    color: var(--kalxa-text);
     font-size: 9px;
-
     font-weight: 700;
-
-    letter-spacing:
-        .5px;
-
+    letter-spacing: .5px;
 }
-
 
 .comment-field input,
 .comment-field textarea {
-
     width: 100%;
-
-    padding:
-        15px;
-
-    border:
-        1px solid
-        var(--kalxa-border);
-
+    padding: 15px;
+    border: 1px solid var(--kalxa-border);
     border-radius: 0;
-
-    background:
-        var(--kalxa-paper);
-
-    color:
-        var(--kalxa-ink);
-
+    background: var(--kalxa-paper);
+    color: var(--kalxa-ink);
 }
-
 
 .comment-field textarea {
-
-    resize:
-        vertical;
-
-    min-height:
-        130px;
-
-    line-height:
-        1.65;
-
+    resize: vertical;
+    min-height: 130px;
+    line-height: 1.65;
 }
-
 
 .comment-field input:focus,
 .comment-field textarea:focus {
-
     outline: none;
-
-    border-color:
-        var(--kalxa-gold);
-
-    box-shadow:
-        0 0 0 2px
-        rgba(165, 123, 67, .08);
-
+    border-color: var(--kalxa-gold);
+    box-shadow: 0 0 0 2px rgba(165, 123, 67, .08);
 }
-
 
 .comment-form-footer {
-
     display: flex;
-
     align-items: center;
-
-    justify-content:
-        space-between;
-
+    justify-content: space-between;
     gap: 15px;
-
 }
-
 
 .comment-submit {
-
-    min-height:
-        48px;
-
+    min-height: 48px;
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 11px;
-
-    padding:
-        0 21px;
-
+    padding: 0 21px;
     border: 0;
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        white;
-
+    background: var(--kalxa-black);
+    color: white;
     font-size: 10px;
-
     font-weight: 700;
-
     cursor: pointer;
-
 }
-
 
 .comment-counter,
 .comment-note {
-
-    color:
-        var(--kalxa-muted);
-
+    color: var(--kalxa-muted);
     font-size: 9px;
-
 }
-
 
 .comment-note {
-
     margin: 0;
-
 }
-
 
 .comment-list {
-
     display: grid;
-
-    margin-top:
-        38px;
-
+    margin-top: 38px;
 }
-
 
 .comment-list-heading {
-
     display: flex;
-
     align-items: center;
-
     gap: 9px;
-
-    padding-bottom:
-        14px;
-
-    border-bottom:
-        1px solid
-        var(--kalxa-border);
-
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--kalxa-border);
 }
-
 
 .comment-list-heading strong {
-
     font-size: 10px;
-
-    letter-spacing:
-        .5px;
-
-    text-transform:
-        uppercase;
-
+    letter-spacing: .5px;
+    text-transform: uppercase;
 }
-
 
 .comment-list-heading span {
-
-    min-width:
-        23px;
-
-    height:
-        23px;
-
+    min-width: 23px;
+    height: 23px;
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
-    border-radius:
-        999px;
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        white;
-
+    border-radius: 999px;
+    background: var(--kalxa-black);
+    color: white;
     font-size: 8px;
-
 }
-
 
 .story-comment {
-
     display: grid;
-
-    grid-template-columns:
-        43px
-        minmax(0, 1fr);
-
+    grid-template-columns: 43px minmax(0, 1fr);
     gap: 15px;
-
-    padding:
-        24px 0;
-
-    border-bottom:
-        1px solid
-        var(--kalxa-border-soft);
-
+    padding: 24px 0;
+    border-bottom: 1px solid var(--kalxa-border-soft);
 }
-
 
 .comment-avatar {
-
-    width:
-        43px;
-
-    height:
-        43px;
-
+    width: 43px;
+    height: 43px;
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
-    border-radius:
-        50%;
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        #eadbc3;
-
-    font-family:
-        var(--kalxa-serif);
-
+    border-radius: 50%;
+    background: var(--kalxa-black);
+    color: #eadbc3;
+    font-family: var(--kalxa-serif);
 }
-
 
 .comment-meta {
-
     display: flex;
-
     align-items: center;
-
-    justify-content:
-        space-between;
-
+    justify-content: space-between;
     gap: 12px;
-
 }
-
 
 .comment-meta strong {
-
-    color:
-        var(--kalxa-ink);
-
+    color: var(--kalxa-ink);
     font-size: 11px;
-
 }
-
 
 .comment-meta span {
-
-    color:
-        var(--kalxa-muted);
-
+    color: var(--kalxa-muted);
     font-size: 9px;
-
 }
-
 
 .comment-content > p {
-
-    margin:
-        8px 0 0;
-
-    color:
-        var(--kalxa-text-soft);
-
+    margin: 8px 0 0;
+    color: var(--kalxa-text-soft);
     font-size: 13px;
-
-    line-height:
-        1.7;
-
-    white-space:
-        pre-wrap;
-
-    overflow-wrap:
-        anywhere;
-
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
-
 
 .comment-actions {
-
     display: flex;
-
     align-items: center;
-
     flex-wrap: wrap;
-
     gap: 9px;
-
-    margin-top:
-        13px;
-
+    margin-top: 13px;
 }
-
 
 .comment-upvote-button {
-
-    min-height:
-        33px;
-
+    min-height: 33px;
     display: inline-flex;
-
     align-items: center;
-
     gap: 6px;
-
-    padding:
-        5px 10px;
-
-    border:
-        1px solid
-        var(--kalxa-border);
-
-    border-radius:
-        999px;
-
-    background:
-        var(--kalxa-paper);
-
-    color:
-        var(--kalxa-text-soft);
-
+    padding: 5px 10px;
+    border: 1px solid var(--kalxa-border);
+    border-radius: 999px;
+    background: var(--kalxa-paper);
+    color: var(--kalxa-text-soft);
     font-size: 9px;
-
     font-weight: 700;
-
     cursor: pointer;
-
 }
-
 
 .comment-upvote-button.is-upvoted {
-
-    border-color:
-        var(--kalxa-black);
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        white;
-
+    border-color: var(--kalxa-black);
+    background: var(--kalxa-black);
+    color: white;
 }
 
-
 .comment-upvote-count {
-
-    min-width:
-        19px;
-
-    height:
-        19px;
-
-    padding:
-        0 5px;
-
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
-    border-radius:
-        999px;
-
-    background:
-        rgba(165, 123, 67, .11);
-
+    border-radius: 999px;
+    background: rgba(165, 123, 67, .11);
     font-size: 8px;
-
 }
 
-
-.comment-upvote-button.is-upvoted
-.comment-upvote-count {
-
-    background:
-        rgba(255, 255, 255, .14);
-
+.comment-upvote-button.is-upvoted .comment-upvote-count {
+    background: rgba(255, 255, 255, .14);
 }
-
 
 .comment-upvote-feedback {
-
-    color:
-        #985145;
-
+    color: #985145;
     font-size: 9px;
-
 }
-
 
 .comments-closed,
 .no-comments {
-
     display: flex;
-
     align-items: center;
-
     gap: 14px;
-
-    padding:
-        25px;
-
-    border:
-        1px solid
-        var(--kalxa-border);
-
-    background:
-        var(--kalxa-cream);
-
+    padding: 25px;
+    border: 1px solid var(--kalxa-border);
+    background: var(--kalxa-cream);
 }
-
 
 .comments-closed-icon,
 .no-comments-icon {
-
-    width:
-        40px;
-
-    height:
-        40px;
-
-    flex:
-        0 0 40px;
-
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
-    border-radius:
-        50%;
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        #eadbc3;
-
-    font-family:
-        var(--kalxa-serif);
-
+    border-radius: 50%;
+    background: var(--kalxa-black);
+    color: #eadbc3;
+    font-family: var(--kalxa-serif);
 }
-
 
 .comments-closed strong,
 .no-comments strong {
-
     font-size: 11px;
-
 }
-
 
 .comments-closed p,
 .no-comments p {
-
-    margin:
-        5px 0 0;
-
-    color:
-        var(--kalxa-muted);
-
+    margin: 5px 0 0;
+    color: var(--kalxa-muted);
     font-size: 10px;
-
 }
 
 
 /* =========================================================
-   RELATED
+   SHARE
+========================================================= */
+
+.story-share {
+    margin-top: 70px;
+    padding: 38px;
+    border: 1px solid var(--kalxa-border);
+    background: var(--kalxa-cream);
+}
+
+.story-share-copy {
+    max-width: 570px;
+}
+
+.story-share h2 {
+    margin: 0 0 10px;
+    color: var(--kalxa-ink);
+    font-family: var(--kalxa-serif);
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -.8px;
+}
+
+.story-share p {
+    max-width: 510px;
+    margin: 0;
+    color: var(--kalxa-text-soft);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.story-share-actions {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.share-button {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 16px;
+    border: 1px solid var(--kalxa-border);
+    background: var(--kalxa-paper);
+    color: var(--kalxa-ink);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        background .15s ease;
+}
+
+.share-button:hover {
+    transform: translateY(-2px);
+    border-color: #b9aa93;
+}
+
+.share-whatsapp {
+    border-color: var(--kalxa-black);
+    background: var(--kalxa-black);
+    color: white;
+}
+
+.share-whatsapp:hover {
+    background: #28261f;
+}
+
+.share-icon {
+    width: 23px;
+    height: 23px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.share-icon svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.share-feedback {
+    min-height: 17px;
+    margin-top: 11px;
+    color: var(--kalxa-text-soft);
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.story-divider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 78px 0;
+}
+
+.story-divider::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--kalxa-border);
+}
+
+.story-divider span {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--kalxa-paper);
+    border: 1px solid var(--kalxa-border);
+    color: var(--kalxa-gold-dark);
+    font-family: var(--kalxa-serif);
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   RELATED STORIES
 ========================================================= */
 
 .related-section {
-
-    padding:
-        90px 0 110px;
-
-    border-top:
-        1px solid
-        var(--kalxa-border);
-
-    background:
-        var(--kalxa-cream);
-
+    padding: 90px 0 110px;
+    border-top: 1px solid var(--kalxa-border);
+    background: var(--kalxa-cream);
 }
-
 
 .related-heading {
-
     display: flex;
-
     align-items: flex-end;
-
-    justify-content:
-        space-between;
-
+    justify-content: space-between;
     gap: 20px;
-
-    margin-bottom:
-        38px;
-
-    padding-bottom:
-        20px;
-
-    border-bottom:
-        1px solid
-        var(--kalxa-border);
-
+    margin-bottom: 38px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--kalxa-border);
 }
 
-
 .view-all-stories {
-
-    color:
-        var(--kalxa-text-soft);
-
+    color: var(--kalxa-text-soft);
     font-size: 10px;
-
     font-weight: 600;
-
 }
 
 
 /* =========================================================
-   PROGRESS
+   READING PROGRESS
 ========================================================= */
 
 .reading-progress {
-
     position: fixed;
-
     top: 0;
-
     left: 0;
-
     z-index: 2000;
-
     width: 0;
-
     height: 2px;
-
-    background:
-        var(--kalxa-gold);
-
+    background: var(--kalxa-gold);
 }
 
 
 /* =========================================================
-   LIGHTBOX
+   IMAGE LIGHTBOX
 ========================================================= */
 
 .story-lightbox {
-
     position: fixed;
-
     inset: 0;
-
     z-index: 3000;
-
     display: none;
-
     align-items: center;
-
     justify-content: center;
-
-    padding:
-        30px;
-
-    background:
-        rgba(10, 10, 8, .96);
-
+    padding: 30px;
+    background: rgba(10, 10, 8, .96);
 }
-
 
 .story-lightbox.open {
-
     display: flex;
-
 }
-
 
 .story-lightbox img {
-
-    max-width:
-        min(
-            1200px,
-            96vw
-        );
-
-    max-height:
-        89vh;
-
-    object-fit:
-        contain;
-
+    max-width: min(1200px, 96vw);
+    max-height: 89vh;
+    object-fit: contain;
 }
 
-
 .story-lightbox-close {
-
     position: absolute;
-
     top: 20px;
-
     right: 22px;
-
     width: 45px;
-
     height: 45px;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, .2);
-
-    border-radius:
-        50%;
-
-    background:
-        rgba(255, 255, 255, .07);
-
-    color:
-        white;
-
-    font-size:
-        26px;
-
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .07);
+    color: white;
+    font-size: 26px;
     cursor: pointer;
-
 }
 
 
@@ -3314,131 +2474,61 @@
    TABLET
 ========================================================= */
 
-@media (
-    max-width: 800px
-) {
+@media (max-width: 800px) {
 
     .article-hero {
-
-        padding:
-            70px 0 45px;
-
+        padding: 70px 0 45px;
     }
-
 
     .article-title {
-
-        font-size:
-            clamp(
-                44px,
-                12vw,
-                62px
-            );
-
-        letter-spacing:
-            -2px;
-
+        font-size: clamp(44px, 12vw, 62px);
+        letter-spacing: -2px;
     }
-
 
     .article-cover {
-
-        width:
-            calc(100% - 20px);
-
+        width: calc(100% - 20px);
     }
-
 
     .article-body-section {
-
-        padding-top:
-            48px;
-
+        padding-top: 48px;
     }
-
 
     .article-body {
-
-        font-size:
-            18px;
-
+        font-size: 18px;
     }
-
 
     .story-share-actions {
-
-        grid-template-columns:
-            1fr 1fr;
-
+        grid-template-columns: 1fr 1fr;
     }
-
 
     .share-whatsapp {
-
-        grid-column:
-            1 / -1;
-
+        grid-column: 1 / -1;
     }
-
-
-    /* RESTAURANT */
 
     .restaurant-reference {
-
-        grid-template-columns:
-            36px
-            minmax(0, 1fr);
-
-        gap:
-            16px;
-
-        padding:
-            22px 20px;
-
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 16px;
+        padding: 22px 20px;
     }
-
 
     .restaurant-reference-number {
-
-        font-size:
-            15px;
-
+        font-size: 15px;
     }
-
 
     .restaurant-reference h3 {
-
-        font-size:
-            25px;
-
+        font-size: 25px;
     }
-
 
     .restaurant-view-button {
-
-        grid-column:
-            1 / -1;
-
-        width:
-            100%;
-
-        min-height:
-            58px;
-
-        margin-top:
-            3px;
-
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 58px;
+        margin-top: 3px;
     }
 
-
     .related-heading {
-
-        align-items:
-            flex-start;
-
-        flex-direction:
-            column;
-
+        align-items: flex-start;
+        flex-direction: column;
     }
 
 }
@@ -3448,204 +2538,124 @@
    MOBILE
 ========================================================= */
 
-@media (
-    max-width: 480px
-) {
+@media (max-width: 480px) {
 
     .article-container {
-
-        width:
-            calc(100% - 30px);
-
+        width: calc(100% - 30px);
     }
-
 
     .article-title {
-
-        font-size:
-            44px;
-
+        font-size: 44px;
     }
-
 
     .article-excerpt {
-
-        font-size:
-            17px;
-
+        font-size: 17px;
     }
-
 
     .article-body {
-
-        font-size:
-            17px;
-
-        line-height:
-            1.82;
-
+        font-size: 17px;
+        line-height: 1.82;
     }
-
 
     .article-body h2 {
-
-        font-size:
-            30px;
-
+        font-size: 30px;
     }
 
+    /* STORY ENGAGEMENT */
+
+    .story-engagement-summary {
+        margin-top: 20px;
+        font-size: 10px;
+    }
+
+    .story-reactions {
+        padding: 25px 20px;
+        margin-top: 45px;
+    }
+
+    .story-reactions-header h2 {
+        font-size: 27px;
+    }
+
+    .story-like-button {
+        width: 100%;
+    }
 
     /* SHARE */
 
     .story-share {
-
-        margin-top:
-            52px;
-
-        padding:
-            24px 20px;
-
+        margin-top: 52px;
+        padding: 24px 20px;
     }
-
 
     .story-share h2 {
-
-        font-size:
-            30px;
-
+        font-size: 30px;
     }
-
 
     .story-share-actions {
-
-        grid-template-columns:
-            1fr;
-
+        grid-template-columns: 1fr;
     }
-
 
     .share-whatsapp {
-
-        grid-column:
-            auto;
-
+        grid-column: auto;
     }
-
 
     .share-button {
-
-        justify-content:
-            flex-start;
-
-        padding:
-            0 17px;
-
+        justify-content: flex-start;
+        padding: 0 17px;
     }
-
 
     /* RESTAURANTS */
 
     .discovery-heading {
-
-        margin-bottom:
-            25px;
-
+        margin-bottom: 25px;
     }
-
 
     .discovery-heading h2 {
-
-        font-size:
-            31px;
-
+        font-size: 31px;
     }
-
 
     .restaurant-reference {
-
-        grid-template-columns:
-            30px
-            minmax(0, 1fr);
-
-        gap:
-            12px;
-
-        padding:
-            20px 17px;
-
+        grid-template-columns: 30px minmax(0, 1fr);
+        gap: 12px;
+        padding: 20px 17px;
     }
-
 
     .restaurant-reference h3 {
-
-        font-size:
-            23px;
-
+        font-size: 23px;
     }
-
 
     .restaurant-reference-headline {
-
-        font-size:
-            11px;
-
+        font-size: 11px;
     }
-
 
     .restaurant-details {
-
-        gap:
-            7px 12px;
-
+        gap: 7px 12px;
     }
-
 
     .restaurant-view-button {
-
-        padding:
-            10px 16px;
-
+        padding: 10px 16px;
     }
-
 
     /* COMMENTS */
 
     .comment-form {
-
-        padding:
-            20px;
-
+        padding: 20px;
     }
-
 
     .comment-form-footer {
-
-        align-items:
-            flex-start;
-
-        flex-direction:
-            column;
-
+        align-items: flex-start;
+        flex-direction: column;
     }
-
 
     .comment-submit {
-
         width: 100%;
-
     }
 
-
     .comment-meta {
-
-        align-items:
-            flex-start;
-
-        flex-direction:
-            column;
-
+        align-items: flex-start;
+        flex-direction: column;
         gap: 3px;
-
     }
 
 }
@@ -3653,13 +2663,15 @@
 </style>
 
 
+<!-- =========================================================
+     ARTICLE JAVASCRIPT
+========================================================= -->
 
 <script>
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
-
 
         // ====================================================
         // READING PROGRESS
@@ -3670,38 +2682,28 @@ document.addEventListener(
                 "reading-progress"
             );
 
-
         function updateReadingProgress() {
 
             if (!progress) {
                 return;
             }
 
-
             const scrollTop =
                 window.scrollY
                 ||
                 document.documentElement.scrollTop;
-
 
             const documentHeight =
                 document.documentElement.scrollHeight
                 -
                 window.innerHeight;
 
-
             const percentage =
                 documentHeight > 0
                     ?
-                    (
-                        scrollTop
-                        /
-                        documentHeight
-                    )
-                    * 100
+                    (scrollTop / documentHeight) * 100
                     :
                     0;
-
 
             progress.style.width =
                 Math.min(
@@ -3716,7 +2718,6 @@ document.addEventListener(
 
         }
 
-
         window.addEventListener(
             "scroll",
             updateReadingProgress,
@@ -3725,9 +2726,266 @@ document.addEventListener(
             }
         );
 
-
         updateReadingProgress();
 
+
+        // ====================================================
+        // NEW: STORY LIKES
+        // ====================================================
+
+        const storyLikeButton =
+            document.getElementById(
+                "story-like-button"
+            );
+
+        const storyLikeIcon =
+            document.getElementById(
+                "story-like-icon"
+            );
+
+        const storyLikeLabel =
+            document.getElementById(
+                "story-like-label"
+            );
+
+        const storyLikeCount =
+            document.getElementById(
+                "story-like-count"
+            );
+
+        const storySummaryLikeCount =
+            document.getElementById(
+                "story-summary-like-count"
+            );
+
+        const storyLikeFeedback =
+            document.getElementById(
+                "story-like-feedback"
+            );
+
+
+        if (storyLikeButton) {
+
+            storyLikeButton.addEventListener(
+                "click",
+                async function () {
+
+                    if (storyLikeButton.disabled) {
+                        return;
+                    }
+
+                    const likeUrl =
+                        storyLikeButton.getAttribute(
+                            "data-like-url"
+                        );
+
+                    const csrfToken =
+                        storyLikeButton.getAttribute(
+                            "data-csrf-token"
+                        );
+
+                    if (!likeUrl || !csrfToken) {
+
+                        if (storyLikeFeedback) {
+                            storyLikeFeedback.textContent =
+                                "Please refresh the page and try again.";
+                        }
+
+                        return;
+                    }
+
+                    storyLikeButton.disabled = true;
+
+                    if (storyLikeFeedback) {
+                        storyLikeFeedback.textContent = "";
+                    }
+
+                    try {
+
+                        const response = await fetch(
+                            likeUrl,
+                            {
+                                method: "POST",
+
+                                credentials: "same-origin",
+
+                                headers: {
+                                    "Accept": "application/json",
+                                    "X-CSRF-Token": csrfToken
+                                }
+                            }
+                        );
+
+                        let data = null;
+
+                        try {
+
+                            data = await response.json();
+
+                        }
+                        catch (error) {
+
+                            data = null;
+
+                        }
+
+                        if (
+                            !response.ok
+                            ||
+                            !data
+                            ||
+                            data.ok !== true
+                        ) {
+
+                            throw new Error(
+                                data && data.message
+                                    ?
+                                    data.message
+                                    :
+                                    "Unable to update your like."
+                            );
+
+                        }
+
+                        const liked =
+                            data.liked === true;
+
+                        const safeLikeCount =
+                            Number(data.like_count);
+
+                        const likes =
+                            Number.isFinite(safeLikeCount)
+                                ?
+                                Math.max(0, safeLikeCount)
+                                :
+                                0;
+
+                        // ====================================
+                        // UPDATE BUTTON STATE
+                        // ====================================
+
+                        storyLikeButton.classList.toggle(
+                            "is-liked",
+                            liked
+                        );
+
+                        storyLikeButton.setAttribute(
+                            "aria-pressed",
+                            liked ? "true" : "false"
+                        );
+
+                        storyLikeButton.setAttribute(
+                            "aria-label",
+                            liked
+                                ?
+                                "Remove your like from this story"
+                                :
+                                "Like this story"
+                        );
+
+                        // ====================================
+                        // UPDATE HEART
+                        // ====================================
+
+                        if (storyLikeIcon) {
+
+                            storyLikeIcon.textContent =
+                                liked
+                                    ?
+                                    "♥"
+                                    :
+                                    "♡";
+
+                        }
+
+                        // ====================================
+                        // UPDATE LABEL
+                        // ====================================
+
+                        if (storyLikeLabel) {
+
+                            storyLikeLabel.textContent =
+                                liked
+                                    ?
+                                    "Liked"
+                                    :
+                                    "Like this story";
+
+                        }
+
+                        // ====================================
+                        // UPDATE LIKE COUNT
+                        // ====================================
+
+                        if (storyLikeCount) {
+
+                            storyLikeCount.textContent =
+                                likes;
+
+                        }
+
+                        if (storySummaryLikeCount) {
+
+                            storySummaryLikeCount.textContent =
+                                likes;
+
+                        }
+
+                        // ====================================
+                        // UPDATE VIEW COUNT IF RETURNED
+                        // ====================================
+
+                        const storyViewCount =
+                            document.getElementById(
+                                "story-view-count"
+                            );
+
+                        if (
+                            storyViewCount
+                            &&
+                            data.view_count !== undefined
+                        ) {
+
+                            const safeViewCount =
+                                Number(data.view_count);
+
+                            if (
+                                Number.isFinite(safeViewCount)
+                            ) {
+
+                                storyViewCount.textContent =
+                                    Math.max(
+                                        0,
+                                        safeViewCount
+                                    );
+
+                            }
+
+                        }
+
+                    }
+                    catch (error) {
+
+                        if (storyLikeFeedback) {
+
+                            storyLikeFeedback.textContent =
+                                error.message
+                                ||
+                                "Unable to update your like.";
+
+                        }
+
+                    }
+                    finally {
+
+                        storyLikeButton.disabled = false;
+
+                    }
+
+                }
+            );
+
+        }
 
 
         // ====================================================
@@ -3749,41 +3007,34 @@ document.addEventListener(
                                 return;
                             }
 
-
                             const upvoteUrl =
                                 button.getAttribute(
                                     "data-upvote-url"
                                 );
 
-
                             if (!upvoteUrl) {
                                 return;
                             }
-
 
                             const icon =
                                 button.querySelector(
                                     "[data-upvote-icon]"
                                 );
 
-
                             const label =
                                 button.querySelector(
                                     "[data-upvote-label]"
                                 );
-
 
                             const count =
                                 button.querySelector(
                                     "[data-upvote-count]"
                                 );
 
-
                             const actions =
                                 button.closest(
                                     ".comment-actions"
                                 );
-
 
                             const feedback =
                                 actions
@@ -3794,18 +3045,11 @@ document.addEventListener(
                                     :
                                     null;
 
-
                             if (feedback) {
-
-                                feedback.textContent =
-                                    "";
-
+                                feedback.textContent = "";
                             }
 
-
-                            button.disabled =
-                                true;
-
+                            button.disabled = true;
 
                             try {
 
@@ -3813,8 +3057,7 @@ document.addEventListener(
                                     await fetch(
                                         upvoteUrl,
                                         {
-                                            method:
-                                                "POST",
+                                            method: "POST",
 
                                             credentials:
                                                 "same-origin",
@@ -3826,10 +3069,7 @@ document.addEventListener(
                                         }
                                     );
 
-
-                                let data =
-                                    null;
-
+                                let data = null;
 
                                 try {
 
@@ -3839,11 +3079,9 @@ document.addEventListener(
                                 }
                                 catch (error) {
 
-                                    data =
-                                        null;
+                                    data = null;
 
                                 }
-
 
                                 if (
                                     !response.ok
@@ -3856,12 +3094,10 @@ document.addEventListener(
                                     let message =
                                         "Unable to update upvote.";
 
-
                                     if (
                                         data
                                         &&
-                                        data.error
-                                        ===
+                                        data.error ===
                                         "comments_closed"
                                     ) {
 
@@ -3870,25 +3106,19 @@ document.addEventListener(
 
                                     }
 
-
                                     throw new Error(
                                         message
                                     );
 
                                 }
 
-
                                 const isUpvoted =
-                                    data.upvoted
-                                    ===
-                                    true;
-
+                                    data.upvoted === true;
 
                                 button.classList.toggle(
                                     "is-upvoted",
                                     isUpvoted
                                 );
-
 
                                 button.setAttribute(
                                     "aria-pressed",
@@ -3899,7 +3129,6 @@ document.addEventListener(
                                         "false"
                                 );
 
-
                                 button.setAttribute(
                                     "aria-label",
                                     isUpvoted
@@ -3908,7 +3137,6 @@ document.addEventListener(
                                         :
                                         "Upvote this comment"
                                 );
-
 
                                 if (icon) {
 
@@ -3921,7 +3149,6 @@ document.addEventListener(
 
                                 }
 
-
                                 if (label) {
 
                                     label.textContent =
@@ -3933,14 +3160,12 @@ document.addEventListener(
 
                                 }
 
-
                                 if (count) {
 
                                     const safeCount =
                                         Number(
                                             data.upvote_count
                                         );
-
 
                                     count.textContent =
                                         Number.isFinite(
@@ -3971,8 +3196,7 @@ document.addEventListener(
                             }
                             finally {
 
-                                button.disabled =
-                                    false;
+                                button.disabled = false;
 
                             }
 
@@ -3983,9 +3207,8 @@ document.addEventListener(
             );
 
 
-
         // ====================================================
-        // SHARE
+        // SHARE STORY
         // ====================================================
 
         const shareActions =
@@ -3993,12 +3216,10 @@ document.addEventListener(
                 "story-share-actions"
             );
 
-
         const shareFeedback =
             document.getElementById(
                 "share-feedback"
             );
-
 
         const copyLabel =
             document.getElementById(
@@ -4006,49 +3227,39 @@ document.addEventListener(
             );
 
 
-        function buildSharedStoryUrl(
-            source
-        ) {
+        function buildSharedStoryUrl(source) {
 
             if (!shareActions) {
                 return "";
             }
 
-
             const canonicalUrl =
                 shareActions.dataset.canonicalUrl;
-
 
             if (!canonicalUrl) {
                 return "";
             }
 
-
             try {
 
-                const url =
-                    new URL(
-                        canonicalUrl
-                    );
-
+                const url = new URL(
+                    canonicalUrl
+                );
 
                 url.searchParams.set(
                     "utm_source",
                     source
                 );
 
-
                 url.searchParams.set(
                     "utm_medium",
                     "share"
                 );
 
-
                 url.searchParams.set(
                     "utm_campaign",
                     "story_share"
                 );
-
 
                 return url.toString();
 
@@ -4062,18 +3273,14 @@ document.addEventListener(
         }
 
 
-        function showShareFeedback(
-            message
-        ) {
+        function showShareFeedback(message) {
 
             if (!shareFeedback) {
                 return;
             }
 
-
             shareFeedback.textContent =
                 message;
-
 
             window.setTimeout(
                 function () {
@@ -4096,9 +3303,7 @@ document.addEventListener(
         }
 
 
-        function openShareWindow(
-            url
-        ) {
+        function openShareWindow(url) {
 
             window.open(
                 url,
@@ -4109,9 +3314,7 @@ document.addEventListener(
         }
 
 
-        async function copyStoryLink(
-            url
-        ) {
+        async function copyStoryLink(url) {
 
             try {
 
@@ -4133,16 +3336,12 @@ document.addEventListener(
                             "textarea"
                         );
 
-
-                    textarea.value =
-                        url;
-
+                    textarea.value = url;
 
                     textarea.setAttribute(
                         "readonly",
                         ""
                     );
-
 
                     textarea.style.position =
                         "fixed";
@@ -4150,30 +3349,33 @@ document.addEventListener(
                     textarea.style.opacity =
                         "0";
 
-
                     document.body.appendChild(
                         textarea
                     );
 
-
                     textarea.select();
 
-
-                    document.execCommand(
-                        "copy"
-                    );
-
+                    const copied =
+                        document.execCommand(
+                            "copy"
+                        );
 
                     textarea.remove();
 
-                }
+                    if (!copied) {
 
+                        throw new Error(
+                            "Copy command failed."
+                        );
+
+                    }
+
+                }
 
                 if (copyLabel) {
 
                     copyLabel.textContent =
                         "Copied!";
-
 
                     window.setTimeout(
                         function () {
@@ -4187,11 +3389,9 @@ document.addEventListener(
 
                 }
 
-
                 showShareFeedback(
                     "Story link copied."
                 );
-
 
                 return true;
 
@@ -4201,7 +3401,6 @@ document.addEventListener(
                 showShareFeedback(
                     "Unable to copy automatically."
                 );
-
 
                 return false;
 
@@ -4228,28 +3427,24 @@ document.addEventListener(
                                         "data-share-channel"
                                     );
 
-
                                 const storyTitle =
                                     shareActions.dataset.storyTitle
                                     ||
                                     "Kalxa Story";
 
 
-                                // =========================================
+                                // =============================
                                 // WHATSAPP
-                                // =========================================
+                                // =============================
 
                                 if (
-                                    channel
-                                    ===
-                                    "whatsapp"
+                                    channel === "whatsapp"
                                 ) {
 
                                     const sharedUrl =
                                         buildSharedStoryUrl(
                                             "whatsapp"
                                         );
-
 
                                     const message =
                                         storyTitle
@@ -4258,7 +3453,6 @@ document.addEventListener(
                                         +
                                         sharedUrl;
 
-
                                     const whatsappUrl =
                                         "https://wa.me/?text="
                                         +
@@ -4266,11 +3460,9 @@ document.addEventListener(
                                             message
                                         );
 
-
                                     openShareWindow(
                                         whatsappUrl
                                     );
-
 
                                     showShareFeedback(
                                         "Opening WhatsApp…"
@@ -4279,21 +3471,18 @@ document.addEventListener(
                                 }
 
 
-                                // =========================================
+                                // =============================
                                 // FACEBOOK
-                                // =========================================
+                                // =============================
 
                                 else if (
-                                    channel
-                                    ===
-                                    "facebook"
+                                    channel === "facebook"
                                 ) {
 
                                     const sharedUrl =
                                         buildSharedStoryUrl(
                                             "facebook"
                                         );
-
 
                                     const facebookUrl =
                                         "https://www.facebook.com/sharer/sharer.php?u="
@@ -4302,11 +3491,9 @@ document.addEventListener(
                                             sharedUrl
                                         );
 
-
                                     openShareWindow(
                                         facebookUrl
                                     );
-
 
                                     showShareFeedback(
                                         "Opening Facebook…"
@@ -4315,21 +3502,18 @@ document.addEventListener(
                                 }
 
 
-                                // =========================================
+                                // =============================
                                 // COPY LINK
-                                // =========================================
+                                // =============================
 
                                 else if (
-                                    channel
-                                    ===
-                                    "copy_link"
+                                    channel === "copy_link"
                                 ) {
 
                                     const sharedUrl =
                                         buildSharedStoryUrl(
                                             "copy_link"
                                         );
-
 
                                     await copyStoryLink(
                                         sharedUrl
@@ -4346,7 +3530,6 @@ document.addEventListener(
         }
 
 
-
         // ====================================================
         // IMAGE LIGHTBOX
         // ====================================================
@@ -4356,12 +3539,10 @@ document.addEventListener(
                 "story-lightbox"
             );
 
-
         const lightboxImage =
             document.getElementById(
                 "story-lightbox-image"
             );
-
 
         const closeButton =
             document.getElementById(
@@ -4375,17 +3556,14 @@ document.addEventListener(
                 return;
             }
 
-
             lightbox.classList.remove(
                 "open"
             );
-
 
             lightbox.setAttribute(
                 "aria-hidden",
                 "true"
             );
-
 
             document.body.style.overflow =
                 "";
@@ -4414,32 +3592,33 @@ document.addEventListener(
 
                             }
 
-
                             const imageUrl =
                                 button.getAttribute(
                                     "data-story-image"
                                 );
 
-
                             if (!imageUrl) {
                                 return;
                             }
 
-
                             lightboxImage.src =
                                 imageUrl;
 
+                            lightboxImage.alt =
+                                button.getAttribute(
+                                    "aria-label"
+                                )
+                                ||
+                                "Story image";
 
                             lightbox.classList.add(
                                 "open"
                             );
 
-
                             lightbox.setAttribute(
                                 "aria-hidden",
                                 "false"
                             );
-
 
                             document.body.style.overflow =
                                 "hidden";
@@ -4468,9 +3647,7 @@ document.addEventListener(
                 function (event) {
 
                     if (
-                        event.target
-                        ===
-                        lightbox
+                        event.target === lightbox
                     ) {
 
                         closeLightbox();
@@ -4487,11 +3664,7 @@ document.addEventListener(
             "keydown",
             function (event) {
 
-                if (
-                    event.key
-                    ===
-                    "Escape"
-                ) {
+                if (event.key === "Escape") {
 
                     closeLightbox();
 
@@ -4504,6 +3677,5 @@ document.addEventListener(
 );
 
 </script>
-
 
 {% endblock %}
