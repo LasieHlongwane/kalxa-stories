@@ -1,45 +1,670 @@
 {% extends "base.html" %}
-{% block title %}Subscribe by Area | KALXA Stories{% endblock %}
-{% block meta_description %}Subscribe to KALXA Stories updates for KwaMhlanga, Kwaggafontein or Siyabuswa.{% endblock %}
-{% block extra_head %}
-<style>
-.newsletter-wrap{max-width:720px;margin:65px auto 90px;padding:0 20px}
-.newsletter-wrap h1{font:500 clamp(36px,6vw,64px)/1.12 var(--kalxa-serif);letter-spacing:-1.4px}
-.newsletter-card{background:var(--kalxa-paper);border:1px solid var(--kalxa-border);padding:clamp(22px,5vw,44px)}
-.newsletter-card label{display:block;font-weight:700;font-size:13px;margin:20px 0 8px}
-.newsletter-card input[type=email],.newsletter-card select{width:100%;min-height:50px;padding:12px;border:1px solid var(--kalxa-border);border-radius:4px;background:#fff;font:inherit}
-.newsletter-consent{display:flex;align-items:flex-start;gap:10px;margin:22px 0;font-size:12px;line-height:1.6;color:var(--kalxa-text-soft)}
-.newsletter-consent input{margin-top:4px;flex:none}
-.newsletter-submit{background:var(--kalxa-black);color:#fff;border:0;padding:16px 28px;cursor:pointer;font-weight:700}
-.newsletter-note{font-size:12px;line-height:1.7;color:var(--kalxa-text-soft)}
-.newsletter-flash{padding:12px;margin:15px 0;background:#f2eadc;border:1px solid var(--kalxa-border)}
-.newsletter-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-</style>
+
+{% block title %}
+Subscribe | KwaNdebele Kalxa Hub
 {% endblock %}
+
+{% block meta_description %}
+Subscribe for free to KwaNdebele Kalxa Hub newsletters covering local news, culture, lifestyle, businesses, events and community stories from KwaMhlanga, Kwaggafontein and Siyabuswa.
+{% endblock %}
+
+
+{% block extra_head %}
+
+<style>
+
+    /* =====================================================
+       NEWSLETTER PAGE
+    ====================================================== */
+
+    .newsletter-wrap {
+
+        max-width: 720px;
+
+        margin:
+            65px auto 90px;
+
+        padding:
+            0 20px;
+
+    }
+
+
+    .newsletter-wrap h1 {
+
+        font:
+            500 clamp(36px, 6vw, 64px)/1.12
+            var(--kalxa-serif);
+
+        letter-spacing:
+            -1.4px;
+
+    }
+
+
+    .newsletter-wrap h1 em {
+
+        color:
+            var(--kalxa-gold-dark);
+
+    }
+
+
+    /* =====================================================
+       NEWSLETTER DESCRIPTION
+    ====================================================== */
+
+    .newsletter-intro {
+
+        max-width: 610px;
+
+        margin:
+            18px 0 32px;
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size: 14px;
+
+        line-height: 1.85;
+
+    }
+
+
+    /* =====================================================
+       FORM CARD
+    ====================================================== */
+
+    .newsletter-card {
+
+        background:
+            var(--kalxa-paper);
+
+        border:
+            1px solid
+            var(--kalxa-border);
+
+        padding:
+            clamp(22px, 5vw, 44px);
+
+    }
+
+
+    /* =====================================================
+       FORM LABELS
+    ====================================================== */
+
+    .newsletter-card > label:not(.newsletter-consent) {
+
+        display: block;
+
+        font-weight: 700;
+
+        font-size: 13px;
+
+        margin:
+            20px 0 8px;
+
+    }
+
+
+    /* =====================================================
+       INPUTS AND SELECT
+    ====================================================== */
+
+    .newsletter-card input[type="email"],
+    .newsletter-card select {
+
+        width: 100%;
+
+        min-height: 50px;
+
+        padding: 12px;
+
+        border:
+            1px solid
+            var(--kalxa-border);
+
+        border-radius: 4px;
+
+        background: #ffffff;
+
+        color:
+            var(--kalxa-text);
+
+        font: inherit;
+
+    }
+
+
+    .newsletter-card input[type="email"]:focus,
+    .newsletter-card select:focus {
+
+        outline:
+            2px solid
+            var(--kalxa-gold);
+
+        outline-offset: 2px;
+
+    }
+
+
+    /* =====================================================
+       AREA INFORMATION
+    ====================================================== */
+
+    .newsletter-area-help {
+
+        margin:
+            9px 0 0;
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size: 12px;
+
+        line-height: 1.7;
+
+    }
+
+
+    /* =====================================================
+       CONSENT CHECKBOX
+    ====================================================== */
+
+    .newsletter-consent {
+
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+        margin:
+            22px 0;
+
+        font-size: 12px;
+
+        line-height: 1.6;
+
+        color:
+            var(--kalxa-text-soft);
+
+        cursor: pointer;
+
+    }
+
+
+    .newsletter-consent input {
+
+        margin-top: 4px;
+
+        flex: none;
+
+        accent-color:
+            var(--kalxa-gold-dark);
+
+    }
+
+
+    /* =====================================================
+       SUBSCRIBE BUTTON
+    ====================================================== */
+
+    .newsletter-submit {
+
+        width: 100%;
+
+        background:
+            var(--kalxa-black);
+
+        color: #ffffff;
+
+        border: 0;
+
+        border-radius: 4px;
+
+        padding:
+            16px 28px;
+
+        cursor: pointer;
+
+        font-weight: 700;
+
+        font-size: 13px;
+
+        transition:
+            background .2s ease;
+
+    }
+
+
+    .newsletter-submit:hover {
+
+        background:
+            var(--kalxa-gold-dark);
+
+    }
+
+
+    .newsletter-submit:focus-visible {
+
+        outline:
+            3px solid
+            var(--kalxa-gold);
+
+        outline-offset: 3px;
+
+    }
+
+
+    /* =====================================================
+       PRIVACY NOTE
+    ====================================================== */
+
+    .newsletter-note {
+
+        font-size: 12px;
+
+        line-height: 1.7;
+
+        color:
+            var(--kalxa-text-soft);
+
+    }
+
+
+    .newsletter-privacy {
+
+        margin:
+            18px 0 0;
+
+        padding-top: 16px;
+
+        border-top:
+            1px solid
+            var(--kalxa-border-soft);
+
+    }
+
+
+    /* =====================================================
+       FLASH MESSAGES
+    ====================================================== */
+
+    .newsletter-flash {
+
+        padding: 14px 16px;
+
+        margin:
+            15px 0;
+
+        background:
+            #f2eadc;
+
+        border:
+            1px solid
+            var(--kalxa-border);
+
+        font-size: 13px;
+
+        line-height: 1.7;
+
+    }
+
+
+    .newsletter-flash.success {
+
+        background:
+            #e8f5eb;
+
+        border-color:
+            #badfc4;
+
+        color:
+            #215934;
+
+    }
+
+
+    .newsletter-flash.error {
+
+        background:
+            #fff0ee;
+
+        border-color:
+            #e8b9b2;
+
+        color:
+            #92372c;
+
+    }
+
+
+    /* =====================================================
+       HONEYPOT
+    ====================================================== */
+
+    .newsletter-hp {
+
+        position: absolute;
+
+        left: -9999px;
+
+        width: 1px;
+
+        height: 1px;
+
+        overflow: hidden;
+
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ====================================================== */
+
+    @media (max-width: 650px) {
+
+        .newsletter-wrap {
+
+            margin:
+                40px auto 65px;
+
+            padding:
+                0 15px;
+
+        }
+
+
+        .newsletter-wrap h1 {
+
+            font-size: 38px;
+
+        }
+
+
+        .newsletter-intro {
+
+            font-size: 13px;
+
+        }
+
+
+        .newsletter-card {
+
+            padding: 23px 20px;
+
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
 {% block content %}
+
 <section class="newsletter-wrap">
-  <span class="hero-label">YOUR AREA · YOUR STORIES</span>
-  <h1>Stay connected to what matters <em>near you.</em></h1>
-  <p class="newsletter-note">Get KALXA Stories updates by email, based on the area you select. Subscribe for free and unsubscribe whenever you want.</p>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}<div class="newsletter-flash" role="status">{{ message }}</div>{% endfor %}
-  {% endwith %}
-  <form class="newsletter-card" method="POST" action="{{ url_for('story_newsletter.subscribe') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <div class="newsletter-hp" aria-hidden="true"><label for="nl-website">Website</label><input id="nl-website" type="text" name="website" tabindex="-1" autocomplete="off"></div>
-    <label for="nl-email">Email address</label>
-    <input id="nl-email" name="email" type="email" maxlength="254" placeholder="you@example.com" autocomplete="email" required>
-    <label for="nl-area">Your closest area</label>
-    <select id="nl-area" name="area" required>
-      <option value="" selected disabled>Select your area</option>
-      {% for area in areas %}<option value="{{ area }}">{{ area }}</option>{% endfor %}
-    </select>
-    <label class="newsletter-consent" for="nl-consent">
-      <input id="nl-consent" type="checkbox" name="consent" value="yes" required>
-      <span>I agree to receive KALXA Stories email updates related to my selected area. I understand I can unsubscribe at any time.</span>
-    </label>
-    <button class="newsletter-submit" type="submit">Subscribe to local stories →</button>
-    <p class="newsletter-note">We collect your email and selected area only for these updates. You will receive a confirmation email before your subscription becomes active.</p>
-  </form>
+
+    <!-- =====================================================
+         PAGE INTRODUCTION
+    ====================================================== -->
+
+    <span class="hero-label">
+        YOUR COMMUNITY · YOUR STORIES
+    </span>
+
+
+    <h1>
+
+        Stay connected to what matters
+
+        <em>
+            around you.
+        </em>
+
+    </h1>
+
+
+    <p class="newsletter-intro">
+
+        Get the latest KwaNdebele news, culture,
+        lifestyle, business updates, events
+        and community stories delivered to
+        your inbox.
+
+        Choose your area or subscribe to
+        updates from all areas.
+
+        Subscription is free, and you can
+        unsubscribe whenever you want.
+
+    </p>
+
+
+    <!-- =====================================================
+         FLASH MESSAGES
+    ====================================================== -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% for category, message in messages %}
+
+            <div
+                class="newsletter-flash {{ category }}"
+                role="status"
+            >
+
+                {{ message }}
+
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+
+    <!-- =====================================================
+         SUBSCRIPTION FORM
+    ====================================================== -->
+
+    <form
+        class="newsletter-card"
+        method="POST"
+        action="{{ url_for('story_newsletter.subscribe') }}"
+    >
+
+        <!-- ===============================================
+             CSRF TOKEN
+        =============================================== -->
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token }}"
+        >
+
+
+        <!-- ===============================================
+             HONEYPOT
+        =============================================== -->
+
+        <div
+            class="newsletter-hp"
+            aria-hidden="true"
+        >
+
+            <label for="nl-website">
+                Website
+            </label>
+
+            <input
+                id="nl-website"
+                type="text"
+                name="website"
+                tabindex="-1"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- ===============================================
+             EMAIL ADDRESS
+        =============================================== -->
+
+        <label for="nl-email">
+            Email address
+        </label>
+
+
+        <input
+            id="nl-email"
+            name="email"
+            type="email"
+            maxlength="254"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+        >
+
+
+        <!-- ===============================================
+             AREA SELECTION
+        =============================================== -->
+
+        <label for="nl-area">
+            Choose your updates
+        </label>
+
+
+        <select
+            id="nl-area"
+            name="area"
+            required
+        >
+
+            <option
+                value=""
+                selected
+                disabled
+            >
+                Select your area
+            </option>
+
+
+            <!-- ===========================================
+                 ALL AREAS OPTION
+            ============================================ -->
+
+            <option value="All Areas">
+                All Areas — KwaNdebele
+            </option>
+
+
+            <!-- ===========================================
+                 INDIVIDUAL AREAS
+            ============================================ -->
+
+            {% for area in areas %}
+
+                {% if area != "All Areas" %}
+
+                    <option value="{{ area }}">
+                        {{ area }}
+                    </option>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </select>
+
+
+        <p class="newsletter-area-help">
+
+            Select <strong>All Areas</strong>
+            to receive updates from KwaMhlanga,
+            Kwaggafontein and Siyabuswa.
+
+        </p>
+
+
+        <!-- ===============================================
+             CONSENT
+        =============================================== -->
+
+        <label
+            class="newsletter-consent"
+            for="nl-consent"
+        >
+
+            <input
+                id="nl-consent"
+                type="checkbox"
+                name="consent"
+                value="yes"
+                required
+            >
+
+
+            <span>
+
+                I agree to receive KwaNdebele
+                Kalxa Hub email updates covering
+                local news, culture, lifestyle,
+                businesses, events and community
+                stories from my selected area
+                or all areas.
+
+                I understand that I can
+                unsubscribe at any time.
+
+            </span>
+
+        </label>
+
+
+        <!-- ===============================================
+             SUBSCRIBE BUTTON
+        =============================================== -->
+
+        <button
+            class="newsletter-submit"
+            type="submit"
+        >
+
+            Subscribe to local stories →
+
+        </button>
+
+
+        <!-- ===============================================
+             PRIVACY AND SUBSCRIPTION INFORMATION
+        =============================================== -->
+
+        <p class="newsletter-note newsletter-privacy">
+
+            We collect your email address
+            and selected area only to send
+            the updates you requested.
+
+            Your subscription becomes active
+            immediately after submission.
+
+            <strong>
+                No confirmation email is required.
+            </strong>
+
+            You can unsubscribe using the link
+            included in future newsletters.
+
+        </p>
+
+    </form>
+
 </section>
+
 {% endblock %}
