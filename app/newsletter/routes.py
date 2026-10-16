@@ -73,6 +73,7 @@ AREAS = (
     "KwaMhlanga",
     "Kwaggafontein",
     "Siyabuswa",
+    "all",
 )
 
 
