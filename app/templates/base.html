@@ -12,7 +12,7 @@
 
     <meta
         name="theme-color"
-        content="#0753bd"
+        content="#38251c"
     >
 
     <meta
@@ -91,7 +91,7 @@
     >
 
     <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap"
         rel="stylesheet"
     >
 
@@ -207,9 +207,17 @@
                 rgba(37, 31, 22, .13);
 
 
-            /* ===============================================
+            /* =================================================
                KWANDEBELE CULTURAL COLOURS
-            =============================================== */
+
+               Dark Brown · Yellow · Blue · Red · Green
+            ================================================= */
+
+            --ndebele-brown:
+                #38251c;
+
+            --ndebele-yellow:
+                #f4c430;
 
             --ndebele-blue:
                 #0753bd;
@@ -217,20 +225,34 @@
             --ndebele-red:
                 #d52032;
 
-            --ndebele-yellow:
-                #f4c430;
+            --ndebele-green:
+                #168447;
 
             --ndebele-dark:
-                #101d38;
+                #241711;
+
+
+            /* =================================================
+               FIVE-COLOUR CULTURAL GRADIENT
+            ================================================= */
 
             --ndebele-gradient:
                 linear-gradient(
                     110deg,
-                    #0753bd 0%,
-                    #1765d5 24%,
-                    #d52032 61%,
-                    #e63739 75%,
-                    #f4c430 100%
+
+                    #38251c 0%,
+
+                    #503326 16%,
+
+                    #f4c430 27%,
+
+                    #0753bd 48%,
+
+                    #d52032 69%,
+
+                    #168447 88%,
+
+                    #116b3b 100%
                 );
 
         }
@@ -325,7 +347,7 @@
            KWANDEBELE KALXA HUB
            GLOBAL CULTURAL HEADER
 
-           Blue → Red → Yellow
+           Dark Brown → Yellow → Blue → Red → Green
         ====================================================== */
 
         .site-header {
@@ -346,8 +368,8 @@
                 var(--ndebele-dark);
 
             box-shadow:
-                0 5px 22px
-                rgba(12, 24, 50, .15);
+                0 6px 26px
+                rgba(28, 17, 13, .2);
 
         }
 
@@ -355,9 +377,8 @@
         /* =====================================================
            HEADER INNER
 
-           UPDATED:
-           Brand is centered horizontally.
-           Navigation stays on the right.
+           Brand centered horizontally.
+           Navigation positioned on the right.
         ====================================================== */
 
         .header-inner {
@@ -370,7 +391,7 @@
                     var(--kalxa-max-width)
                 );
 
-            min-height: 100px;
+            min-height: 120px;
 
             margin:
                 0 auto;
@@ -388,9 +409,6 @@
 
         /* =====================================================
            BRAND WRAPPER
-
-           UPDATED:
-           Centered in the header.
         ====================================================== */
 
         .brand {
@@ -401,7 +419,7 @@
 
             justify-content: center;
 
-            gap: 15px;
+            gap: 16px;
 
             min-width: 0;
 
@@ -417,8 +435,7 @@
         /* =====================================================
            KWANDEBELE KALXA HUB BRAND NAME
 
-           UPDATED:
-           Larger and more prominent.
+           EXTRA BOLD · LARGE · CENTERED
         ====================================================== */
 
         .brand-name {
@@ -429,20 +446,20 @@
 
             justify-content: center;
 
-            min-height: 56px;
+            min-height: 70px;
 
             padding:
-                12px 22px;
+                14px 28px;
 
             background:
-                rgba(8, 22, 48, .32);
+                rgba(30, 17, 13, .72);
 
             border:
-                1px solid
-                rgba(255, 255, 255, .32);
+                2px solid
+                rgba(255, 255, 255, .45);
 
             border-radius:
-                5px;
+                6px;
 
             color:
                 #ffffff;
@@ -450,20 +467,31 @@
             font-family:
                 var(--kalxa-sans);
 
-            font-size: 27px;
+            font-size:
+                clamp(
+                    28px,
+                    3.2vw,
+                    42px
+                );
 
-            font-weight: 700;
+            font-weight: 800;
 
-            line-height: 1.25;
+            line-height: 1.15;
 
             letter-spacing:
-                -.6px;
+                -1.2px;
 
             text-align: center;
 
+            white-space: nowrap;
+
             text-shadow:
-                0 1px 2px
-                rgba(0, 0, 0, .2);
+                0 2px 5px
+                rgba(0, 0, 0, .35);
+
+            box-shadow:
+                0 5px 18px
+                rgba(20, 10, 6, .12);
 
             transition:
                 background .2s ease,
@@ -475,10 +503,10 @@
         .brand:hover .brand-name {
 
             background:
-                rgba(8, 22, 48, .48);
+                rgba(30, 17, 13, .86);
 
             border-color:
-                rgba(255, 255, 255, .6);
+                rgba(255, 255, 255, .75);
 
         }
 
@@ -491,7 +519,7 @@
 
             position: relative;
 
-            padding-left: 14px;
+            padding-left: 15px;
 
             color:
                 #ffffff;
@@ -499,15 +527,15 @@
             font-family:
                 var(--kalxa-serif);
 
-            font-size: 23px;
+            font-size: 25px;
 
-            font-weight: 600;
+            font-weight: 700;
 
             white-space: nowrap;
 
             text-shadow:
-                0 1px 3px
-                rgba(0, 0, 0, .25);
+                0 2px 5px
+                rgba(0, 0, 0, .4);
 
         }
 
@@ -524,10 +552,10 @@
 
             width: 1px;
 
-            height: 22px;
+            height: 25px;
 
             background:
-                rgba(255, 255, 255, .65);
+                rgba(255, 255, 255, .75);
 
             transform:
                 translateY(-50%);
@@ -537,10 +565,6 @@
 
         /* =====================================================
            MAIN NAVIGATION
-
-           UPDATED:
-           Positioned on the right without moving
-           the brand away from the center.
         ====================================================== */
 
         .main-nav {
@@ -585,8 +609,8 @@
             white-space: nowrap;
 
             text-shadow:
-                0 1px 3px
-                rgba(0, 0, 0, .3);
+                0 1px 4px
+                rgba(0, 0, 0, .65);
 
             transition:
                 opacity .2s ease;
@@ -1385,25 +1409,25 @@
            TABLET RESPONSIVE
         ====================================================== */
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
 
             /*
-               Move navigation beneath the centered brand
-               before the larger title overlaps the links.
+               Put navigation below the brand before
+               the larger title can overlap it.
             */
 
             .header-inner {
 
-                min-height: 112px;
+                min-height: 140px;
 
                 padding:
-                    12px 0;
+                    15px 0;
 
                 flex-direction: column;
 
                 justify-content: center;
 
-                gap: 8px;
+                gap: 12px;
 
             }
 
@@ -1417,19 +1441,19 @@
 
             .brand-name {
 
-                font-size: 24px;
+                font-size: 34px;
 
-                min-height: 48px;
+                min-height: 60px;
 
                 padding:
-                    9px 17px;
+                    12px 22px;
 
             }
 
 
             .brand-section {
 
-                font-size: 21px;
+                font-size: 23px;
 
             }
 
@@ -1468,26 +1492,26 @@
 
             .header-inner {
 
-                min-height: 108px;
+                min-height: 132px;
 
-                gap: 8px;
+                gap: 10px;
 
             }
 
 
             .brand-name {
 
-                font-size: 22px;
+                font-size: 28px;
 
                 padding:
-                    9px 14px;
+                    11px 19px;
 
             }
 
 
             .brand-section {
 
-                font-size: 19px;
+                font-size: 21px;
 
             }
 
@@ -1520,15 +1544,24 @@
             }
 
 
+            /* Five cultural colours remain visible
+               on mobile screens. */
+
             .site-header {
 
                 background:
                     linear-gradient(
                         115deg,
-                        #0753bd 0%,
-                        #1765d5 22%,
-                        #d52032 63%,
-                        #f4c430 100%
+
+                        #38251c 0%,
+
+                        #f4c430 24%,
+
+                        #0753bd 46%,
+
+                        #d52032 69%,
+
+                        #168447 100%
                     );
 
             }
@@ -1536,10 +1569,10 @@
 
             .header-inner {
 
-                min-height: 110px;
+                min-height: 132px;
 
                 padding:
-                    12px 0 10px;
+                    14px 0 12px;
 
                 flex-direction: column;
 
@@ -1547,7 +1580,7 @@
 
                 justify-content: center;
 
-                gap: 9px;
+                gap: 12px;
 
             }
 
@@ -1567,21 +1600,26 @@
 
             .brand-name {
 
-                min-height: 42px;
+                min-height: 52px;
 
                 padding:
-                    9px 12px;
+                    10px 13px;
 
-                font-size: clamp(
-                    15px,
-                    4.3vw,
-                    20px
-                );
+                font-size:
+                    clamp(
+                        18px,
+                        5vw,
+                        25px
+                    );
+
+                font-weight: 800;
 
                 line-height: 1.2;
 
                 letter-spacing:
-                    -.3px;
+                    -.45px;
+
+                white-space: normal;
 
             }
 
@@ -1590,14 +1628,14 @@
 
                 padding-left: 9px;
 
-                font-size: 16px;
+                font-size: 17px;
 
             }
 
 
             .brand-section::before {
 
-                height: 18px;
+                height: 20px;
 
             }
 
@@ -1680,9 +1718,9 @@
 
             .header-inner {
 
-                min-height: 116px;
+                min-height: 138px;
 
-                gap: 8px;
+                gap: 10px;
 
             }
 
@@ -1696,23 +1734,25 @@
 
             .brand-name {
 
-                max-width: 230px;
+                max-width: 250px;
 
                 white-space: normal;
 
                 text-align: center;
 
-                font-size: 15px;
+                font-size: 19px;
+
+                font-weight: 800;
 
                 padding:
-                    9px 10px;
+                    10px 12px;
 
             }
 
 
             .brand-section {
 
-                font-size: 14px;
+                font-size: 15px;
 
                 padding-left: 7px;
 
