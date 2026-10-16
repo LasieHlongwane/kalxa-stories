@@ -7,6 +7,8 @@ from app.models.article_comment import (
     ArticleComment,
     CommentUpvote,
 )
+
+from app.models.story_reaction import StoryReaction
 from app.models.restaurant_analytics_event import (
     RestaurantAnalyticsEvent,
 )
@@ -21,4 +23,5 @@ __all__ = [
     "ArticleComment",
     "CommentUpvote",
     "RestaurantAnalyticsEvent",
+    "StoryReaction",
 ]
