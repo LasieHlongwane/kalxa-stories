@@ -97,10 +97,10 @@
         rel="stylesheet"
     >
 
-    <!-- FUTURISTIC / IRON MAN-INSPIRED FONT -->
+    <!-- ARCHIVO BLACK BRAND FONT -->
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
         rel="stylesheet"
     >
 
@@ -209,12 +209,12 @@
 
 
             /* =================================================
-               IRON MAN-INSPIRED BRAND FONT
+               ARCHIVO BLACK BRAND FONT
             ================================================= */
 
             --ndebele-art-font:
-                "Orbitron",
-                "DM Sans",
+                "Archivo Black",
+                "Arial Black",
                 sans-serif;
 
 
@@ -373,9 +373,12 @@
 
            Dark Brown → Yellow → Blue → Red → Green
 
-           BACKGROUND COLOURS UNCHANGED
+           DESKTOP HEADER WIDTH: 45%
 
-           DESKTOP WIDTH REDUCED BY 40%
+           Previous width: 60%
+           New width: 45%
+
+           Background colours remain unchanged.
         ====================================================== */
 
         .site-header {
@@ -386,7 +389,7 @@
 
             z-index: 1000;
 
-            width: 60%;
+            width: 45%;
 
             max-width: 100%;
 
@@ -420,7 +423,7 @@
 
             width:
                 min(
-                    calc(100% - 36px),
+                    calc(100% - 28px),
                     var(--kalxa-max-width)
                 );
 
@@ -440,7 +443,7 @@
 
             justify-content: center;
 
-            gap: 12px;
+            gap: 10px;
 
         }
 
@@ -481,12 +484,11 @@
         /* =====================================================
            KWANDEBELE KALXA HUB BRAND NAME
 
-           IRON MAN-INSPIRED DESIGN
+           ARCHIVO BLACK
 
-           - Futuristic angular typography
-           - Orbitron ExtraBold
-           - Metallic white lettering
-           - Transparent background
+           - Heavy modern lettering
+           - Bold visual appearance
+           - Fully transparent background
            - Centered
            - Responsive
         ====================================================== */
@@ -519,24 +521,26 @@
             color:
                 #ffffff;
 
+            /* ARCHIVO BLACK */
+
             font-family:
                 var(--ndebele-art-font);
 
             font-size:
                 clamp(
-                    22px,
-                    2.8vw,
-                    46px
+                    24px,
+                    2.6vw,
+                    42px
                 );
 
-            font-weight: 900;
+            font-weight: 400;
 
             font-style: normal;
 
-            line-height: 1.12;
+            line-height: 1.1;
 
             letter-spacing:
-                -1.8px;
+                -1.5px;
 
             text-transform: uppercase;
 
@@ -549,22 +553,14 @@
             word-break: normal;
 
 
-            /* ===============================================
-               METALLIC / ARMOUR-STYLE TEXT EFFECT
-            =============================================== */
+            /* SUBTLE TEXT DEPTH */
 
             text-shadow:
-                0 1px 0
-                rgba(255, 255, 255, .65),
+                0 2px 3px
+                rgba(0, 0, 0, .4),
 
-                1px 2px 0
-                rgba(30, 25, 25, .7),
-
-                2px 3px 0
-                rgba(20, 20, 20, .5),
-
-                0 5px 10px
-                rgba(0, 0, 0, .55);
+                0 4px 8px
+                rgba(0, 0, 0, .3);
 
 
             transition:
@@ -590,9 +586,6 @@
 
         /* =====================================================
            STORIES BRAND SECTION
-
-           POSITIONED BELOW MAIN BRAND TO GIVE
-           THE LARGER TITLE MORE HORIZONTAL SPACE
         ====================================================== */
 
         .brand-section {
@@ -1496,26 +1489,27 @@
         /* =====================================================
            TABLET RESPONSIVE
 
-           Keep the narrower header usable.
+           The coloured header remains compact while
+           leaving enough room for the branding.
         ====================================================== */
 
         @media (max-width: 1100px) {
 
             .site-header {
 
-                width: 60%;
+                width: 65%;
 
             }
 
 
             .header-inner {
 
-                min-height: 140px;
+                min-height: 135px;
 
                 padding:
-                    16px 0 12px;
+                    14px 0 12px;
 
-                gap: 10px;
+                gap: 9px;
 
             }
 
@@ -1524,15 +1518,15 @@
 
                 font-size:
                     clamp(
-                        20px,
-                        3.1vw,
+                        21px,
+                        3.2vw,
                         34px
                     );
 
-                min-height: 56px;
+                min-height: 52px;
 
                 letter-spacing:
-                    -1.3px;
+                    -1.2px;
 
             }
 
@@ -1556,8 +1550,8 @@
         /* =====================================================
            MOBILE RESPONSIVE
 
-           On phones the header expands to the screen
-           width to prevent text and navigation overflow.
+           Keep the header narrower than the screen
+           without cutting off the branding.
 
            BACKGROUND COLOURS UNCHANGED.
         ====================================================== */
@@ -1578,7 +1572,7 @@
 
             .site-header {
 
-                width: 100%;
+                width: 88%;
 
                 background:
                     linear-gradient(
@@ -1601,7 +1595,7 @@
             .header-inner {
 
                 width:
-                    calc(100% - 30px);
+                    calc(100% - 20px);
 
                 min-height: 125px;
 
@@ -1633,7 +1627,7 @@
 
 
             /* ===============================================
-               FUTURISTIC MOBILE BRAND
+               ARCHIVO BLACK MOBILE BRAND
             =============================================== */
 
             .brand-name {
@@ -1660,17 +1654,17 @@
 
                 font-size:
                     clamp(
-                        19px,
-                        5.2vw,
-                        30px
+                        18px,
+                        5vw,
+                        28px
                     );
 
-                font-weight: 900;
+                font-weight: 400;
 
                 line-height: 1.12;
 
                 letter-spacing:
-                    -1.2px;
+                    -1px;
 
                 white-space: normal;
 
@@ -1773,6 +1767,13 @@
 
         @media (max-width: 380px) {
 
+            .site-header {
+
+                width: 92%;
+
+            }
+
+
             .header-inner {
 
                 min-height: 128px;
@@ -1802,17 +1803,17 @@
                 font-size:
                     clamp(
                         17px,
-                        5.1vw,
+                        5vw,
                         21px
                     );
 
                 font-family:
                     var(--ndebele-art-font);
 
-                font-weight: 900;
+                font-weight: 400;
 
                 letter-spacing:
-                    -1px;
+                    -.9px;
 
                 padding:
                     4px 0;
@@ -1905,7 +1906,7 @@
     <div class="header-inner">
 
         <!-- ===============================================
-             CENTERED FUTURISTIC BRAND
+             CENTERED ARCHIVO BLACK BRAND
         =============================================== -->
 
         <a
