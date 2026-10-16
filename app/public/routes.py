@@ -1624,6 +1624,32 @@ def article_detail(
     )
 
 
+
+
+        # ========================================================
+    # STORY ENGAGEMENT
+    # ========================================================
+
+    story_engagement = get_story_engagement(
+        article.id
+    )
+
+    story_view_count = (
+        story_engagement["view_count"]
+    )
+
+    story_like_count = (
+        story_engagement["like_count"]
+    )
+
+    story_is_liked = visitor_liked_story(
+        article.id
+    )
+
+    reaction_csrf_token = (
+        story_reaction_csrf_token()
+    )
+
     # ========================================================
     # LINKED KALXA RESTAURANTS
     # ========================================================
@@ -2108,6 +2134,14 @@ def article_detail(
         featured_restaurants=(
             featured_restaurants
         ),
+
+        story_view_count=story_view_count,
+
+        story_like_count=story_like_count,
+
+        story_is_liked=story_is_liked,
+
+        reaction_csrf_token=reaction_csrf_token,
 
         reading_minutes=(
             reading_minutes
