@@ -2,12 +2,13 @@
 
 
 {% block title %}
-Kalxa Stories | Local Food & Restaurant Stories
+KwaNdebele Kalxa Hub | KALXA Stories
 {% endblock %}
 
 
 {% block meta_description %}
-Discover restaurant stories, local food, hidden spots and experiences worth discovering on Kalxa.
+Discover the people, businesses, creators, restaurants,
+events and latest news shaping KwaNdebele on KALXA Stories.
 {% endblock %}
 
 
@@ -15,771 +16,1227 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 <style>
 
-    /* =====================================================
-       HOME HERO
-    ====================================================== */
+/* =====================================================
+   KWANDEBELE CULTURAL COLOURS
+====================================================== */
 
-    .home-hero {
+:root {
 
-        position: relative;
+    --ndebele-blue: #0753bd;
 
-        overflow: hidden;
+    --ndebele-red: #d52032;
 
-        padding:
-            115px 0 100px;
+    --ndebele-yellow: #f4c430;
 
-        background:
-            var(--kalxa-cream);
+    --ndebele-dark: #101d38;
 
-        border-bottom:
-            1px solid
-            var(--kalxa-border);
+    --ndebele-gradient:
+        linear-gradient(
+            110deg,
+            #0753bd 0%,
+            #1765d5 25%,
+            #d52032 65%,
+            #f4c430 100%
+        );
 
-    }
+}
 
 
-    .home-hero::before {
+/* =====================================================
+   HOME HERO
+====================================================== */
 
-        content: "";
+.home-hero {
 
-        position: absolute;
+    position: relative;
 
-        top: 0;
+    overflow: hidden;
 
-        right: 8%;
+    padding: 115px 0 100px;
 
-        width: 1px;
+    background:
+        var(--kalxa-cream);
 
-        height: 100%;
+    border-bottom:
+        1px solid
+        var(--kalxa-border);
 
-        background:
-            rgba(120, 91, 51, .1);
+}
 
-    }
 
+/* NDEBELE COLOUR STRIPE */
 
-    .home-hero::after {
+.home-hero::before {
 
-        content: "K";
+    content: "";
 
-        position: absolute;
+    position: absolute;
 
-        right: -35px;
+    top: 0;
 
-        bottom: -175px;
+    left: 0;
 
-        color:
-            rgba(93, 70, 40, .045);
+    right: 0;
 
-        font-family:
-            var(--kalxa-serif);
+    height: 7px;
 
-        font-size:
-            min(
-                500px,
-                47vw
-            );
+    background:
+        var(--ndebele-gradient);
 
-        font-weight: 600;
+}
 
-        line-height: 1;
 
-        pointer-events: none;
+/* BACKGROUND WATERMARK */
 
-    }
+.home-hero::after {
 
+    content: "K";
 
-    .home-hero .page-container {
+    position: absolute;
 
-        position: relative;
+    right: -35px;
 
-        z-index: 2;
+    bottom: -175px;
 
-    }
+    color:
+        rgba(93, 70, 40, .045);
 
+    font-family:
+        var(--kalxa-serif);
 
-    .home-hero h1 {
+    font-size:
+        min(500px, 47vw);
 
-        max-width: 940px;
+    font-weight: 600;
 
-        margin:
-            0 0 30px;
+    line-height: 1;
 
-        color:
-            var(--kalxa-ink);
+    pointer-events: none;
 
-        font-family:
-            var(--kalxa-serif);
+}
 
-        font-size:
-            clamp(
-                58px,
-                8vw,
-                108px
-            );
 
-        font-weight: 500;
+.home-hero .page-container {
 
-        line-height: .91;
+    position: relative;
 
-        letter-spacing:
-            -5px;
+    z-index: 2;
 
-    }
+}
 
 
-    .home-hero h1 em {
+/* CULTURAL LABEL */
 
-        color:
-            var(--kalxa-gold-dark);
+.home-hero .hero-label {
 
-        font-weight: 500;
+    color:
+        var(--ndebele-blue);
 
-    }
+}
 
 
-    .hero-copy {
+/* MAIN HEADLINE */
 
-        max-width: 610px;
+.home-hero h1 {
 
-        margin: 0;
+    max-width: 940px;
 
-        color:
-            var(--kalxa-text-soft);
+    margin: 0 0 30px;
 
-        font-size:
-            clamp(
-                15px,
-                1.7vw,
-                19px
-            );
+    color:
+        var(--kalxa-ink);
 
-        line-height: 1.75;
+    font-family:
+        var(--kalxa-serif);
 
-    }
+    font-size:
+        clamp(58px, 8vw, 108px);
 
+    font-weight: 500;
 
-    .hero-edition {
+    line-height: .91;
 
-        margin-top: 48px;
+    letter-spacing: -5px;
 
-        padding-top: 18px;
+}
 
-        border-top:
-            1px solid
-            rgba(116, 92, 60, .22);
 
-        display: flex;
+.home-hero h1 em {
 
-        align-items: center;
+    color:
+        var(--kalxa-gold-dark);
 
-        gap: 14px;
+    font-weight: 500;
 
-        max-width: 610px;
+}
 
-        color:
-            var(--kalxa-muted);
 
-        font-size: 9px;
+/* HERO DESCRIPTION */
 
-        font-weight: 700;
+.hero-copy {
 
-        letter-spacing:
-            1.7px;
+    max-width: 610px;
 
-        text-transform:
-            uppercase;
+    margin: 0;
 
-    }
+    color:
+        var(--kalxa-text-soft);
 
+    font-size:
+        clamp(15px, 1.7vw, 19px);
 
-    .hero-edition-dot {
+    line-height: 1.75;
 
-        width: 5px;
+}
 
-        height: 5px;
 
-        border-radius: 50%;
+/* HERO EDITION */
 
-        background:
-            var(--kalxa-gold);
+.hero-edition {
 
-    }
+    margin-top: 48px;
 
+    padding-top: 18px;
 
-    /* =====================================================
-       EDITORIAL CATEGORY NAVIGATION
-    ====================================================== */
+    border-top:
+        1px solid
+        rgba(116, 92, 60, .22);
 
-    .story-categories {
-        padding: 65px 0 10px;
-    }
+    display: flex;
 
-    .story-categories-heading {
-        margin: 0 0 12px;
-        font-family: var(--kalxa-serif);
-        font-size: clamp(32px, 4vw, 48px);
-        font-weight: 500;
-    }
+    align-items: center;
 
-    .story-categories-intro {
-        margin: 0 0 29px;
-        color: var(--kalxa-text-soft);
-        font-size: 13px;
-        line-height: 1.7;
-    }
+    gap: 14px;
 
-    .story-categories-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 15px;
-    }
+    max-width: 610px;
 
-    .story-category-button {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-        min-height: 135px;
-        padding: 25px 28px;
-        background: var(--kalxa-paper);
-        border: 1px solid var(--kalxa-border);
-        transition:
-            border-color .2s,
-            transform .2s,
-            box-shadow .2s;
-    }
+    color:
+        var(--kalxa-muted);
 
-    .story-category-button:hover {
-        border-color: var(--kalxa-gold);
-        transform: translateY(-2px);
-        box-shadow: var(--kalxa-shadow);
-    }
+    font-size: 9px;
 
-    .story-category-button small {
-        display: block;
-        margin-bottom: 11px;
-        color: var(--kalxa-gold-dark);
-        font-size: 9px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-    }
+    font-weight: 700;
 
-    .story-category-button strong {
-        display: block;
-        color: var(--kalxa-ink);
-        font-family: var(--kalxa-serif);
-        font-size: clamp(19px, 2.2vw, 27px);
-        font-weight: 500;
-        line-height: 1.2;
-    }
+    letter-spacing: 1.7px;
 
-    .story-category-button .category-arrow {
-        flex-shrink: 0;
-        color: var(--kalxa-gold-dark);
-        font-size: 26px;
-    }
+    text-transform: uppercase;
 
-    @media (max-width: 650px) {
+}
 
-        .story-categories {
-            padding: 42px 0 5px;
-        }
 
-        .story-categories-grid {
-            grid-template-columns: 1fr;
-        }
+.hero-edition-dot {
 
-        .story-category-button {
-            min-height: 112px;
-            padding: 21px;
-        }
+    width: 7px;
 
-    }
+    height: 7px;
 
+    border-radius: 50%;
 
-    /* =====================================================
-       FEATURED
-    ====================================================== */
+    background:
+        var(--ndebele-red);
 
-    .featured-section {
+}
 
-        padding:
-            72px 0 64px;
 
-    }
+/* =====================================================
+   STORY CATEGORIES
+====================================================== */
 
+.story-categories {
+
+    padding: 65px 0 10px;
+
+}
+
+
+.story-categories-heading {
+
+    margin: 0 0 12px;
+
+    font-family:
+        var(--kalxa-serif);
+
+    font-size:
+        clamp(32px, 4vw, 48px);
+
+    font-weight: 500;
+
+}
+
+
+.story-categories-intro {
+
+    margin: 0 0 29px;
+
+    color:
+        var(--kalxa-text-soft);
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+}
+
+
+/* CATEGORY GRID */
+
+.story-categories-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+
+}
+
+
+/* CATEGORY CARD */
+
+.story-category-button {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    min-height: 135px;
+
+    padding: 25px 28px;
+
+    background:
+        var(--kalxa-paper);
+
+    border:
+        1px solid
+        var(--kalxa-border);
+
+    overflow: hidden;
+
+    transition:
+        border-color .2s,
+        transform .2s,
+        box-shadow .2s;
+
+}
+
+
+/* COLOURED CULTURAL CARD ACCENT */
+
+.story-category-button::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    bottom: 0;
+
+    width: 4px;
+
+    background:
+        var(--ndebele-blue);
+
+}
+
+
+.story-category-button:nth-child(2)::before {
+
+    background:
+        var(--ndebele-red);
+
+}
+
+
+.story-category-button:nth-child(3)::before {
+
+    background:
+        var(--ndebele-yellow);
+
+}
+
+
+.story-category-button:nth-child(4)::before {
+
+    background:
+        var(--ndebele-blue);
+
+}
+
+
+.story-category-button:nth-child(5)::before {
+
+    background:
+        var(--ndebele-red);
+
+}
+
+
+/* HOVER */
+
+.story-category-button:hover {
+
+    border-color:
+        var(--ndebele-blue);
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        var(--kalxa-shadow);
+
+}
+
+
+.story-category-button:focus-visible {
+
+    outline:
+        3px solid
+        var(--ndebele-blue);
+
+    outline-offset: 3px;
+
+}
+
+
+/* CATEGORY LABEL */
+
+.story-category-button small {
+
+    display: block;
+
+    margin-bottom: 11px;
+
+    color:
+        var(--kalxa-gold-dark);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* CATEGORY TITLE */
+
+.story-category-button strong {
+
+    display: block;
+
+    color:
+        var(--kalxa-ink);
+
+    font-family:
+        var(--kalxa-serif);
+
+    font-size:
+        clamp(19px, 2.2vw, 27px);
+
+    font-weight: 500;
+
+    line-height: 1.2;
+
+}
+
+
+/* ARROW */
+
+.story-category-button .category-arrow {
+
+    flex-shrink: 0;
+
+    color:
+        var(--ndebele-blue);
+
+    font-size: 26px;
+
+}
+
+
+/* =====================================================
+   TRENDING STORIES
+====================================================== */
+
+.trending-section {
+
+    position: relative;
+
+    padding-top: 75px;
+
+    padding-bottom: 65px;
+
+}
+
+
+.trending-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 50%;
+
+    width:
+        min(
+            calc(100% - 56px),
+            var(--kalxa-max-width)
+        );
+
+    height: 3px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        var(--ndebele-gradient);
+
+}
+
+
+.trending-section .latest-header-copy span {
+
+    color:
+        var(--ndebele-blue);
+
+}
+
+
+/* =====================================================
+   FEATURED STORY
+====================================================== */
+
+.featured-section {
+
+    padding: 72px 0 64px;
+
+}
+
+
+.featured-story {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.45fr)
+        minmax(340px, .55fr);
+
+    min-height: 590px;
+
+    overflow: hidden;
+
+    background:
+        var(--kalxa-black);
+
+    color:
+        #f7f2e9;
+
+    box-shadow:
+        var(--kalxa-shadow);
+
+}
+
+
+/* FEATURED IMAGE */
+
+.featured-image {
+
+    position: relative;
+
+    min-height: 590px;
+
+    overflow: hidden;
+
+    background: #292721;
+
+}
+
+
+.featured-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform .8s
+        cubic-bezier(.2, .7, .2, 1);
+
+}
+
+
+.featured-story:hover .featured-image img {
+
+    transform:
+        scale(1.025);
+
+}
+
+
+.featured-image::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to right,
+            transparent 60%,
+            rgba(17, 17, 15, .18)
+        );
+
+    pointer-events: none;
+
+}
+
+
+/* PHOTO COUNT */
+
+.featured-photo-count {
+
+    position: absolute;
+
+    left: 20px;
+
+    bottom: 20px;
+
+    z-index: 3;
+
+    min-height: 31px;
+
+    padding: 0 12px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .27);
+
+    border-radius: 999px;
+
+    background:
+        rgba(17, 17, 15, .66);
+
+    backdrop-filter:
+        blur(12px);
+
+    color: white;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+}
+
+
+/* FEATURED CONTENT */
+
+.featured-content {
+
+    position: relative;
+
+    padding: 62px 48px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    justify-content: center;
+
+}
+
+
+.featured-content::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 42px;
+
+    left: 48px;
+
+    width: 42px;
+
+    height: 3px;
+
+    background:
+        var(--ndebele-gradient);
+
+}
+
+
+.featured-content .story-meta {
+
+    margin-top: 26px;
+
+    color:
+        rgba(255, 255, 255, .5);
+
+}
+
+
+.featured-content h2 {
+
+    margin: 20px 0 22px;
+
+    font-family:
+        var(--kalxa-serif);
+
+    font-size:
+        clamp(38px, 4vw, 59px);
+
+    font-weight: 500;
+
+    line-height: 1.01;
+
+    letter-spacing: -2px;
+
+}
+
+
+.featured-content p {
+
+    margin: 0 0 32px;
+
+    color:
+        rgba(255, 255, 255, .62);
+
+    font-size: 13px;
+
+    line-height: 1.8;
+
+}
+
+
+.featured-content .read-link {
+
+    padding-bottom: 6px;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, .28);
+
+    color:
+        #f7f2e9;
+
+}
+
+
+/* =====================================================
+   LATEST STORIES
+====================================================== */
+
+.latest-section {
+
+    padding-top: 60px;
+
+    padding-bottom: 100px;
+
+}
+
+
+.latest-heading-title {
+
+    margin: 0;
+
+    font-family:
+        var(--kalxa-serif);
+
+    font-size:
+        clamp(34px, 4vw, 49px);
+
+    font-weight: 500;
+
+    letter-spacing: -1.5px;
+
+}
+
+
+.latest-header {
+
+    margin-bottom: 38px;
+
+    padding-bottom: 20px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    border-bottom:
+        1px solid
+        var(--kalxa-border);
+
+}
+
+
+.latest-header-copy span {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color:
+        var(--kalxa-gold-dark);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.latest-header > a {
+
+    color:
+        var(--kalxa-text-soft);
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+}
+
+
+.latest-header > a:hover {
+
+    color:
+        var(--ndebele-blue);
+
+}
+
+
+/* =====================================================
+   NEWSLETTER
+====================================================== */
+
+.kalxa-newsletter {
+
+    padding: 80px 0;
+
+    background:
+        var(--kalxa-cream);
+
+    border-top:
+        1px solid
+        var(--kalxa-border);
+
+}
+
+
+.kalxa-newsletter-inner {
+
+    max-width: 780px;
+
+    text-align: center;
+
+}
+
+
+.kalxa-newsletter-title {
+
+    margin: 12px 0 22px;
+
+    font-family:
+        var(--kalxa-serif);
+
+    font-size:
+        clamp(34px, 5vw, 55px);
+
+    font-weight: 500;
+
+    line-height: 1.12;
+
+}
+
+
+.kalxa-newsletter-copy {
+
+    color:
+        var(--kalxa-text-soft);
+
+    line-height: 1.75;
+
+}
+
+
+.kalxa-newsletter-button {
+
+    display: inline-block;
+
+    margin-top: 16px;
+
+    padding: 16px 28px;
+
+    background:
+        var(--ndebele-blue);
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background .2s,
+        transform .2s;
+
+}
+
+
+.kalxa-newsletter-button:hover {
+
+    background: #063f92;
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* =====================================================
+   PAID STORIES CTA
+====================================================== */
+
+.kalxa-paid-stories-cta {
+
+    position: relative;
+
+    padding: 85px 0;
+
+    background:
+        var(--kalxa-black);
+
+    color:
+        #f5efe3;
+
+    text-align: center;
+
+    overflow: hidden;
+
+}
+
+
+.kalxa-paid-stories-cta::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 6px;
+
+    background:
+        var(--ndebele-gradient);
+
+}
+
+
+.kalxa-paid-inner {
+
+    max-width: 760px;
+
+}
+
+
+.kalxa-paid-eyebrow {
+
+    color: #d0ab70;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+}
+
+
+.kalxa-paid-title {
+
+    margin: 20px 0;
+
+    font-family:
+        var(--kalxa-serif);
+
+    font-size:
+        clamp(37px, 5vw, 65px);
+
+    font-weight: 500;
+
+}
+
+
+.kalxa-paid-copy {
+
+    margin: 20px auto 25px;
+
+    color: #c6bdb0;
+
+    line-height: 1.8;
+
+}
+
+
+.kalxa-paid-price {
+
+    margin-bottom: 8px;
+
+    color: #e6d4b7;
+
+    font-family:
+        var(--kalxa-serif);
+
+    font-size: 50px;
+
+}
+
+
+.kalxa-paid-note {
+
+    margin-bottom: 32px;
+
+    color: #c6bdb0;
+
+    font-size: 13px;
+
+}
+
+
+.kalxa-paid-button {
+
+    display: inline-block;
+
+    padding: 16px 28px;
+
+    background:
+        var(--ndebele-yellow);
+
+    color:
+        #181511;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background .2s,
+        transform .2s;
+
+}
+
+
+.kalxa-paid-button:hover {
+
+    background: #ffda58;
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* =====================================================
+   TABLET RESPONSIVE
+====================================================== */
+
+@media (max-width: 900px) {
 
     .featured-story {
 
-        display: grid;
-
-        grid-template-columns:
-            minmax(0, 1.45fr)
-            minmax(340px, .55fr);
-
-        min-height: 590px;
-
-        overflow: hidden;
-
-        background:
-            var(--kalxa-black);
-
-        color:
-            #f7f2e9;
-
-        box-shadow:
-            var(--kalxa-shadow);
+        grid-template-columns: 1fr;
 
     }
-
 
     .featured-image {
 
-        position: relative;
-
-        min-height: 590px;
-
-        overflow: hidden;
-
-        background:
-            #292721;
+        min-height: 500px;
 
     }
-
-
-    .featured-image img {
-
-        width: 100%;
-
-        height: 100%;
-
-        display: block;
-
-        object-fit: cover;
-
-        transition:
-            transform .8s
-            cubic-bezier(.2, .7, .2, 1);
-
-    }
-
-
-    .featured-story:hover
-    .featured-image img {
-
-        transform:
-            scale(1.025);
-
-    }
-
-
-    .featured-image::after {
-
-        content: "";
-
-        position: absolute;
-
-        inset: 0;
-
-        background:
-            linear-gradient(
-                to right,
-                transparent 60%,
-                rgba(17, 17, 15, .18)
-            );
-
-        pointer-events: none;
-
-    }
-
-
-    .featured-photo-count {
-
-        position: absolute;
-
-        left: 20px;
-
-        bottom: 20px;
-
-        z-index: 3;
-
-        min-height: 31px;
-
-        padding:
-            0 12px;
-
-        display: inline-flex;
-
-        align-items: center;
-
-        border:
-            1px solid
-            rgba(255, 255, 255, .27);
-
-        border-radius:
-            999px;
-
-        background:
-            rgba(17, 17, 15, .66);
-
-        backdrop-filter:
-            blur(12px);
-
-        color:
-            white;
-
-        font-size: 9px;
-
-        font-weight: 600;
-
-    }
-
 
     .featured-content {
 
-        position: relative;
-
-        padding:
-            62px 48px;
-
-        display: flex;
-
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        justify-content: center;
+        padding: 60px 38px 48px;
 
     }
-
 
     .featured-content::before {
 
-        content: "";
-
-        position: absolute;
-
-        top: 42px;
-
-        left: 48px;
-
-        width: 42px;
-
-        height: 1px;
-
-        background:
-            var(--kalxa-gold);
+        left: 38px;
 
     }
 
+}
 
-    .featured-content
-    .story-meta {
 
-        margin-top: 26px;
+/* =====================================================
+   MOBILE RESPONSIVE
+====================================================== */
 
-        color:
-            rgba(255, 255, 255, .5);
+@media (max-width: 650px) {
+
+    .home-hero {
+
+        padding: 82px 0 70px;
 
     }
 
+    .home-hero h1 {
+
+        max-width: 100%;
+
+        font-size:
+            clamp(52px, 16vw, 72px);
+
+        letter-spacing: -3px;
+
+    }
+
+    .hero-copy {
+
+        max-width: 95%;
+
+        font-size: 15px;
+
+    }
+
+    .hero-edition {
+
+        margin-top: 34px;
+
+    }
+
+    .story-categories {
+
+        padding: 42px 0 5px;
+
+    }
+
+    .story-categories-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .story-category-button {
+
+        min-height: 112px;
+
+        padding: 21px;
+
+    }
+
+    .trending-section {
+
+        padding-top: 52px;
+
+        padding-bottom: 40px;
+
+    }
+
+    .featured-section {
+
+        padding: 45px 0 38px;
+
+    }
+
+    .featured-image {
+
+        min-height: 380px;
+
+    }
+
+    .featured-content {
+
+        padding: 55px 24px 34px;
+
+    }
+
+    .featured-content::before {
+
+        top: 34px;
+
+        left: 24px;
+
+    }
 
     .featured-content h2 {
 
-        margin:
-            20px 0 22px;
+        font-size: 38px;
 
-        font-family:
-            var(--kalxa-serif);
-
-        font-size:
-            clamp(
-                38px,
-                4vw,
-                59px
-            );
-
-        font-weight: 500;
-
-        line-height: 1.01;
-
-        letter-spacing:
-            -2px;
+        letter-spacing: -1.3px;
 
     }
-
-
-    .featured-content p {
-
-        margin:
-            0 0 32px;
-
-        color:
-            rgba(255, 255, 255, .62);
-
-        font-size: 13px;
-
-        line-height: 1.8;
-
-    }
-
-
-    .featured-content
-    .read-link {
-
-        padding-bottom: 6px;
-
-        border-bottom:
-            1px solid
-            rgba(255, 255, 255, .28);
-
-        color:
-            #f7f2e9;
-
-    }
-
-
-    /* =====================================================
-       LATEST
-    ====================================================== */
 
     .latest-section {
 
-        padding-top: 60px;
+        padding-top: 42px;
 
-        padding-bottom: 100px;
-
-    }
-
-
-    .latest-heading-title {
-
-        margin:
-            0;
-
-        font-family:
-            var(--kalxa-serif);
-
-        font-size:
-            clamp(
-                34px,
-                4vw,
-                49px
-            );
-
-        font-weight: 500;
-
-        letter-spacing:
-            -1.5px;
+        padding-bottom: 65px;
 
     }
-
 
     .latest-header {
 
-        margin-bottom: 38px;
+        align-items: flex-start;
 
-        padding-bottom: 20px;
-
-        display: flex;
-
-        align-items: flex-end;
-
-        justify-content:
-            space-between;
-
-        gap: 20px;
-
-        border-bottom:
-            1px solid
-            var(--kalxa-border);
+        flex-direction: column;
 
     }
 
+    .kalxa-newsletter {
 
-    .latest-header-copy span {
-
-        display: block;
-
-        margin-bottom: 8px;
-
-        color:
-            var(--kalxa-gold-dark);
-
-        font-size: 9px;
-
-        font-weight: 700;
-
-        letter-spacing:
-            2px;
-
-        text-transform:
-            uppercase;
+        padding: 65px 0;
 
     }
 
+    .kalxa-paid-stories-cta {
 
-    .latest-header > a {
-
-        color:
-            var(--kalxa-text-soft);
-
-        font-size: 11px;
-
-        font-weight: 600;
+        padding: 65px 0;
 
     }
 
-
-    .latest-header > a:hover {
-
-        color:
-            var(--kalxa-gold-dark);
-
-    }
-
-
-    /* =====================================================
-       RESPONSIVE
-    ====================================================== */
-
-    @media (
-        max-width: 900px
-    ) {
-
-        .featured-story {
-
-            grid-template-columns:
-                1fr;
-
-        }
-
-
-        .featured-image {
-            min-height: 500px;
-        }
-
-
-        .featured-content {
-
-            padding:
-                60px 38px 48px;
-
-        }
-
-
-        .featured-content::before {
-            left: 38px;
-        }
-
-    }
-
-
-    @media (
-        max-width: 650px
-    ) {
-
-        .home-hero {
-
-            padding:
-                82px 0 70px;
-
-        }
-
-
-        .home-hero h1 {
-
-            max-width: 100%;
-
-            font-size:
-                clamp(
-                    52px,
-                    16vw,
-                    72px
-                );
-
-            letter-spacing:
-                -3px;
-
-        }
-
-
-        .hero-copy {
-
-            max-width: 95%;
-
-            font-size: 15px;
-
-        }
-
-
-        .hero-edition {
-            margin-top: 34px;
-        }
-
-
-        .featured-section {
-
-            padding:
-                45px 0 38px;
-
-        }
-
-
-        .featured-image {
-
-            min-height: 380px;
-
-        }
-
-
-        .featured-content {
-
-            padding:
-                55px 24px 34px;
-
-        }
-
-
-        .featured-content::before {
-
-            top: 34px;
-
-            left: 24px;
-
-        }
-
-
-        .featured-content h2 {
-
-            font-size: 38px;
-
-            letter-spacing:
-                -1.3px;
-
-        }
-
-
-        .latest-section {
-
-            padding-top: 42px;
-
-            padding-bottom: 65px;
-
-        }
-
-
-        .latest-header {
-
-            align-items: flex-start;
-
-            flex-direction: column;
-
-        }
-
-    }
+}
 
 </style>
 
@@ -789,37 +1246,41 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 {% block content %}
 
 
+<!-- =========================================================
+     HOME HERO
+========================================================== -->
+
 <section class="home-hero">
 
     <div class="page-container">
 
         <div class="hero-label">
-            LIFESTYLE
+            KWANDEBELE · LIFESTYLE · CULTURE
         </div>
 
-
         <h1>
-            From an 
+            From an
             <em>Idea</em>
             to an
             <em>Empire</em>
         </h1>
 
-
         <p class="hero-copy">
-            Every place started somewhere. Discover what inspired 
-            the places around you, how they came to life and the 
-            journeys that keep them growing.
-                                
-        </p>
 
+            Every place started somewhere.
+
+            Discover what inspired the places around you,
+            how they came to life and the journeys
+            that keep them growing.
+
+        </p>
 
         <div class="hero-edition">
 
             <span class="hero-edition-dot"></span>
 
             <span>
-               Business · People · Journeys · Inspiration
+                Business · People · Journeys · Inspiration
             </span>
 
         </div>
@@ -842,7 +1303,11 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
     <div class="page-container">
 
         <div class="section-heading">
-            <span>Explore the journal</span>
+
+            <span>
+                Explore the journal
+            </span>
+
         </div>
 
         <h2
@@ -853,11 +1318,16 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
         </h2>
 
         <p class="story-categories-intro">
+
             Explore the local people, places, events
             and experiences shaping our communities.
+
         </p>
 
         <div class="story-categories-grid">
+
+
+            <!-- LOCAL DISCOVERIES -->
 
             <a
                 class="story-category-button"
@@ -866,90 +1336,17 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                     category_slug='local'
                 ) }}"
             >
+
                 <span>
-                    <small>Local Discoveries</small>
+
+                    <small>
+                        Local Discoveries
+                    </small>
+
                     <strong>
                         What is happening locally?
                     </strong>
-                </span>
 
-                <span class="category-arrow" aria-hidden="true">
-                    ↗
-                </span>
-            </a>
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='experiences'
-                ) }}"
-            >
-                <span>
-                    <small>Events &amp; Experiences</small>
-                    <strong>
-                        What experiences can people attend?
-                    </strong>
-                </span>
-
-                <span class="category-arrow" aria-hidden="true">
-                    ↗
-                </span>
-            </a>
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='food'
-                ) }}"
-            >
-                <span>
-                    <small>Food &amp; Lifestyle</small>
-                    <strong>
-                        Where can people eat,
-                        socialise and explore?
-                    </strong>
-                </span>
-
-                <span class="category-arrow" aria-hidden="true">
-                    ↗
-                </span>
-            </a>
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='creators'
-                ) }}"
-            >
-                <span>
-                    <small>Creators &amp; Culture</small>
-                    <strong>
-                        Who is creating, entertaining
-                        and influencing locally?
-                    </strong>
-                </span>
-
-                <span class="category-arrow" aria-hidden="true">
-                    ↗
-                </span>
-            </a>
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='news-kwandebele'
-                ) }}"
-            >
-                <span>
-                    <small>KwaNdebele News</small>
-
-                    <strong>
-                        Latest news in KwaNdebele
-                    </strong>
                 </span>
 
                 <span
@@ -958,6 +1355,141 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                 >
                     ↗
                 </span>
+
+            </a>
+
+
+
+            <!-- EVENTS AND EXPERIENCES -->
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='experiences'
+                ) }}"
+            >
+
+                <span>
+
+                    <small>
+                        Events &amp; Experiences
+                    </small>
+
+                    <strong>
+                        What experiences can people attend?
+                    </strong>
+
+                </span>
+
+                <span
+                    class="category-arrow"
+                    aria-hidden="true"
+                >
+                    ↗
+                </span>
+
+            </a>
+
+
+
+            <!-- FOOD AND LIFESTYLE -->
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='food'
+                ) }}"
+            >
+
+                <span>
+
+                    <small>
+                        Food &amp; Lifestyle
+                    </small>
+
+                    <strong>
+                        Where can people eat,
+                        socialise and explore?
+                    </strong>
+
+                </span>
+
+                <span
+                    class="category-arrow"
+                    aria-hidden="true"
+                >
+                    ↗
+                </span>
+
+            </a>
+
+
+
+            <!-- CREATORS -->
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='creators'
+                ) }}"
+            >
+
+                <span>
+
+                    <small>
+                        Creators &amp; Culture
+                    </small>
+
+                    <strong>
+                        Who is creating, entertaining
+                        and influencing locally?
+                    </strong>
+
+                </span>
+
+                <span
+                    class="category-arrow"
+                    aria-hidden="true"
+                >
+                    ↗
+                </span>
+
+            </a>
+
+
+
+            <!-- KWANDEBELE NEWS -->
+
+            <a
+                class="story-category-button"
+                href="{{ url_for(
+                    'public.story_category',
+                    category_slug='news-kwandebele'
+                ) }}"
+            >
+
+                <span>
+
+                    <small>
+                        KwaNdebele News
+                    </small>
+
+                    <strong>
+                        Latest news in KwaNdebele
+                    </strong>
+
+                </span>
+
+                <span
+                    class="category-arrow"
+                    aria-hidden="true"
+                >
+                    ↗
+                </span>
+
             </a>
 
 
@@ -968,13 +1500,9 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 </section>
 
 
+
 <!-- =========================================================
      KALXA TRENDING STORIES
-
-     Curated restaurant-linked stories and featured paid stories.
-
-     Featured visibility is independent of the permanent
-     publication lifetime of a paid story.
 ========================================================== -->
 
 {% if trending_articles %}
@@ -1009,6 +1537,7 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         </div>
 
+
         <div class="story-grid">
 
             {% for article in trending_articles %}
@@ -1037,7 +1566,11 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                         {% else %}
 
                         <div class="image-placeholder small">
-                            <span>K</span>
+
+                            <span>
+                                K
+                            </span>
+
                         </div>
 
                         {% endif %}
@@ -1045,6 +1578,7 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                     </div>
 
                 </a>
+
 
                 <div class="story-card-content">
 
@@ -1059,14 +1593,19 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                         {% endif %}
 
                         <span>
-                            {{ article.category.name
-                               if article.category
-                               else article.article_type
-                                   .replace('_', ' ')
-                                   .title() }}
+
+                            {{
+                                article.category.name
+                                if article.category
+                                else article.article_type
+                                    .replace('_', ' ')
+                                    .title()
+                            }}
+
                         </span>
 
                     </div>
+
 
                     <h3>
 
@@ -1074,10 +1613,13 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                             'public.article_detail',
                             slug=article.slug
                         ) }}">
+
                             {{ article.title }}
+
                         </a>
 
                     </h3>
+
 
                     {% if article.excerpt %}
 
@@ -1087,6 +1629,7 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                     {% endif %}
 
+
                     <a
                         class="read-link"
                         href="{{ url_for(
@@ -1094,7 +1637,8 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                             slug=article.slug
                         ) }}"
                     >
-                        Read story <span>→</span>
+                        Read story
+                        <span>→</span>
                     </a>
 
                 </div>
@@ -1113,13 +1657,15 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
 
+<!-- =========================================================
+     FEATURED STORY
+========================================================== -->
 
 {% if featured_article %}
 
 <section class="featured-section">
 
     <div class="page-container">
-
 
         <div class="section-heading">
 
@@ -1138,7 +1684,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
             class="featured-story"
         >
 
-
             <div class="featured-image">
 
                 {% if
@@ -1147,48 +1692,45 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                     featured_article.images | length > 0
                 %}
 
-                    <img
-                        src="{{ featured_article.images[0].image_url }}"
-                        alt="{{ featured_article.title }}"
-                    >
+                <img
+                    src="{{ featured_article.images[0].image_url }}"
+                    alt="{{ featured_article.title }}"
+                >
 
+                {% if featured_article.images | length > 1 %}
 
-                    {% if
-                        featured_article.images | length > 1
-                    %}
+                <span class="featured-photo-count">
 
-                    <span class="featured-photo-count">
+                    {{ featured_article.images | length }}
 
-                        {{ featured_article.images | length }}
-
-                        {% if featured_article.images | length == 1 %}
-                            photo
-                        {% else %}
-                            photos
-                        {% endif %}
-
-                    </span>
-
+                    {% if featured_article.images | length == 1 %}
+                        photo
+                    {% else %}
+                        photos
                     {% endif %}
+
+                </span>
+
+                {% endif %}
 
 
                 {% elif featured_article.cover_image_url %}
 
-                    <img
-                        src="{{ featured_article.cover_image_url }}"
-                        alt="{{ featured_article.title }}"
-                    >
+                <img
+                    src="{{ featured_article.cover_image_url }}"
+                    alt="{{ featured_article.title }}"
+                >
 
 
                 {% else %}
 
-                    <div class="image-placeholder">
+                <div class="image-placeholder">
 
-                        <span>
-                            K
-                        </span>
+                    <span>
+                        K
+                    </span>
 
-                    </div>
+                </div>
 
                 {% endif %}
 
@@ -1197,7 +1739,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
             <div class="featured-content">
-
 
                 <div class="story-meta">
 
@@ -1214,8 +1755,8 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                         {{
                             featured_article.article_type
-                            .replace("_", " ")
-                            .title()
+                                .replace("_", " ")
+                                .title()
                         }}
 
                     </span>
@@ -1238,8 +1779,10 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
                 <span class="read-link">
+
                     Read the story
                     <span>→</span>
+
                 </span>
 
             </div>
@@ -1254,10 +1797,13 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
 
+<!-- =========================================================
+     LATEST STORIES
+========================================================== -->
+
 <section class="latest-section">
 
     <div class="page-container">
-
 
         <div class="latest-header">
 
@@ -1273,7 +1819,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
             </div>
 
-
             <a href="{{ url_for('public.stories') }}">
                 View all stories →
             </a>
@@ -1285,11 +1830,9 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
         <div class="story-grid">
 
-
             {% for article in articles %}
 
             <article class="story-card">
-
 
                 <a
                     href="{{ url_for(
@@ -1301,7 +1844,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                 >
 
                     <div class="story-image">
-
 
                         {% if
                             article.images
@@ -1316,9 +1858,7 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                         >
 
 
-                        {% if
-                            article.images | length > 1
-                        %}
+                        {% if article.images | length > 1 %}
 
                         <span class="story-image-count">
 
@@ -1351,7 +1891,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                         {% endif %}
 
-
                     </div>
 
                 </a>
@@ -1359,7 +1898,6 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
                 <div class="story-card-content">
-
 
                     <div class="story-meta">
 
@@ -1376,8 +1914,8 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                             {{
                                 article.article_type
-                                .replace("_", " ")
-                                .title()
+                                    .replace("_", " ")
+                                    .title()
                             }}
 
                         </span>
@@ -1387,13 +1925,13 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
                     <h3>
 
-                        <a
-                            href="{{ url_for(
-                                'public.article_detail',
-                                slug=article.slug
-                            ) }}"
-                        >
+                        <a href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}">
+
                             {{ article.title }}
+
                         </a>
 
                     </h3>
@@ -1415,17 +1953,17 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
                             slug=article.slug
                         ) }}"
                     >
+
                         Read story
                         <span>→</span>
-                    </a>
 
+                    </a>
 
                 </div>
 
             </article>
 
             {% endfor %}
-
 
         </div>
 
@@ -1443,14 +1981,15 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
             </h2>
 
             <p>
+
                 We're discovering restaurants,
                 food and experiences worth sharing.
+
             </p>
 
         </div>
 
         {% endif %}
-
 
     </div>
 
@@ -1459,65 +1998,44 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
 <!-- =========================================================
-     KALXA STORIES — LOCATION-BASED NEWSLETTER
+     LOCATION-BASED NEWSLETTER
 ========================================================== -->
 
 <section
     id="kalxa-area-newsletter"
-    style="
-        padding:80px 0;
-        background:var(--kalxa-cream);
-        border-top:1px solid var(--kalxa-border);
-    "
+    class="kalxa-newsletter"
     aria-labelledby="kalxa-newsletter-title"
 >
 
-    <div
-        class="page-container"
-        style="
-            max-width:780px;
-            text-align:center;
-        "
-    >
+    <div class="page-container kalxa-newsletter-inner">
 
         <span class="hero-label">
             LOCAL STORIES · YOUR INBOX
         </span>
 
+
         <h2
             id="kalxa-newsletter-title"
-            style="
-                font:500 clamp(34px,5vw,55px)/1.12
-                var(--kalxa-serif);
-                margin:12px 0 22px;
-            "
+            class="kalxa-newsletter-title"
         >
             Stay connected to your community.
         </h2>
 
-        <p
-            style="
-                color:var(--kalxa-text-soft);
-                line-height:1.75;
-            "
-        >
+
+        <p class="kalxa-newsletter-copy">
+
             Subscribe for local KALXA Stories updates.
+
             Choose your closest area:
+
             KwaMhlanga, Kwaggafontein or Siyabuswa.
+
         </p>
+
 
         <a
             href="{{ url_for('story_newsletter.signup_page') }}"
-            style="
-                display:inline-block;
-                background:var(--kalxa-black);
-                color:white;
-                padding:16px 28px;
-                margin-top:16px;
-                font-weight:700;
-                font-size:13px;
-                text-decoration:none;
-            "
+            class="kalxa-newsletter-button"
         >
             Subscribe to local stories →
         </a>
@@ -1528,94 +2046,57 @@ Discover restaurant stories, local food, hidden spots and experiences worth disc
 
 
 
-<!-- KALXA PAID STORIES CALL TO ACTION -->
+<!-- =========================================================
+     PAID STORIES CTA — R200 PERMANENT PUBLISHING
+========================================================== -->
 
 <section
     id="kalxa-paid-stories-cta"
-    style="
-        background:var(--kalxa-black);
-        color:#f5efe3;
-        padding:85px 0;
-        text-align:center;
-    "
+    class="kalxa-paid-stories-cta"
 >
-    <div
-        class="page-container"
-        style="max-width:760px"
-    >
-        <span
-            style="
-                font-size:11px;
-                letter-spacing:2px;
-                text-transform:uppercase;
-                color:#d0ab70;
-            "
-        >
+
+    <div class="page-container kalxa-paid-inner">
+
+        <span class="kalxa-paid-eyebrow">
             PUBLISH WITH KALXA
         </span>
 
-        <h2
-            style="
-                font-family:var(--kalxa-serif);
-                font-size:clamp(37px,5vw,65px);
-                font-weight:500;
-                margin:20px 0;
-            "
-        >
+
+        <h2 class="kalxa-paid-title">
             Your story deserves a permanent home.
         </h2>
 
-        <p
-            style="
-                line-height:1.8;
-                color:#c6bdb0;
-                margin:20px auto 25px;
-            "
-        >
+
+        <p class="kalxa-paid-copy">
+
             Showcase your business, brand or
             creative journey on KALXA Stories.
 
             Publish once and keep sharing your
             story link without renewal fees.
+
         </p>
+        <p class="kalxa-paid-note">
 
-        <div
-            style="
-                font-family:var(--kalxa-serif);
-                font-size:50px;
-                color:#e6d4b7;
-                margin-bottom:8px;
-            "
-        >
-            R200
-        </div>
-
-        <p
-            style="
-                color:#c6bdb0;
-                font-size:13px;
-                margin-bottom:32px;
-            "
-        >
             Once-off publishing fee.
+
             No article expiry or renewal.
+
             Subject to editorial approval.
+
         </p>
+
 
         <a
             href="{{ url_for('paid_stories.submit_story') }}"
-            style="
-                display:inline-block;
-                background:#e6d4b7;
-                color:#181511;
-                padding:16px 28px;
-                font-weight:700;
-                text-decoration:none;
-            "
+            class="kalxa-paid-button"
         >
             Submit your story →
         </a>
+
     </div>
+
 </section>
+
 
 {% endblock %}
