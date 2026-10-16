@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block title %}
+Support KwaNdebele Hub | Kalxa Stories
+{% endblock %}
+
+{% block meta_description %}
+Support KwaNdebele Kalxa Hub with a voluntary contribution to help grow local news, culture, lifestyle and community storytelling.
+{% endblock %}
+
+
+{% block extra_head %}
+
+<style>
+
+    .donation-page {
+
+        max-width: 650px;
+
+        margin:
+            65px auto 90px;
+
+        padding:
+            0 20px;
+
+    }
+
+
+    .donation-heading {
+
+        font-family:
+            var(--kalxa-serif);
+
+        font-size:
+            clamp(34px, 6vw, 54px);
+
+        line-height: 1.15;
+
+        letter-spacing: -1px;
+
+        margin:
+            0 0 20px;
+
+    }
+
+
+    .donation-intro {
+
+        font-size: 14px;
+
+        line-height: 1.8;
+
+        color:
+            var(--kalxa-text-soft);
+
+        margin-bottom: 30px;
+
+    }
+
+
+    .donation-card {
+
+        background:
+            var(--kalxa-paper);
+
+        border:
+            1px solid var(--kalxa-border);
+
+        padding:
+            clamp(24px, 5vw, 42px);
+
+    }
+
+
+    .donation-card h2 {
+
+        font-family:
+            var(--kalxa-serif);
+
+        font-size: 24px;
+
+        margin:
+            0 0 22px;
+
+    }
+
+
+    .donation-options {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 12px;
+
+        margin-bottom: 25px;
+
+    }
+
+
+    .donation-option {
+
+        position: relative;
+
+        cursor: pointer;
+
+    }
+
+
+    .donation-option input {
+
+        position: absolute;
+
+        opacity: 0;
+
+        width: 100%;
+
+        height: 100%;
+
+        inset: 0;
+
+        cursor: pointer;
+
+    }
+
+
+    .donation-option span {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-height: 65px;
+
+        border:
+            2px solid var(--kalxa-border);
+
+        border-radius: 6px;
+
+        background: #ffffff;
+
+        font-family:
+            var(--kalxa-sans);
+
+        font-size: 22px;
+
+        font-weight: 800;
+
+        transition:
+            border-color .2s ease,
+            background .2s ease;
+
+    }
+
+
+    .donation-option input:checked + span {
+
+        border-color:
+            var(--kalxa-gold);
+
+        background:
+            var(--kalxa-gold-soft);
+
+        color:
+            var(--kalxa-ink);
+
+    }
+
+
+    .donation-option input:focus-visible + span {
+
+        outline:
+            3px solid var(--kalxa-gold);
+
+        outline-offset: 3px;
+
+    }
+
+
+    .donation-submit {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 100%;
+
+        min-height: 54px;
+
+        padding:
+            15px 20px;
+
+        border: 0;
+
+        border-radius: 5px;
+
+        background:
+            var(--kalxa-black);
+
+        color: #ffffff;
+
+        font-weight: 800;
+
+        font-size: 13px;
+
+        cursor: pointer;
+
+    }
+
+
+    .donation-submit:hover {
+
+        background:
+            var(--kalxa-gold-dark);
+
+    }
+
+
+    .donation-note {
+
+        margin-top: 18px;
+
+        color:
+            var(--kalxa-text-soft);
+
+        font-size: 12px;
+
+        line-height: 1.7;
+
+        text-align: center;
+
+    }
+
+
+    .donation-flash {
+
+        background: #fff0ee;
+
+        border: 1px solid #e8b9b2;
+
+        padding: 14px;
+
+        margin-bottom: 20px;
+
+        color: #92372c;
+
+    }
+
+
+    @media (max-width: 400px) {
+
+        .donation-options {
+            gap: 8px;
+        }
+
+        .donation-option span {
+            font-size: 19px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="donation-page">
+
+    <span class="hero-label">
+        SUPPORT LOCAL STORIES
+    </span>
+
+
+    <p class="donation-intro">
+
+        Every contribution, big or small,
+        helps us move forward.
+
+    </p>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% for category, message in messages %}
+
+            <div class="donation-flash" role="alert">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+
+    <form
+        method="POST"
+        action="{{ url_for('story_donations.create_checkout') }}"
+        class="donation-card"
+    >
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token }}"
+        >
+
+
+        <h2>
+            Choose your contribution
+        </h2>
+
+
+        <div class="donation-options">
+
+            <!-- R5 -->
+
+            <label class="donation-option">
+
+                <input
+                    type="radio"
+                    name="amount"
+                    value="5"
+                    required
+                >
+
+                <span>
+                    R5
+                </span>
+
+            </label>
+
+
+            <!-- R10 -->
+
+            <label class="donation-option">
+
+                <input
+                    type="radio"
+                    name="amount"
+                    value="10"
+                    checked
+                    required
+                >
+
+                <span>
+                    R10
+                </span>
+
+            </label>
+
+
+            <!-- R20 -->
+
+            <label class="donation-option">
+
+                <input
+                    type="radio"
+                    name="amount"
+                    value="20"
+                    required
+                >
+
+                <span>
+                    R20
+                </span>
+
+            </label>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="donation-submit"
+        >
+
+            Continue to Secure Payment →
+
+        </button>
+
+
+        <p class="donation-note">
+
+            One-time voluntary contribution.
+
+            You will be redirected to Yoco
+            to complete your payment securely.
+
+            No recurring subscription.
+
+        </p>
+
+    </form>
+
+</section>
+
+{% endblock %}
