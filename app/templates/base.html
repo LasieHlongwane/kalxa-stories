@@ -234,6 +234,8 @@
 
             /* =================================================
                FIVE-COLOUR CULTURAL GRADIENT
+
+               UNCHANGED
             ================================================= */
 
             --ndebele-gradient:
@@ -348,6 +350,8 @@
            GLOBAL CULTURAL HEADER
 
            Dark Brown → Yellow → Blue → Red → Green
+
+           BACKGROUND COLOURS UNCHANGED
         ====================================================== */
 
         .site-header {
@@ -377,8 +381,7 @@
         /* =====================================================
            HEADER INNER
 
-           Brand centered horizontally.
-           Navigation positioned on the right.
+           CENTERED BRAND
         ====================================================== */
 
         .header-inner {
@@ -391,7 +394,7 @@
                     var(--kalxa-max-width)
                 );
 
-            min-height: 120px;
+            min-height: 130px;
 
             margin:
                 0 auto;
@@ -409,6 +412,8 @@
 
         /* =====================================================
            BRAND WRAPPER
+
+           CENTERED · TRANSPARENT
         ====================================================== */
 
         .brand {
@@ -429,13 +434,21 @@
 
             margin: 0 auto;
 
+            background: transparent;
+
         }
 
 
         /* =====================================================
            KWANDEBELE KALXA HUB BRAND NAME
 
-           EXTRA BOLD · LARGE · CENTERED
+           UPDATED:
+           - FULLY TRANSPARENT BACKGROUND
+           - NO BORDER
+           - NO BOX SHADOW
+           - EXTRA LARGE
+           - EXTRA BOLD
+           - RESPONSIVE
         ====================================================== */
 
         .brand-name {
@@ -446,20 +459,18 @@
 
             justify-content: center;
 
-            min-height: 70px;
+            min-height: 75px;
 
             padding:
-                14px 28px;
+                8px 4px;
 
-            background:
-                rgba(30, 17, 13, .72);
+            background: transparent;
 
-            border:
-                2px solid
-                rgba(255, 255, 255, .45);
+            border: none;
 
-            border-radius:
-                6px;
+            border-radius: 0;
+
+            box-shadow: none;
 
             color:
                 #ffffff;
@@ -469,17 +480,17 @@
 
             font-size:
                 clamp(
-                    28px,
-                    3.2vw,
-                    42px
+                    34px,
+                    3.8vw,
+                    56px
                 );
 
             font-weight: 800;
 
-            line-height: 1.15;
+            line-height: 1.08;
 
             letter-spacing:
-                -1.2px;
+                -1.5px;
 
             text-align: center;
 
@@ -487,26 +498,25 @@
 
             text-shadow:
                 0 2px 5px
-                rgba(0, 0, 0, .35);
-
-            box-shadow:
-                0 5px 18px
-                rgba(20, 10, 6, .12);
+                rgba(0, 0, 0, .55);
 
             transition:
-                background .2s ease,
-                border-color .2s ease;
+                opacity .2s ease;
 
         }
 
 
+        /* HOVER KEEPS BACKGROUND TRANSPARENT */
+
         .brand:hover .brand-name {
 
-            background:
-                rgba(30, 17, 13, .86);
+            background: transparent;
 
-            border-color:
-                rgba(255, 255, 255, .75);
+            border: none;
+
+            box-shadow: none;
+
+            opacity: .94;
 
         }
 
@@ -1407,18 +1417,16 @@
 
         /* =====================================================
            TABLET RESPONSIVE
+
+           Navigation moves beneath the larger title
+           to prevent overlapping.
         ====================================================== */
 
-        @media (max-width: 1200px) {
-
-            /*
-               Put navigation below the brand before
-               the larger title can overlap it.
-            */
+        @media (max-width: 1450px) {
 
             .header-inner {
 
-                min-height: 140px;
+                min-height: 145px;
 
                 padding:
                     15px 0;
@@ -1441,19 +1449,24 @@
 
             .brand-name {
 
-                font-size: 34px;
+                font-size:
+                    clamp(
+                        34px,
+                        4vw,
+                        52px
+                    );
 
-                min-height: 60px;
+                min-height: 65px;
 
                 padding:
-                    12px 22px;
+                    8px 4px;
 
             }
 
 
             .brand-section {
 
-                font-size: 23px;
+                font-size: 25px;
 
             }
 
@@ -1492,7 +1505,7 @@
 
             .header-inner {
 
-                min-height: 132px;
+                min-height: 135px;
 
                 gap: 10px;
 
@@ -1501,17 +1514,22 @@
 
             .brand-name {
 
-                font-size: 28px;
+                font-size:
+                    clamp(
+                        30px,
+                        4.5vw,
+                        40px
+                    );
 
                 padding:
-                    11px 19px;
+                    8px 3px;
 
             }
 
 
             .brand-section {
 
-                font-size: 21px;
+                font-size: 22px;
 
             }
 
@@ -1544,8 +1562,7 @@
             }
 
 
-            /* Five cultural colours remain visible
-               on mobile screens. */
+            /* Five cultural colours remain unchanged */
 
             .site-header {
 
@@ -1600,26 +1617,41 @@
 
             .brand-name {
 
+                min-width: 0;
+
                 min-height: 52px;
 
+                max-width:
+                    calc(100% - 75px);
+
                 padding:
-                    10px 13px;
+                    6px 0;
+
+                background: transparent;
+
+                border: none;
+
+                box-shadow: none;
 
                 font-size:
                     clamp(
-                        18px,
-                        5vw,
-                        25px
+                        22px,
+                        5.7vw,
+                        34px
                     );
 
                 font-weight: 800;
 
-                line-height: 1.2;
+                line-height: 1.1;
 
                 letter-spacing:
-                    -.45px;
+                    -.6px;
 
                 white-space: normal;
+
+                overflow-wrap: normal;
+
+                text-align: center;
 
             }
 
@@ -1734,18 +1766,30 @@
 
             .brand-name {
 
-                max-width: 250px;
+                max-width:
+                    calc(100% - 60px);
 
                 white-space: normal;
 
                 text-align: center;
 
-                font-size: 19px;
+                font-size:
+                    clamp(
+                        20px,
+                        6vw,
+                        25px
+                    );
 
                 font-weight: 800;
 
                 padding:
-                    10px 12px;
+                    6px 0;
+
+                background: transparent;
+
+                border: none;
+
+                box-shadow: none;
 
             }
 
@@ -1829,7 +1873,7 @@
     <div class="header-inner">
 
         <!-- ===============================================
-             CENTERED BRAND
+             CENTERED TRANSPARENT BRAND
         =============================================== -->
 
         <a
