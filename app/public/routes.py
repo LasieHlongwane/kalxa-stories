@@ -489,6 +489,166 @@ def build_attributed_ticketing_url(
         return profile_url
 
 
+
+# ============================================================
+# KALXA CURATED TRENDING STORIES
+# ============================================================
+
+def kalxa_trending_articles(limit=6):
+    """
+    Return articles eligible for curated Trending display.
+
+    Includes:
+        1. Published restaurant-linked stories.
+        2. Published paid stories with active featured status.
+
+    Permanent paid publishing:
+        No PaidStoryPublication.ends_at dependency.
+
+    Important:
+        Association with a restaurant does not establish
+        whether that restaurant currently has a valid
+        Premium subscription.
+
+        The existing restaurant entitlement integration
+        remains the source of truth for that eligibility.
+
+    This is a curated display, not a popularity ranking.
+    """
+
+    from datetime import datetime, timezone
+
+    from sqlalchemy import or_
+
+    from app.models.article_restaurant import ArticleRestaurant
+
+    from app.paid.models import PaidStoryPublication
+
+    now = datetime.now(timezone.utc)
+
+    # --------------------------------------------------------
+    # RESTAURANT-LINKED ARTICLE IDs
+    # --------------------------------------------------------
+
+    restaurant_article_ids = (
+        db.session.query(
+            ArticleRestaurant.article_id
+        )
+        .distinct()
+        .subquery()
+    )
+
+    # --------------------------------------------------------
+    # FEATURED PAID PUBLICATIONS
+    # --------------------------------------------------------
+
+    # Use only publication and featured-placement columns
+    # that exist on the installed PaidStoryPublication model.
+
+    featured_filters = []
+
+    starts_at = getattr(
+        PaidStoryPublication,
+        "starts_at",
+        None,
+    )
+
+    featured_until = getattr(
+        PaidStoryPublication,
+        "featured_until",
+        None,
+    )
+
+    if starts_at is not None:
+        featured_filters.append(
+            starts_at <= now
+        )
+
+    if featured_until is not None:
+        featured_filters.append(
+            featured_until > now
+        )
+
+    # Never treat every permanent paid article as featured.
+    # If featured_until does not exist, do not infer an
+    # active paid featured placement.
+    if featured_until is None:
+
+        featured_article_ids = set()
+
+    else:
+
+        featured_query = db.session.query(
+            PaidStoryPublication.article_id
+        )
+
+        if featured_filters:
+            featured_query = featured_query.filter(
+                *featured_filters
+            )
+
+        featured_article_ids = {
+            item[0]
+            for item in featured_query.all()
+        }
+
+    # --------------------------------------------------------
+    # CURATED TRENDING CANDIDATES
+    # --------------------------------------------------------
+
+    if featured_article_ids:
+
+        eligibility_filter = or_(
+            Article.id.in_(
+                db.session.query(
+                    restaurant_article_ids.c.article_id
+                )
+            ),
+            Article.id.in_(
+                featured_article_ids
+            ),
+        )
+
+    else:
+
+        eligibility_filter = Article.id.in_(
+            db.session.query(
+                restaurant_article_ids.c.article_id
+            )
+        )
+
+    candidates = (
+        active_published_article_query()
+        .filter(
+            eligibility_filter
+        )
+        .order_by(
+            Article.published_at.desc(),
+            Article.created_at.desc(),
+        )
+        .limit(100)
+        .all()
+    )
+
+    # --------------------------------------------------------
+    # DISPLAY ORDER
+    # --------------------------------------------------------
+
+    # Featured articles appear first.
+    # The database query already orders the remaining
+    # candidates from newest to oldest.
+    #
+    # Python sort is stable, preserving newest-first order
+    # within each group.
+
+    candidates.sort(
+        key=lambda article: (
+            article.id not in featured_article_ids
+        )
+    )
+
+    return candidates[:limit]
+
 # ============================================================
 # HOME
 # ============================================================
@@ -526,6 +686,7 @@ def home():
     return render_template(
         "home.html",
         featured_article=featured_article,
+        trending_articles=kalxa_trending_articles(),
         articles=remaining_articles,
     )
 

@@ -1378,6 +1378,74 @@ Edit Story
 
 
         <!-- =============================================
+             EDITORIAL CATEGORY
+             INDEPENDENT OF PREMIUM RESTAURANTS
+        ============================================== -->
+
+        <div class="form-section">
+
+            <h2>Story Category</h2>
+
+            <div class="field">
+
+                <label for="story-category">
+                    Show this story under
+                </label>
+
+                {% set current_category =
+                    request.form.get(
+                        'category_id',
+                        article.category_id
+                        if article and article.category_id
+                        else ''
+                    ) | string
+                %}
+
+                <select
+                    id="story-category"
+                    name="category_id"
+                >
+
+                    <option
+                        value=""
+                        {% if not current_category %}
+                            selected
+                        {% endif %}
+                    >
+                        No category (existing/default publishing)
+                    </option>
+
+                    {% for category in
+                        story_categories | default([], true)
+                    %}
+
+                    <option
+                        value="{{ category.id }}"
+                        {% if
+                            current_category == category.id|string
+                        %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ category.name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <div class="help">
+                    Categories control where stories appear.
+                    They do not change restaurant links,
+                    Premium Restaurant benefits or payments.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
              SEO
         ============================================== -->
 

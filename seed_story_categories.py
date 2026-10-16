@@ -11,6 +11,7 @@ CATEGORIES = (
     ("experiences", "What experiences can people attend?", "Events, entertainment and real-world experiences.", 2),
     ("food", "Where can people eat, socialise and explore?", "Restaurants, food culture and local places.", 3),
     ("creators", "Who is creating, entertaining and influencing locally?", "Artists, creators and local voices.", 4),
+    ("news-kwandebele", "Latest news in KwaNdebele", "News, developments and community announcements across KwaNdebele.", 5),
 )
 
 if __name__ == "__main__":
@@ -26,4 +27,4 @@ if __name__ == "__main__":
             category.display_order = order
             category.is_active = True
         db.session.commit()
-        print("Four KALXA Stories categories are ready.")
+        print("Five KALXA Stories categories are ready.")
