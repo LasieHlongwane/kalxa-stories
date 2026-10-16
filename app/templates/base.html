@@ -216,16 +216,59 @@
 
 
             /* =================================================
-               NEW FOOTER BLUE GRADIENT
+               NEW FOOTER LIGHT-GREY GRADIENT
+
+               Soft silver → light grey → white-grey
             ================================================= */
 
             --kalxa-footer-gradient:
                 linear-gradient(
                     125deg,
-                    #071c43 0%,
-                    #0a3478 35%,
-                    #0753bd 70%,
-                    #1683e8 100%
+                    #e1e4e8 0%,
+                    #edf0f2 35%,
+                    #f5f6f7 70%,
+                    #ffffff 100%
+                );
+
+
+            /* =================================================
+               NEW DONATION BUTTON LIGHT-GREEN GRADIENT
+            ================================================= */
+
+            --kalxa-donation-gradient:
+                linear-gradient(
+                    120deg,
+                    #b8e6c3 0%,
+                    #c9f2d1 40%,
+                    #dcf8df 75%,
+                    #edfff0 100%
+                );
+
+
+            /* =================================================
+               DONATION BUTTON HOVER GRADIENT
+            ================================================= */
+
+            --kalxa-donation-hover-gradient:
+                linear-gradient(
+                    120deg,
+                    #9dd9ad 0%,
+                    #b6e8c0 50%,
+                    #d2f4d8 100%
+                );
+
+
+            /* =================================================
+               PUBLISH WITH KALXA WHITE GRADIENT
+            ================================================= */
+
+            --kalxa-publish-gradient:
+                linear-gradient(
+                    135deg,
+                    #ffffff 0%,
+                    #fcfcfd 35%,
+                    #f7f8fa 70%,
+                    #eef1f4 100%
                 );
 
         }
@@ -1196,9 +1239,60 @@
 
 
         /* =====================================================
+           PUBLISH WITH KALXA
+
+           NEW WHITE GRADIENT CARD
+
+           Apply class="publish-with-kalxa" to the
+           publishing card in its page template.
+        ====================================================== */
+
+        .publish-with-kalxa {
+
+            background:
+                var(--kalxa-publish-gradient);
+
+            border:
+                1px solid #e4e7eb;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 12px 35px rgba(30, 40, 55, .05);
+
+            color:
+                var(--kalxa-text);
+
+        }
+
+
+        /* =====================================================
+           PUBLISH CARD TEXT
+
+           Keep text readable against white gradient.
+        ====================================================== */
+
+        .publish-with-kalxa h2,
+        .publish-with-kalxa h3 {
+
+            color:
+                var(--kalxa-ink);
+
+        }
+
+
+        .publish-with-kalxa p {
+
+            color:
+                var(--kalxa-text-soft);
+
+        }
+
+
+        /* =====================================================
            FOOTER
 
-           BLUE GRADIENT BACKGROUND
+           UPDATED: LIGHT-GREY GRADIENT BACKGROUND
         ====================================================== */
 
         .site-footer {
@@ -1210,13 +1304,11 @@
             padding:
                 62px 0 38px;
 
-            /* UPDATED: BLUE GRADIENT */
-
             background:
                 var(--kalxa-footer-gradient);
 
             color:
-                #ffffff;
+                var(--kalxa-ink);
 
         }
 
@@ -1286,7 +1378,7 @@
             font-weight: 600;
 
             color:
-                #ffffff;
+                #1b2530;
 
         }
 
@@ -1298,7 +1390,7 @@
             margin: 0;
 
             color:
-                rgba(255, 255, 255, .88);
+                #47515d;
 
             font-size: 12px;
 
@@ -1309,6 +1401,8 @@
 
         /* =====================================================
            DONATION BUTTON
+
+           UPDATED: LIGHT-GREEN GRADIENT
         ====================================================== */
 
         .footer-donate-button {
@@ -1327,15 +1421,15 @@
                 13px 22px;
 
             border:
-                1px solid rgba(255, 255, 255, .16);
+                1px solid #a7d9b2;
 
             border-radius: 5px;
 
             background:
-                var(--kalxa-gold);
+                var(--kalxa-donation-gradient);
 
             color:
-                #ffffff;
+                #19452a;
 
             font-family:
                 var(--kalxa-sans);
@@ -1348,9 +1442,13 @@
 
             text-decoration: none;
 
+            box-shadow:
+                0 5px 16px rgba(46, 124, 69, .12);
+
             transition:
                 background .2s ease,
-                transform .2s ease;
+                transform .2s ease,
+                box-shadow .2s ease;
 
         }
 
@@ -1358,12 +1456,16 @@
         .footer-donate-button:hover {
 
             background:
-                var(--kalxa-gold-dark);
+                var(--kalxa-donation-hover-gradient);
 
-            color: #ffffff;
+            color:
+                #123b22;
 
             transform:
                 translateY(-2px);
+
+            box-shadow:
+                0 8px 20px rgba(46, 124, 69, .18);
 
         }
 
@@ -1371,7 +1473,7 @@
         .footer-donate-button:focus-visible {
 
             outline:
-                3px solid #ffffff;
+                3px solid #247443;
 
             outline-offset: 4px;
 
@@ -1385,7 +1487,7 @@
             font-size: 10px !important;
 
             color:
-                rgba(255, 255, 255, .72) !important;
+                #64717b !important;
 
         }
 
@@ -1397,7 +1499,7 @@
         .footer-small {
 
             color:
-                rgba(255, 255, 255, .76);
+                #69747e;
 
             font-size: 10px;
 
@@ -1655,7 +1757,7 @@
             }
 
 
-            /* Blue footer stacks on mobile */
+            /* Light-grey footer stacks on mobile */
 
             .footer-inner {
 
@@ -1859,7 +1961,7 @@
 <!-- =========================================================
      UPDATED GLOBAL FOOTER
 
-     BLUE GRADIENT SUPPORT SECTION
+     LIGHT-GREY GRADIENT SUPPORT SECTION
 ========================================================== -->
 
 <footer class="site-footer">
@@ -1891,7 +1993,7 @@
 
 
             <!-- ===========================================
-                 DONATION BUTTON
+                 LIGHT-GREEN DONATION BUTTON
             ============================================ -->
 
             <a
