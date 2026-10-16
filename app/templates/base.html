@@ -354,9 +354,15 @@
 
         /* =====================================================
            HEADER INNER
+
+           UPDATED:
+           Brand is centered horizontally.
+           Navigation stays on the right.
         ====================================================== */
 
         .header-inner {
+
+            position: relative;
 
             width:
                 min(
@@ -364,7 +370,7 @@
                     var(--kalxa-max-width)
                 );
 
-            min-height: 82px;
+            min-height: 100px;
 
             margin:
                 0 auto;
@@ -373,8 +379,7 @@
 
             align-items: center;
 
-            justify-content:
-                space-between;
+            justify-content: center;
 
             gap: 24px;
 
@@ -383,6 +388,9 @@
 
         /* =====================================================
            BRAND WRAPPER
+
+           UPDATED:
+           Centered in the header.
         ====================================================== */
 
         .brand {
@@ -391,17 +399,26 @@
 
             align-items: center;
 
-            gap: 13px;
+            justify-content: center;
+
+            gap: 15px;
 
             min-width: 0;
 
+            max-width: 100%;
+
             flex-shrink: 1;
+
+            margin: 0 auto;
 
         }
 
 
         /* =====================================================
            KWANDEBELE KALXA HUB BRAND NAME
+
+           UPDATED:
+           Larger and more prominent.
         ====================================================== */
 
         .brand-name {
@@ -412,10 +429,10 @@
 
             justify-content: center;
 
-            min-height: 43px;
+            min-height: 56px;
 
             padding:
-                9px 16px;
+                12px 22px;
 
             background:
                 rgba(8, 22, 48, .32);
@@ -433,14 +450,14 @@
             font-family:
                 var(--kalxa-sans);
 
-            font-size: 17px;
+            font-size: 27px;
 
             font-weight: 700;
 
             line-height: 1.25;
 
             letter-spacing:
-                -.45px;
+                -.6px;
 
             text-align: center;
 
@@ -482,7 +499,7 @@
             font-family:
                 var(--kalxa-serif);
 
-            font-size: 20px;
+            font-size: 23px;
 
             font-weight: 600;
 
@@ -520,9 +537,22 @@
 
         /* =====================================================
            MAIN NAVIGATION
+
+           UPDATED:
+           Positioned on the right without moving
+           the brand away from the center.
         ====================================================== */
 
         .main-nav {
+
+            position: absolute;
+
+            right: 0;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
 
             display: flex;
 
@@ -1355,6 +1385,70 @@
            TABLET RESPONSIVE
         ====================================================== */
 
+        @media (max-width: 1100px) {
+
+            /*
+               Move navigation beneath the centered brand
+               before the larger title overlaps the links.
+            */
+
+            .header-inner {
+
+                min-height: 112px;
+
+                padding:
+                    12px 0;
+
+                flex-direction: column;
+
+                justify-content: center;
+
+                gap: 8px;
+
+            }
+
+
+            .brand {
+
+                margin: 0 auto;
+
+            }
+
+
+            .brand-name {
+
+                font-size: 24px;
+
+                min-height: 48px;
+
+                padding:
+                    9px 17px;
+
+            }
+
+
+            .brand-section {
+
+                font-size: 21px;
+
+            }
+
+
+            .main-nav {
+
+                position: static;
+
+                transform: none;
+
+                justify-content: center;
+
+                gap: 25px;
+
+            }
+
+        }
+
+
         @media (max-width: 950px) {
 
             .story-grid {
@@ -1374,33 +1468,33 @@
 
             .header-inner {
 
-                min-height: 74px;
+                min-height: 108px;
 
-                gap: 16px;
+                gap: 8px;
 
             }
 
 
             .brand-name {
 
-                font-size: 14px;
+                font-size: 22px;
 
                 padding:
-                    9px 11px;
+                    9px 14px;
 
             }
 
 
             .brand-section {
 
-                font-size: 17px;
+                font-size: 19px;
 
             }
 
 
             .main-nav {
 
-                gap: 15px;
+                gap: 23px;
 
             }
 
@@ -1442,42 +1536,61 @@
 
             .header-inner {
 
-                min-height: 72px;
+                min-height: 110px;
 
-                gap: 10px;
+                padding:
+                    12px 0 10px;
+
+                flex-direction: column;
+
+                align-items: center;
+
+                justify-content: center;
+
+                gap: 9px;
 
             }
 
 
             .brand {
 
-                gap: 7px;
+                width: 100%;
+
+                gap: 8px;
+
+                margin: 0 auto;
+
+                justify-content: center;
 
             }
 
 
             .brand-name {
 
-                min-height: 36px;
+                min-height: 42px;
 
                 padding:
-                    7px 8px;
+                    9px 12px;
 
-                font-size: 11px;
+                font-size: clamp(
+                    15px,
+                    4.3vw,
+                    20px
+                );
 
-                line-height: 1.25;
+                line-height: 1.2;
 
                 letter-spacing:
-                    -.25px;
+                    -.3px;
 
             }
 
 
             .brand-section {
 
-                padding-left: 8px;
+                padding-left: 9px;
 
-                font-size: 15px;
+                font-size: 16px;
 
             }
 
@@ -1491,14 +1604,25 @@
 
             .main-nav {
 
-                gap: 10px;
+                position: static;
+
+                transform: none;
+
+                width: 100%;
+
+                justify-content: center;
+
+                gap: 25px;
 
             }
 
 
             .main-nav a {
 
-                font-size: 10px;
+                font-size: 11px;
+
+                padding:
+                    4px 0;
 
             }
 
@@ -1556,41 +1680,55 @@
 
             .header-inner {
 
-                gap: 7px;
-
-            }
-
-
-            .brand-name {
-
-                max-width: 120px;
-
-                white-space: normal;
-
-                text-align: left;
-
-                font-size: 10px;
-
-            }
-
-
-            .brand-section {
-
-                font-size: 13px;
-
-            }
-
-
-            .main-nav {
+                min-height: 116px;
 
                 gap: 8px;
 
             }
 
 
+            .brand {
+
+                gap: 6px;
+
+            }
+
+
+            .brand-name {
+
+                max-width: 230px;
+
+                white-space: normal;
+
+                text-align: center;
+
+                font-size: 15px;
+
+                padding:
+                    9px 10px;
+
+            }
+
+
+            .brand-section {
+
+                font-size: 14px;
+
+                padding-left: 7px;
+
+            }
+
+
+            .main-nav {
+
+                gap: 22px;
+
+            }
+
+
             .main-nav a {
 
-                font-size: 9px;
+                font-size: 10px;
 
             }
 
@@ -1651,7 +1789,7 @@
     <div class="header-inner">
 
         <!-- ===============================================
-             BRAND
+             CENTERED BRAND
         =============================================== -->
 
         <a
