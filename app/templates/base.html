@@ -90,14 +90,10 @@
         crossorigin
     >
 
-    <!-- EXISTING WEBSITE FONTS -->
-
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap"
         rel="stylesheet"
     >
-
-    <!-- ARCHIVO BLACK BRAND FONT -->
 
     <link
         href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
@@ -130,68 +126,35 @@
 
         :root {
 
-            --kalxa-ink:
-                #161511;
+            --kalxa-ink: #161511;
+            --kalxa-black: #11110f;
+            --kalxa-charcoal: #24221d;
 
-            --kalxa-black:
-                #11110f;
+            --kalxa-text: #292720;
+            --kalxa-text-soft: #6e695e;
+            --kalxa-muted: #999184;
 
-            --kalxa-charcoal:
-                #24221d;
+            --kalxa-cream: #f3eee4;
+            --kalxa-cream-soft: #faf8f3;
+            --kalxa-paper: #fffdf9;
 
-            --kalxa-text:
-                #292720;
+            --kalxa-surface: #ffffff;
+            --kalxa-surface-soft: #f6f2e9;
 
-            --kalxa-text-soft:
-                #6e695e;
+            --kalxa-border: #ddd5c7;
+            --kalxa-border-soft: #ebe5da;
 
-            --kalxa-muted:
-                #999184;
+            --kalxa-gold: #a57b43;
+            --kalxa-gold-dark: #77552b;
+            --kalxa-gold-soft: #eee1cc;
 
-            --kalxa-cream:
-                #f3eee4;
+            --kalxa-accent: #a57b43;
+            --kalxa-accent-soft: #f4ead9;
 
-            --kalxa-cream-soft:
-                #faf8f3;
+            --kalxa-green: #355f49;
 
-            --kalxa-paper:
-                #fffdf9;
-
-            --kalxa-surface:
-                #ffffff;
-
-            --kalxa-surface-soft:
-                #f6f2e9;
-
-            --kalxa-border:
-                #ddd5c7;
-
-            --kalxa-border-soft:
-                #ebe5da;
-
-            --kalxa-gold:
-                #a57b43;
-
-            --kalxa-gold-dark:
-                #77552b;
-
-            --kalxa-gold-soft:
-                #eee1cc;
-
-            --kalxa-accent:
-                #a57b43;
-
-            --kalxa-accent-soft:
-                #f4ead9;
-
-            --kalxa-green:
-                #355f49;
-
-            --kalxa-max-width:
-                1280px;
-
-            --kalxa-reading-width:
-                760px;
+            --kalxa-max-width: 1280px;
+            --kalxa-reading-width: 760px;
 
             --kalxa-serif:
                 "Playfair Display",
@@ -207,55 +170,34 @@
                 "Segoe UI",
                 sans-serif;
 
-
-            /* =================================================
-               ARCHIVO BLACK BRAND FONT
-            ================================================= */
-
             --ndebele-art-font:
                 "Archivo Black",
                 "Arial Black",
                 sans-serif;
 
-
             --kalxa-shadow:
-                0 24px 70px
-                rgba(37, 31, 22, .08);
+                0 24px 70px rgba(37, 31, 22, .08);
 
             --kalxa-shadow-hover:
-                0 30px 90px
-                rgba(37, 31, 22, .13);
+                0 30px 90px rgba(37, 31, 22, .13);
 
 
             /* =================================================
                KWANDEBELE CULTURAL COLOURS
 
-               Dark Brown · Yellow · Blue · Red · Green
-
                UNCHANGED
             ================================================= */
 
-            --ndebele-brown:
-                #38251c;
-
-            --ndebele-yellow:
-                #f4c430;
-
-            --ndebele-blue:
-                #0753bd;
-
-            --ndebele-red:
-                #d52032;
-
-            --ndebele-green:
-                #168447;
-
-            --ndebele-dark:
-                #241711;
+            --ndebele-brown: #38251c;
+            --ndebele-yellow: #f4c430;
+            --ndebele-blue: #0753bd;
+            --ndebele-red: #d52032;
+            --ndebele-green: #168447;
+            --ndebele-dark: #241711;
 
 
             /* =================================================
-               FIVE-COLOUR CULTURAL GRADIENT
+               CULTURAL GRADIENT
 
                UNCHANGED
             ================================================= */
@@ -263,19 +205,12 @@
             --ndebele-gradient:
                 linear-gradient(
                     110deg,
-
                     #38251c 0%,
-
                     #503326 16%,
-
                     #f4c430 27%,
-
                     #0753bd 48%,
-
                     #d52032 69%,
-
                     #168447 88%,
-
                     #116b3b 100%
                 );
 
@@ -290,11 +225,9 @@
             box-sizing: border-box;
         }
 
-
         html {
             scroll-behavior: smooth;
         }
-
 
         body {
 
@@ -317,7 +250,6 @@
 
         }
 
-
         body,
         button,
         input,
@@ -326,17 +258,14 @@
             font: inherit;
         }
 
-
         img {
             max-width: 100%;
         }
-
 
         a {
             color: inherit;
             text-decoration: none;
         }
-
 
         button,
         a {
@@ -344,14 +273,12 @@
                 transparent;
         }
 
-
         main {
 
             min-height:
                 calc(100vh - 250px);
 
         }
-
 
         .page-container {
 
@@ -368,13 +295,11 @@
 
 
         /* =====================================================
-           KWANDEBELE KALXA HUB
            GLOBAL CULTURAL HEADER
 
-           WIDTH: 100% OF SCREEN
-           HEIGHT: APPROXIMATELY 30% THINNER
-
-           Background colours remain unchanged.
+           FULL SCREEN WIDTH
+           THINNER HEADER
+           COLOURS UNCHANGED
         ====================================================== */
 
         .site-header {
@@ -390,29 +315,19 @@
             max-width: 100%;
 
             margin-left: auto;
-
             margin-right: auto;
 
             background:
                 var(--ndebele-gradient);
 
             border-bottom:
-                3px solid
-                var(--ndebele-dark);
+                3px solid var(--ndebele-dark);
 
             box-shadow:
-                0 6px 26px
-                rgba(28, 17, 13, .2);
+                0 6px 26px rgba(28, 17, 13, .2);
 
         }
 
-
-        /* =====================================================
-           HEADER INNER
-
-           UPDATED:
-           Reduced from 145px to approximately 102px.
-        ====================================================== */
 
         .header-inner {
 
@@ -446,9 +361,7 @@
 
 
         /* =====================================================
-           BRAND WRAPPER
-
-           CENTERED · TRANSPARENT
+           BRAND
         ====================================================== */
 
         .brand {
@@ -478,18 +391,6 @@
         }
 
 
-        /* =====================================================
-           KWANDEBELE KALXA HUB BRAND NAME
-
-           ARCHIVO BLACK
-
-           - Heavy modern lettering
-           - Bold visual appearance
-           - Fully transparent background
-           - Centered
-           - Responsive
-        ====================================================== */
-
         .brand-name {
 
             display: inline-flex;
@@ -515,8 +416,7 @@
 
             box-shadow: none;
 
-            color:
-                #ffffff;
+            color: #ffffff;
 
             font-family:
                 var(--ndebele-art-font);
@@ -534,8 +434,7 @@
 
             line-height: 1.1;
 
-            letter-spacing:
-                -1.5px;
+            letter-spacing: -1.5px;
 
             text-transform: uppercase;
 
@@ -547,24 +446,15 @@
 
             word-break: normal;
 
-
-            /* SUBTLE TEXT DEPTH */
-
             text-shadow:
-                0 2px 3px
-                rgba(0, 0, 0, .4),
-
-                0 4px 8px
-                rgba(0, 0, 0, .3);
-
+                0 2px 3px rgba(0, 0, 0, .4),
+                0 4px 8px rgba(0, 0, 0, .3);
 
             transition:
                 opacity .2s ease;
 
         }
 
-
-        /* KEEP BRAND TRANSPARENT ON HOVER */
 
         .brand:hover .brand-name {
 
@@ -579,10 +469,6 @@
         }
 
 
-        /* =====================================================
-           STORIES BRAND SECTION
-        ====================================================== */
-
         .brand-section {
 
             position: relative;
@@ -591,8 +477,7 @@
 
             padding-left: 0;
 
-            color:
-                #ffffff;
+            color: #ffffff;
 
             font-family:
                 var(--kalxa-serif);
@@ -604,23 +489,18 @@
             white-space: nowrap;
 
             text-shadow:
-                0 2px 5px
-                rgba(0, 0, 0, .4);
+                0 2px 5px rgba(0, 0, 0, .4);
 
         }
 
 
         .brand-section::before {
-
             display: none;
-
         }
 
 
         /* =====================================================
-           MAIN NAVIGATION
-
-           CENTERED BELOW BRAND
+           NAVIGATION
         ====================================================== */
 
         .main-nav {
@@ -628,7 +508,6 @@
             position: static;
 
             right: auto;
-
             top: auto;
 
             transform: none;
@@ -653,21 +532,18 @@
             padding:
                 3px 0;
 
-            color:
-                #ffffff;
+            color: #ffffff;
 
             font-size: 11px;
 
             font-weight: 700;
 
-            letter-spacing:
-                .25px;
+            letter-spacing: .25px;
 
             white-space: nowrap;
 
             text-shadow:
-                0 1px 4px
-                rgba(0, 0, 0, .65);
+                0 1px 4px rgba(0, 0, 0, .65);
 
             transition:
                 opacity .2s ease;
@@ -682,15 +558,12 @@
             position: absolute;
 
             left: 0;
-
             right: 100%;
-
             bottom: 0;
 
             height: 2px;
 
-            background:
-                #ffffff;
+            background: #ffffff;
 
             transition:
                 right .2s ease;
@@ -700,8 +573,7 @@
 
         .main-nav a:hover {
 
-            color:
-                #ffffff;
+            color: #ffffff;
 
             opacity: .9;
 
@@ -709,21 +581,14 @@
 
 
         .main-nav a:hover::after {
-
             right: 0;
-
         }
 
-
-        /* =====================================================
-           ACCESSIBILITY
-        ====================================================== */
 
         .site-header a:focus-visible {
 
             outline:
-                3px solid
-                #ffffff;
+                3px solid #ffffff;
 
             outline-offset: 4px;
 
@@ -753,11 +618,9 @@
 
             font-weight: 700;
 
-            letter-spacing:
-                2.4px;
+            letter-spacing: 2.4px;
 
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
 
         }
 
@@ -770,8 +633,7 @@
 
             height: 1px;
 
-            background:
-                currentColor;
+            background: currentColor;
 
         }
 
@@ -794,14 +656,12 @@
 
             align-items: flex-end;
 
-            justify-content:
-                space-between;
+            justify-content: space-between;
 
             gap: 20px;
 
             border-bottom:
-                1px solid
-                var(--kalxa-border);
+                1px solid var(--kalxa-border);
 
         }
 
@@ -815,11 +675,9 @@
 
             font-weight: 700;
 
-            letter-spacing:
-                2px;
+            letter-spacing: 2px;
 
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
 
         }
 
@@ -868,11 +726,9 @@
 
             font-weight: 700;
 
-            letter-spacing:
-                1.45px;
+            letter-spacing: 1.45px;
 
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
 
         }
 
@@ -889,11 +745,9 @@
                 0 9px;
 
             border:
-                1px solid
-                rgba(165, 123, 67, .28);
+                1px solid rgba(165, 123, 67, .28);
 
-            border-radius:
-                999px;
+            border-radius: 999px;
 
             background:
                 var(--kalxa-gold-soft);
@@ -905,11 +759,9 @@
 
             font-weight: 700;
 
-            letter-spacing:
-                1.2px;
+            letter-spacing: 1.2px;
 
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
 
         }
 
@@ -929,8 +781,7 @@
 
             font-weight: 700;
 
-            letter-spacing:
-                .2px;
+            letter-spacing: .2px;
 
             transition:
                 gap .18s ease,
@@ -973,8 +824,7 @@
 
             min-width: 0;
 
-            background:
-                transparent;
+            background: transparent;
 
         }
 
@@ -985,8 +835,7 @@
 
             overflow: hidden;
 
-            background:
-                #e7e0d4;
+            background: #e7e0d4;
 
         }
 
@@ -997,11 +846,9 @@
 
             overflow: hidden;
 
-            aspect-ratio:
-                4 / 3;
+            aspect-ratio: 4 / 3;
 
-            background:
-                #e7e0d4;
+            background: #e7e0d4;
 
         }
 
@@ -1040,8 +887,7 @@
         }
 
 
-        .story-card:hover
-        .story-image img {
+        .story-card:hover .story-image img {
 
             transform:
                 scale(1.035);
@@ -1054,7 +900,6 @@
             position: absolute;
 
             right: 13px;
-
             bottom: 13px;
 
             z-index: 2;
@@ -1069,20 +914,16 @@
             align-items: center;
 
             border:
-                1px solid
-                rgba(255, 255, 255, .25);
+                1px solid rgba(255, 255, 255, .25);
 
-            border-radius:
-                999px;
+            border-radius: 999px;
 
             background:
                 rgba(17, 17, 15, .68);
 
-            color:
-                white;
+            color: white;
 
-            backdrop-filter:
-                blur(10px);
+            backdrop-filter: blur(10px);
 
             font-size: 9px;
 
@@ -1122,8 +963,7 @@
 
             line-height: 1.12;
 
-            letter-spacing:
-                -.7px;
+            letter-spacing: -.7px;
 
         }
 
@@ -1170,13 +1010,11 @@
 
             line-height: 1.72;
 
-            display:
-                -webkit-box;
+            display: -webkit-box;
 
             -webkit-line-clamp: 3;
 
-            -webkit-box-orient:
-                vertical;
+            -webkit-box-orient: vertical;
 
             overflow: hidden;
 
@@ -1224,14 +1062,11 @@
             justify-content: center;
 
             border:
-                1px solid
-                rgba(220, 192, 151, .4);
+                1px solid rgba(220, 192, 151, .4);
 
-            border-radius:
-                50%;
+            border-radius: 50%;
 
-            color:
-                #eadbc3;
+            color: #eadbc3;
 
             font-family:
                 var(--kalxa-serif);
@@ -1274,8 +1109,7 @@
                 75px 40px;
 
             border:
-                1px solid
-                var(--kalxa-border);
+                1px solid var(--kalxa-border);
 
             background:
                 var(--kalxa-paper);
@@ -1300,14 +1134,12 @@
 
             justify-content: center;
 
-            border-radius:
-                50%;
+            border-radius: 50%;
 
             background:
                 var(--kalxa-black);
 
-            color:
-                #eadbc3;
+            color: #eadbc3;
 
             font-family:
                 var(--kalxa-serif);
@@ -1351,6 +1183,8 @@
 
         /* =====================================================
            FOOTER
+
+           UPDATED: COMMUNITY SUPPORT / DONATIONS
         ====================================================== */
 
         .site-footer {
@@ -1360,7 +1194,7 @@
             margin-top: 30px;
 
             padding:
-                75px 0 42px;
+                62px 0 38px;
 
             background:
                 var(--kalxa-black);
@@ -1371,7 +1205,7 @@
         }
 
 
-        /* SUBTLE CULTURAL ACCENT ON FOOTER */
+        /* Cultural accent remains unchanged */
 
         .site-footer::before {
 
@@ -1380,9 +1214,7 @@
             position: absolute;
 
             top: 0;
-
             left: 0;
-
             right: 0;
 
             height: 4px;
@@ -1408,10 +1240,20 @@
 
             align-items: flex-end;
 
-            justify-content:
-                space-between;
+            justify-content: space-between;
 
             gap: 40px;
+
+        }
+
+
+        /* =====================================================
+           SUPPORT SECTION
+        ====================================================== */
+
+        .footer-support {
+
+            max-width: 620px;
 
         }
 
@@ -1432,12 +1274,12 @@
 
         .footer-inner p {
 
-            max-width: 430px;
+            max-width: 480px;
 
             margin: 0;
 
             color:
-                rgba(255, 255, 255, .54);
+                rgba(255, 255, 255, .65);
 
             font-size: 12px;
 
@@ -1446,6 +1288,93 @@
         }
 
 
+        /* =====================================================
+           DONATION BUTTON
+        ====================================================== */
+
+        .footer-donate-button {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 9px;
+
+            margin-top: 20px;
+
+            padding:
+                13px 22px;
+
+            border:
+                1px solid rgba(255, 255, 255, .16);
+
+            border-radius: 5px;
+
+            background:
+                var(--kalxa-gold);
+
+            color:
+                #ffffff;
+
+            font-family:
+                var(--kalxa-sans);
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: .15px;
+
+            text-decoration: none;
+
+            transition:
+                background .2s ease,
+                transform .2s ease;
+
+        }
+
+
+        .footer-donate-button:hover {
+
+            background:
+                var(--kalxa-gold-dark);
+
+            color: #ffffff;
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        .footer-donate-button:focus-visible {
+
+            outline:
+                3px solid #ffffff;
+
+            outline-offset: 4px;
+
+        }
+
+
+        .footer-support-note {
+
+            margin-top: 12px !important;
+
+            font-size: 10px !important;
+
+            color:
+                rgba(255, 255, 255, .48) !important;
+
+        }
+
+
+        /* =====================================================
+           FOOTER CREDIT
+        ====================================================== */
+
         .footer-small {
 
             color:
@@ -1453,11 +1382,9 @@
 
             font-size: 10px;
 
-            letter-spacing:
-                .9px;
+            letter-spacing: .9px;
 
-            text-transform:
-                uppercase;
+            text-transform: uppercase;
 
         }
 
@@ -1482,18 +1409,13 @@
 
 
         /* =====================================================
-           TABLET RESPONSIVE
-
-           Header is full width and approximately 30%
-           thinner than its previous 135px height.
+           TABLET
         ====================================================== */
 
         @media (max-width: 1100px) {
 
             .site-header {
-
                 width: 100%;
-
             }
 
 
@@ -1520,34 +1442,25 @@
 
                 min-height: 40px;
 
-                letter-spacing:
-                    -1.2px;
+                letter-spacing: -1.2px;
 
             }
 
 
             .brand-section {
-
                 font-size: 17px;
-
             }
 
 
             .main-nav {
-
                 gap: 23px;
-
             }
 
         }
 
 
         /* =====================================================
-           MOBILE RESPONSIVE
-
-           Full-width coloured header.
-           Reduced vertical space.
-           Background colours unchanged.
+           MOBILE
         ====================================================== */
 
         @media (max-width: 650px) {
@@ -1571,15 +1484,10 @@
                 background:
                     linear-gradient(
                         115deg,
-
                         #38251c 0%,
-
                         #f4c430 24%,
-
                         #0753bd 46%,
-
                         #d52032 69%,
-
                         #168447 100%
                     );
 
@@ -1620,10 +1528,6 @@
             }
 
 
-            /* ===============================================
-               ARCHIVO BLACK MOBILE BRAND
-            =============================================== */
-
             .brand-name {
 
                 width: 100%;
@@ -1657,8 +1561,7 @@
 
                 line-height: 1.1;
 
-                letter-spacing:
-                    -1px;
+                letter-spacing: -1px;
 
                 white-space: normal;
 
@@ -1679,9 +1582,7 @@
 
 
             .brand-section::before {
-
                 display: none;
-
             }
 
 
@@ -1711,16 +1612,13 @@
 
 
             .section {
-
                 padding: 40px 0;
-
             }
 
 
             .story-grid {
 
-                grid-template-columns:
-                    1fr;
+                grid-template-columns: 1fr;
 
                 gap: 38px;
 
@@ -1728,27 +1626,34 @@
 
 
             .story-card-content {
-
                 padding-top: 17px;
-
             }
 
 
             .story-card-content h2,
             .story-card-content h3 {
-
                 font-size: 27px;
+            }
+
+
+            /* Updated footer stacks on mobile */
+
+            .footer-inner {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 25px;
 
             }
 
 
-            .footer-inner {
+            .footer-donate-button {
 
-                align-items:
-                    flex-start;
+                width: 100%;
 
-                flex-direction:
-                    column;
+                max-width: 330px;
 
             }
 
@@ -1756,15 +1661,13 @@
 
 
         /* =====================================================
-           VERY SMALL PHONE SCREENS
+           VERY SMALL SCREENS
         ====================================================== */
 
         @media (max-width: 380px) {
 
             .site-header {
-
                 width: 100%;
-
             }
 
 
@@ -1778,9 +1681,7 @@
 
 
             .brand {
-
                 gap: 1px;
-
             }
 
 
@@ -1806,8 +1707,7 @@
 
                 font-weight: 400;
 
-                letter-spacing:
-                    -.9px;
+                letter-spacing: -.9px;
 
                 padding:
                     2px 0;
@@ -1831,16 +1731,12 @@
 
 
             .main-nav {
-
                 gap: 22px;
-
             }
 
 
             .main-nav a {
-
                 font-size: 10px;
-
             }
 
         }
@@ -1851,14 +1747,11 @@
         ====================================================== */
 
         @media (
-            prefers-reduced-motion:
-            reduce
+            prefers-reduced-motion: reduce
         ) {
 
             html {
-
                 scroll-behavior: auto;
-
             }
 
 
@@ -1888,20 +1781,12 @@
 
 
 <!-- =========================================================
-     KWANDEBELE KALXA HUB
      GLOBAL HEADER
-
-     All public templates extending base.html
-     automatically inherit this header.
 ========================================================== -->
 
 <header class="site-header">
 
     <div class="header-inner">
-
-        <!-- ===============================================
-             CENTERED ARCHIVO BLACK BRAND
-        =============================================== -->
 
         <a
             href="{{ url_for('public.home') }}"
@@ -1913,14 +1798,12 @@
                 KwaNdebele Kalxa Hub
             </span>
 
-            
+            <span class="brand-section">
+                Stories
+            </span>
 
         </a>
 
-
-        <!-- ===============================================
-             NAVIGATION
-        =============================================== -->
 
         <nav
             class="main-nav"
@@ -1942,7 +1825,6 @@
 </header>
 
 
-
 <!-- =========================================================
      MAIN CONTENT
 ========================================================== -->
@@ -1955,32 +1837,78 @@
 </main>
 
 
-
 <!-- =========================================================
-     GLOBAL FOOTER
+     UPDATED GLOBAL FOOTER
+
+     COMMUNITY SUPPORT & DONATIONS
 ========================================================== -->
 
 <footer class="site-footer">
 
     <div class="footer-inner">
 
-        <div>
+        <!-- ===============================================
+             SUPPORT KWANDEBELE HUB
+        =============================================== -->
+
+        <div class="footer-support">
 
             <div class="footer-brand">
-                Our Community
+                Support the KwaNdebele Hub
             </div>
+
 
             <p>
 
-                Stories about the food, people,
-                businesses, creators and places
-                shaping KwaNdebele and the
-                communities around us.
+                Help us grow a platform that celebrates
+                KwaNdebele's culture, lifestyle,
+                businesses, people and local stories.
+
+                Your contribution helps us reach more
+                communities, share more stories and
+                expand the KwaNdebele Hub.
+
+            </p>
+
+
+            <!-- ===========================================
+                 DONATION BUTTON
+            ============================================ -->
+
+            <a
+                href="{{ url_for('story_donations.donate_page') }}"
+                class="footer-donate-button"
+            >
+
+                <span aria-hidden="true">
+                    ❤️
+                </span>
+
+                <span>
+                    Help Grow KwaNdebele Hub
+                </span>
+
+                <span aria-hidden="true">
+                    →
+                </span>
+
+            </a>
+
+
+            <p class="footer-support-note">
+
+                Voluntary contributions ·
+                From R5 ·
+                Secure payment via Yoco
 
             </p>
 
         </div>
 
+
+        <!-- ===============================================
+             FOOTER CREDIT
+        =============================================== -->
 
         <div class="footer-small">
             Powered by Kalxa
@@ -1989,7 +1917,6 @@
     </div>
 
 </footer>
-
 
 
 <!-- =========================================================
