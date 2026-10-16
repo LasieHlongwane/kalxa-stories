@@ -90,8 +90,17 @@
         crossorigin
     >
 
+    <!-- EXISTING WEBSITE FONTS -->
+
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- HAND-DRAWN / PAINTED BRAND FONT -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Knewave&display=swap"
         rel="stylesheet"
     >
 
@@ -196,6 +205,15 @@
                 -apple-system,
                 BlinkMacSystemFont,
                 "Segoe UI",
+                sans-serif;
+
+            /* ===============================================
+               NEW ARTISTIC BRAND FONT
+            =============================================== */
+
+            --ndebele-art-font:
+                "Knewave",
+                "DM Sans",
                 sans-serif;
 
             --kalxa-shadow:
@@ -424,7 +442,7 @@
 
             justify-content: center;
 
-            gap: 16px;
+            gap: 12px;
 
             min-width: 0;
 
@@ -442,13 +460,14 @@
         /* =====================================================
            KWANDEBELE KALXA HUB BRAND NAME
 
-           UPDATED:
-           - FULLY TRANSPARENT BACKGROUND
-           - NO BORDER
-           - NO BOX SHADOW
-           - EXTRA LARGE
-           - EXTRA BOLD
-           - RESPONSIVE
+           NEW DESIGN:
+
+           - Hand-drawn / painted lettering
+           - Knewave display font
+           - Completely transparent background
+           - Slightly narrower typography
+           - Centered
+           - Responsive
         ====================================================== */
 
         .brand-name {
@@ -462,7 +481,7 @@
             min-height: 75px;
 
             padding:
-                8px 4px;
+                6px 2px;
 
             background: transparent;
 
@@ -475,30 +494,39 @@
             color:
                 #ffffff;
 
+            /* HAND-PAINTED FONT */
+
             font-family:
-                var(--kalxa-sans);
+                var(--ndebele-art-font);
 
             font-size:
                 clamp(
-                    34px,
-                    3.8vw,
-                    56px
+                    32px,
+                    3.3vw,
+                    49px
                 );
 
-            font-weight: 800;
+            font-weight: 400;
 
-            line-height: 1.08;
+            font-style: normal;
+
+            line-height: 1.12;
 
             letter-spacing:
-                -1.5px;
+                -1.4px;
 
             text-align: center;
 
             white-space: nowrap;
 
+            /* SOFT PAINTED DEPTH */
+
             text-shadow:
-                0 2px 5px
-                rgba(0, 0, 0, .55);
+                1px 2px 0
+                rgba(38, 20, 14, .30),
+
+                0 3px 7px
+                rgba(0, 0, 0, .35);
 
             transition:
                 opacity .2s ease;
@@ -506,7 +534,7 @@
         }
 
 
-        /* HOVER KEEPS BACKGROUND TRANSPARENT */
+        /* KEEP TRANSPARENT ON HOVER */
 
         .brand:hover .brand-name {
 
@@ -529,7 +557,7 @@
 
             position: relative;
 
-            padding-left: 15px;
+            padding-left: 13px;
 
             color:
                 #ffffff;
@@ -1418,7 +1446,7 @@
         /* =====================================================
            TABLET RESPONSIVE
 
-           Navigation moves beneath the larger title
+           Navigation moves beneath the artistic title
            to prevent overlapping.
         ====================================================== */
 
@@ -1451,15 +1479,15 @@
 
                 font-size:
                     clamp(
-                        34px,
-                        4vw,
-                        52px
+                        32px,
+                        3.6vw,
+                        47px
                     );
 
                 min-height: 65px;
 
                 padding:
-                    8px 4px;
+                    6px 2px;
 
             }
 
@@ -1516,13 +1544,13 @@
 
                 font-size:
                     clamp(
-                        30px,
-                        4.5vw,
-                        40px
+                        28px,
+                        4vw,
+                        38px
                     );
 
                 padding:
-                    8px 3px;
+                    6px 2px;
 
             }
 
@@ -1562,7 +1590,9 @@
             }
 
 
-            /* Five cultural colours remain unchanged */
+            /* =================================================
+               CULTURAL HEADER COLOURS UNCHANGED
+            ================================================= */
 
             .site-header {
 
@@ -1606,7 +1636,7 @@
 
                 width: 100%;
 
-                gap: 8px;
+                gap: 7px;
 
                 margin: 0 auto;
 
@@ -1614,6 +1644,12 @@
 
             }
 
+
+            /* ===============================================
+               HAND-PAINTED MOBILE BRAND
+
+               Smaller width, bold artistic appearance
+            =============================================== */
 
             .brand-name {
 
@@ -1625,7 +1661,7 @@
                     calc(100% - 75px);
 
                 padding:
-                    6px 0;
+                    5px 0;
 
                 background: transparent;
 
@@ -1633,19 +1669,22 @@
 
                 box-shadow: none;
 
+                font-family:
+                    var(--ndebele-art-font);
+
                 font-size:
                     clamp(
-                        22px,
-                        5.7vw,
-                        34px
+                        20px,
+                        5.1vw,
+                        29px
                     );
 
-                font-weight: 800;
+                font-weight: 400;
 
-                line-height: 1.1;
+                line-height: 1.12;
 
                 letter-spacing:
-                    -.6px;
+                    -1px;
 
                 white-space: normal;
 
@@ -1775,15 +1814,21 @@
 
                 font-size:
                     clamp(
-                        20px,
-                        6vw,
-                        25px
+                        19px,
+                        5.5vw,
+                        24px
                     );
 
-                font-weight: 800;
+                font-family:
+                    var(--ndebele-art-font);
+
+                font-weight: 400;
+
+                letter-spacing:
+                    -.9px;
 
                 padding:
-                    6px 0;
+                    5px 0;
 
                 background: transparent;
 
@@ -1873,7 +1918,7 @@
     <div class="header-inner">
 
         <!-- ===============================================
-             CENTERED TRANSPARENT BRAND
+             CENTERED HAND-PAINTED BRAND
         =============================================== -->
 
         <a
