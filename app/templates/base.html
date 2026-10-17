@@ -1177,6 +1177,21 @@
             <span aria-hidden="true">♥</span>
         </a>
 
+        {% set create_website_link = config.get(
+            'KALXA_CREATE_WEBSITE_URL',
+            'https://blog-creator-e5pz.onrender.com'
+        ) %}
+
+        <a
+            href="{{ create_website_link }}"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            <span>Create Website</span>
+            <span aria-hidden="true">↗</span>
+        </a>
+
+
 
         {% set main_website_link = config.get(
             'KALXA_MAIN_WEBSITE_URL',
