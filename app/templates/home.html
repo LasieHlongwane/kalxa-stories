@@ -1,2007 +1,240 @@
 {% extends "base.html" %}
 
-
-{% block title %}
-KwaNdebele Kalxa Hub | KALXA Stories
-{% endblock %}
-
-
-{% block meta_description %}
-Discover the people, businesses, creators, restaurants,
-events and latest news shaping KwaNdebele on KALXA Stories.
-{% endblock %}
-
+{% block title %}KwaNdebele Kalxa Hub | KALXA Stories{% endblock %}
+{% block meta_description %}Discover the people, businesses, creators, restaurants, events and latest news shaping KwaNdebele on KALXA Stories.{% endblock %}
 
 {% block extra_head %}
-
 <style>
-
-/* =====================================================
-   KWANDEBELE CULTURAL COLOURS
-====================================================== */
-
-:root {
-
-    --ndebele-blue: #0753bd;
-
-    --ndebele-red: #d52032;
-
-    --ndebele-yellow: #f4c430;
-
-    --ndebele-dark: #101d38;
-
-    --ndebele-gradient:
-        linear-gradient(
-            110deg,
-            #0753bd 0%,
-            #1765d5 25%,
-            #d52032 65%,
-            #f4c430 100%
-        );
-
-}
-
-
-/* =====================================================
-   HOME HERO
-====================================================== */
-
-.home-hero {
-
-    position: relative;
-
-    overflow: hidden;
-
-    padding: 115px 0 100px;
-
-    background:
-        var(--kalxa-cream);
-
-    border-bottom:
-        1px solid
-        var(--kalxa-border);
-
-}
-
-
-/* NDEBELE COLOUR STRIPE */
-
-.home-hero::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-
-    left: 0;
-
-    right: 0;
-
-    height: 7px;
-
-    background:
-        var(--ndebele-gradient);
-
-}
-
-
-/* BACKGROUND WATERMARK */
-
-.home-hero::after {
-
-    content: "K";
-
-    position: absolute;
-
-    right: -35px;
-
-    bottom: -175px;
-
-    color:
-        rgba(93, 70, 40, .045);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        min(500px, 47vw);
-
-    font-weight: 600;
-
-    line-height: 1;
-
-    pointer-events: none;
-
-}
-
-
-.home-hero .page-container {
-
-    position: relative;
-
-    z-index: 2;
-
-}
-
-
-/* CULTURAL LABEL */
-
-.home-hero .hero-label {
-
-    color:
-        var(--ndebele-blue);
-
-}
-
-
-/* MAIN HEADLINE */
-
-.home-hero h1 {
-
-    max-width: 940px;
-
-    margin: 0 0 30px;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(58px, 8vw, 108px);
-
-    font-weight: 500;
-
-    line-height: .91;
-
-    letter-spacing: -5px;
-
-}
-
-
-.home-hero h1 em {
-
-    color:
-        var(--kalxa-gold-dark);
-
-    font-weight: 500;
-
-}
-
-
-/* HERO DESCRIPTION */
-
-.hero-copy {
-
-    max-width: 610px;
-
-    margin: 0;
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size:
-        clamp(15px, 1.7vw, 19px);
-
-    line-height: 1.75;
-
-}
-
-
-/* HERO EDITION */
-
-.hero-edition {
-
-    margin-top: 48px;
-
-    padding-top: 18px;
-
-    border-top:
-        1px solid
-        rgba(116, 92, 60, .22);
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 14px;
-
-    max-width: 610px;
-
-    color:
-        var(--kalxa-muted);
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    letter-spacing: 1.7px;
-
-    text-transform: uppercase;
-
-}
-
-
-.hero-edition-dot {
-
-    width: 7px;
-
-    height: 7px;
-
-    border-radius: 50%;
-
-    background:
-        var(--ndebele-red);
-
-}
-
-
-/* =====================================================
-   STORY CATEGORIES
-====================================================== */
-
-.story-categories {
-
-    padding: 65px 0 10px;
-
-}
-
-
-.story-categories-heading {
-
-    margin: 0 0 12px;
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(32px, 4vw, 48px);
-
-    font-weight: 500;
-
-}
-
-
-.story-categories-intro {
-
-    margin: 0 0 29px;
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size: 13px;
-
-    line-height: 1.7;
-
-}
-
-
-/* CATEGORY GRID */
-
-.story-categories-grid {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 15px;
-
-}
-
-
-/* CATEGORY CARD */
-
-.story-category-button {
-
-    position: relative;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: 18px;
-
-    min-height: 135px;
-
-    padding: 25px 28px;
-
-    background:
-        var(--kalxa-paper);
-
-    border:
-        1px solid
-        var(--kalxa-border);
-
-    overflow: hidden;
-
-    transition:
-        border-color .2s,
-        transform .2s,
-        box-shadow .2s;
-
-}
-
-
-/* COLOURED CULTURAL CARD ACCENT */
-
-.story-category-button::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-
-    left: 0;
-
-    bottom: 0;
-
-    width: 4px;
-
-    background:
-        var(--ndebele-blue);
-
-}
-
-
-.story-category-button:nth-child(2)::before {
-
-    background:
-        var(--ndebele-red);
-
-}
-
-
-.story-category-button:nth-child(3)::before {
-
-    background:
-        var(--ndebele-yellow);
-
-}
-
-
-.story-category-button:nth-child(4)::before {
-
-    background:
-        var(--ndebele-blue);
-
-}
-
-
-.story-category-button:nth-child(5)::before {
-
-    background:
-        var(--ndebele-red);
-
-}
-
-
-/* HOVER */
-
-.story-category-button:hover {
-
-    border-color:
-        var(--ndebele-blue);
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        var(--kalxa-shadow);
-
-}
-
-
-.story-category-button:focus-visible {
-
-    outline:
-        3px solid
-        var(--ndebele-blue);
-
-    outline-offset: 3px;
-
-}
-
-
-/* CATEGORY LABEL */
-
-.story-category-button small {
-
-    display: block;
-
-    margin-bottom: 11px;
-
-    color:
-        var(--kalxa-gold-dark);
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    letter-spacing: 1.5px;
-
-    text-transform: uppercase;
-
-}
-
-
-/* CATEGORY TITLE */
-
-.story-category-button strong {
-
-    display: block;
-
-    color:
-        var(--kalxa-ink);
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(19px, 2.2vw, 27px);
-
-    font-weight: 500;
-
-    line-height: 1.2;
-
-}
-
-
-/* ARROW */
-
-.story-category-button .category-arrow {
-
-    flex-shrink: 0;
-
-    color:
-        var(--ndebele-blue);
-
-    font-size: 26px;
-
-}
-
-
-/* =====================================================
-   TRENDING STORIES
-====================================================== */
-
-.trending-section {
-
-    position: relative;
-
-    padding-top: 75px;
-
-    padding-bottom: 65px;
-
-}
-
-
-.trending-section::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-
-    left: 50%;
-
-    width:
-        min(
-            calc(100% - 56px),
-            var(--kalxa-max-width)
-        );
-
-    height: 3px;
-
-    transform:
-        translateX(-50%);
-
-    background:
-        var(--ndebele-gradient);
-
-}
-
-
-.trending-section .latest-header-copy span {
-
-    color:
-        var(--ndebele-blue);
-
-}
-
-
-/* =====================================================
-   FEATURED STORY
-====================================================== */
-
-.featured-section {
-
-    padding: 72px 0 64px;
-
-}
-
-
-.featured-story {
-
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 1.45fr)
-        minmax(340px, .55fr);
-
-    min-height: 590px;
-
-    overflow: hidden;
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        #f7f2e9;
-
-    box-shadow:
-        var(--kalxa-shadow);
-
-}
-
-
-/* FEATURED IMAGE */
-
-.featured-image {
-
-    position: relative;
-
-    min-height: 590px;
-
-    overflow: hidden;
-
-    background: #292721;
-
-}
-
-
-.featured-image img {
-
-    width: 100%;
-
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
-
-    transition:
-        transform .8s
-        cubic-bezier(.2, .7, .2, 1);
-
-}
-
-
-.featured-story:hover .featured-image img {
-
-    transform:
-        scale(1.025);
-
-}
-
-
-.featured-image::after {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent 60%,
-            rgba(17, 17, 15, .18)
-        );
-
-    pointer-events: none;
-
-}
-
-
-/* PHOTO COUNT */
-
-.featured-photo-count {
-
-    position: absolute;
-
-    left: 20px;
-
-    bottom: 20px;
-
-    z-index: 3;
-
-    min-height: 31px;
-
-    padding: 0 12px;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, .27);
-
-    border-radius: 999px;
-
-    background:
-        rgba(17, 17, 15, .66);
-
-    backdrop-filter:
-        blur(12px);
-
-    color: white;
-
-    font-size: 9px;
-
-    font-weight: 600;
-
-}
-
-
-/* FEATURED CONTENT */
-
-.featured-content {
-
-    position: relative;
-
-    padding: 62px 48px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    justify-content: center;
-
-}
-
-
-.featured-content::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 42px;
-
-    left: 48px;
-
-    width: 42px;
-
-    height: 3px;
-
-    background:
-        var(--ndebele-gradient);
-
-}
-
-
-.featured-content .story-meta {
-
-    margin-top: 26px;
-
-    color:
-        rgba(255, 255, 255, .5);
-
-}
-
-
-.featured-content h2 {
-
-    margin: 20px 0 22px;
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(38px, 4vw, 59px);
-
-    font-weight: 500;
-
-    line-height: 1.01;
-
-    letter-spacing: -2px;
-
-}
-
-
-.featured-content p {
-
-    margin: 0 0 32px;
-
-    color:
-        rgba(255, 255, 255, .62);
-
-    font-size: 13px;
-
-    line-height: 1.8;
-
-}
-
-
-.featured-content .read-link {
-
-    padding-bottom: 6px;
-
-    border-bottom:
-        1px solid
-        rgba(255, 255, 255, .28);
-
-    color:
-        #f7f2e9;
-
-}
-
-
-/* =====================================================
-   LATEST STORIES
-====================================================== */
-
-.latest-section {
-
-    padding-top: 60px;
-
-    padding-bottom: 100px;
-
-}
-
-
-.latest-heading-title {
-
-    margin: 0;
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(34px, 4vw, 49px);
-
-    font-weight: 500;
-
-    letter-spacing: -1.5px;
-
-}
-
-
-.latest-header {
-
-    margin-bottom: 38px;
-
-    padding-bottom: 20px;
-
-    display: flex;
-
-    align-items: flex-end;
-
-    justify-content: space-between;
-
-    gap: 20px;
-
-    border-bottom:
-        1px solid
-        var(--kalxa-border);
-
-}
-
-
-.latest-header-copy span {
-
-    display: block;
-
-    margin-bottom: 8px;
-
-    color:
-        var(--kalxa-gold-dark);
-
-    font-size: 9px;
-
-    font-weight: 700;
-
-    letter-spacing: 2px;
-
-    text-transform: uppercase;
-
-}
-
-
-.latest-header > a {
-
-    color:
-        var(--kalxa-text-soft);
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-}
-
-
-.latest-header > a:hover {
-
-    color:
-        var(--ndebele-blue);
-
-}
-
-
-/* =====================================================
-   NEWSLETTER
-====================================================== */
-
-.kalxa-newsletter {
-
-    padding: 80px 0;
-
-    background:
-        var(--kalxa-cream);
-
-    border-top:
-        1px solid
-        var(--kalxa-border);
-
-}
-
-
-.kalxa-newsletter-inner {
-
-    max-width: 780px;
-
-    text-align: center;
-
-}
-
-
-.kalxa-newsletter-title {
-
-    margin: 12px 0 22px;
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(34px, 5vw, 55px);
-
-    font-weight: 500;
-
-    line-height: 1.12;
-
-}
-
-
-.kalxa-newsletter-copy {
-
-    color:
-        var(--kalxa-text-soft);
-
-    line-height: 1.75;
-
-}
-
-
-.kalxa-newsletter-button {
-
-    display: inline-block;
-
-    margin-top: 16px;
-
-    padding: 16px 28px;
-
-    background:
-        var(--ndebele-blue);
-
-    color: white;
-
-    font-size: 13px;
-
-    font-weight: 700;
-
-    text-decoration: none;
-
-    transition:
-        background .2s,
-        transform .2s;
-
-}
-
-
-.kalxa-newsletter-button:hover {
-
-    background: #063f92;
-
-    transform:
-        translateY(-2px);
-
-}
-
-
-/* =====================================================
-   PAID STORIES CTA
-====================================================== */
-
-.kalxa-paid-stories-cta {
-
-    position: relative;
-
-    padding: 85px 0;
-
-    background:
-        var(--kalxa-black);
-
-    color:
-        #f5efe3;
-
-    text-align: center;
-
-    overflow: hidden;
-
-}
-
-
-.kalxa-paid-stories-cta::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-
-    left: 0;
-
-    width: 100%;
-
-    height: 6px;
-
-    background:
-        var(--ndebele-gradient);
-
-}
-
-
-.kalxa-paid-inner {
-
-    max-width: 760px;
-
-}
-
-
-.kalxa-paid-eyebrow {
-
-    color: #d0ab70;
-
-    font-size: 11px;
-
-    letter-spacing: 2px;
-
-    text-transform: uppercase;
-
-}
-
-
-.kalxa-paid-title {
-
-    margin: 20px 0;
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size:
-        clamp(37px, 5vw, 65px);
-
-    font-weight: 500;
-
-}
-
-
-.kalxa-paid-copy {
-
-    margin: 20px auto 25px;
-
-    color: #c6bdb0;
-
-    line-height: 1.8;
-
-}
-
-
-.kalxa-paid-price {
-
-    margin-bottom: 8px;
-
-    color: #e6d4b7;
-
-    font-family:
-        var(--kalxa-serif);
-
-    font-size: 50px;
-
-}
-
-
-.kalxa-paid-note {
-
-    margin-bottom: 32px;
-
-    color: #c6bdb0;
-
-    font-size: 13px;
-
-}
-
-
-.kalxa-paid-button {
-
-    display: inline-block;
-
-    padding: 16px 28px;
-
-    background:
-        var(--ndebele-yellow);
-
-    color:
-        #181511;
-
-    font-weight: 700;
-
-    text-decoration: none;
-
-    transition:
-        background .2s,
-        transform .2s;
-
-}
-
-
-.kalxa-paid-button:hover {
-
-    background: #ffda58;
-
-    transform:
-        translateY(-2px);
-
-}
-
-
-/* =====================================================
-   TABLET RESPONSIVE
-====================================================== */
-
-@media (max-width: 900px) {
-
-    .featured-story {
-
-        grid-template-columns: 1fr;
-
-    }
-
-    .featured-image {
-
-        min-height: 500px;
-
-    }
-
-    .featured-content {
-
-        padding: 60px 38px 48px;
-
-    }
-
-    .featured-content::before {
-
-        left: 38px;
-
-    }
-
-}
-
-
-/* =====================================================
-   MOBILE RESPONSIVE
-====================================================== */
-
-@media (max-width: 650px) {
-
-    .home-hero {
-
-        padding: 82px 0 70px;
-
-    }
-
-    .home-hero h1 {
-
-        max-width: 100%;
-
-        font-size:
-            clamp(52px, 16vw, 72px);
-
-        letter-spacing: -3px;
-
-    }
-
-    .hero-copy {
-
-        max-width: 95%;
-
-        font-size: 15px;
-
-    }
-
-    .hero-edition {
-
-        margin-top: 34px;
-
-    }
-
-    .story-categories {
-
-        padding: 42px 0 5px;
-
-    }
-
-    .story-categories-grid {
-
-        grid-template-columns: 1fr;
-
-    }
-
-    .story-category-button {
-
-        min-height: 112px;
-
-        padding: 21px;
-
-    }
-
-    .trending-section {
-
-        padding-top: 52px;
-
-        padding-bottom: 40px;
-
-    }
-
-    .featured-section {
-
-        padding: 45px 0 38px;
-
-    }
-
-    .featured-image {
-
-        min-height: 380px;
-
-    }
-
-    .featured-content {
-
-        padding: 55px 24px 34px;
-
-    }
-
-    .featured-content::before {
-
-        top: 34px;
-
-        left: 24px;
-
-    }
-
-    .featured-content h2 {
-
-        font-size: 38px;
-
-        letter-spacing: -1.3px;
-
-    }
-
-    .latest-section {
-
-        padding-top: 42px;
-
-        padding-bottom: 65px;
-
-    }
-
-    .latest-header {
-
-        align-items: flex-start;
-
-        flex-direction: column;
-
-    }
-
-    .kalxa-newsletter {
-
-        padding: 65px 0;
-
-    }
-
-    .kalxa-paid-stories-cta {
-
-        padding: 65px 0;
-
-    }
-
-}
-
+/* ============================================================
+   KWANDEBELE KALXA HUB — COMPACT NEWSROOM HOMEPAGE
+   Uses base.html design tokens and global cultural masthead.
+============================================================ */
+.home-content{padding-top:18px}
+.home-masthead{padding:28px 0 19px;border-bottom:1px solid var(--kalxa-border)}
+.home-masthead-inner{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.home-eyebrow{display:block;color:var(--kalxa-gold-dark);font-size:10px;font-weight:800;letter-spacing:1.9px;text-transform:uppercase}
+.home-masthead h1{margin:7px 0 0;font-family:var(--kalxa-serif);font-size:clamp(31px,4vw,49px);font-weight:600;line-height:1.1;letter-spacing:-1.4px;color:var(--kalxa-ink)}
+.home-masthead p{max-width:380px;margin:0 0 3px;color:var(--kalxa-text-soft);font-size:12px;line-height:1.7;text-align:right}
+
+/* Single-row category ribbon: native horizontal swipe on mobile. */
+.story-categories{padding:22px 0 24px}
+.category-topline{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:11px}
+.category-topline strong{color:var(--kalxa-ink);font-size:11px;letter-spacing:.4px;text-transform:uppercase}
+.category-hint{color:var(--kalxa-muted);font-size:10px}
+.story-categories-scroll{display:flex;align-items:center;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#b9c5d3 transparent;padding:2px 0 12px}
+.story-category-pill{flex:0 0 auto;scroll-snap-align:start;display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 17px;border:1px solid #d9dfe5;border-radius:999px;background:linear-gradient(135deg,#fff 0%,#f5f7fa 100%);color:#202b37;white-space:nowrap;font-size:11px;font-weight:800;transition:border-color .18s,background .18s,transform .18s}
+.story-category-pill::before{content:"";width:6px;height:6px;flex:0 0 6px;border-radius:50%;background:#0753bd}
+.story-category-pill:nth-child(2)::before{background:#d52032}
+.story-category-pill:nth-child(3)::before{background:#e4b024}
+.story-category-pill:nth-child(4)::before{background:#168447}
+.story-category-pill:nth-child(5)::before{background:#38251c}
+.story-category-pill:hover{background:#ebf3ff;border-color:#92b4dd;transform:translateY(-1px)}
+.story-category-pill:focus-visible{outline:3px solid #0753bd;outline-offset:3px}
+
+/* Journal/news sections. */
+.newsroom-section{padding:29px 0 36px}
+.newsroom-section + .newsroom-section{border-top:1px solid var(--kalxa-border-soft)}
+.newsroom-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:19px;padding-bottom:12px;border-bottom:2px solid #273c57}
+.newsroom-heading h2{margin:0;font-family:var(--kalxa-serif);font-size:clamp(24px,2.8vw,33px);font-weight:600;letter-spacing:-.8px;color:var(--kalxa-ink)}
+.newsroom-heading a{flex-shrink:0;color:#0753bd;font-size:11px;font-weight:800}
+.newsroom-heading a:hover{text-decoration:underline}
+
+/* A proportionate lead story, with a compact image. */
+.home-lead{display:grid;grid-template-columns:minmax(0,44%) minmax(0,1fr);gap:23px;align-items:center;padding:15px;border:1px solid #e3e5e8;background:linear-gradient(135deg,#fff 0%,#f7f9fb 100%)}
+.home-lead-media{position:relative;display:block;overflow:hidden;aspect-ratio:16/10;background:#dededb}
+.home-lead-media img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .3s ease}
+.home-lead:hover .home-lead-media img{transform:scale(1.025)}
+.home-lead-media .image-placeholder{min-height:100%}
+.home-lead-body{min-width:0}
+.home-story-meta{display:flex;align-items:center;flex-wrap:wrap;gap:7px;color:#69747d;font-size:10px;font-weight:700;line-height:1.5}
+.home-story-date{color:#66717d;font-size:10px;font-weight:600;white-space:nowrap}
+.home-lead h3{margin:12px 0 11px;font-family:var(--kalxa-serif);font-size:clamp(26px,3.1vw,41px);line-height:1.15;letter-spacing:-1px;font-weight:600;color:var(--kalxa-ink)}
+.home-lead h3 a:hover,.home-news-title a:hover{color:#0753bd}
+.home-lead p{margin:0 0 17px;font-size:12px;line-height:1.7;color:var(--kalxa-text-soft);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.home-lead .read-link{font-size:11px}
+
+/* News-site story rows: smaller thumbnails, headline-focused. */
+.home-news-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 26px}
+.home-news-item{display:grid;grid-template-columns:116px minmax(0,1fr);gap:15px;align-items:start;padding:17px 0;border-bottom:1px solid #e2e3e5;min-width:0}
+.home-news-thumb{display:block;width:116px;height:86px;overflow:hidden;background:#e9e8e3}
+.home-news-thumb img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .25s ease}
+.home-news-item:hover .home-news-thumb img{transform:scale(1.04)}
+.home-news-thumb .image-placeholder{min-height:86px}
+.home-news-thumb .image-placeholder span{width:32px;height:32px;font-size:15px}
+.home-news-body{min-width:0}
+.home-news-title{margin:6px 0 8px;color:var(--kalxa-ink);font-family:var(--kalxa-serif);font-size:clamp(17px,1.7vw,21px);font-weight:600;line-height:1.27;letter-spacing:-.35px}
+.home-news-excerpt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0;color:var(--kalxa-text-soft);font-size:11px;line-height:1.55}
+.home-news-item .sponsored-label,.home-lead .sponsored-label{min-height:19px;padding:0 7px;font-size:7px}
+
+/* Continue to preserve newsletter and publishing CTAs. */
+.kalxa-newsletter{padding:50px 0;border-top:1px solid var(--kalxa-border);background:linear-gradient(130deg,#f3f5f7,#fff)}
+.kalxa-newsletter-inner{max-width:780px;text-align:center}
+.kalxa-newsletter-title{margin:9px 0 14px;font-family:var(--kalxa-serif);font-size:clamp(28px,4vw,40px);line-height:1.2}
+.kalxa-newsletter-copy{margin:0;color:var(--kalxa-text-soft);font-size:12px;line-height:1.7}
+.kalxa-newsletter-button{display:inline-block;margin-top:19px;padding:13px 23px;background:#0753bd;color:#fff;border-radius:5px;font-size:12px;font-weight:800}
+.kalxa-newsletter-button:hover{background:#063f92}
+.kalxa-paid-stories-cta{position:relative;padding:54px 0;background:var(--kalxa-publish-gradient);border-top:1px solid #e4e7eb;text-align:center;color:var(--kalxa-ink)}
+.kalxa-paid-stories-cta::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--ndebele-gradient)}
+.kalxa-paid-inner{max-width:740px}
+.kalxa-paid-eyebrow{color:var(--kalxa-gold-dark);font-size:10px;font-weight:800;letter-spacing:1.8px}
+.kalxa-paid-title{margin:12px 0;font-family:var(--kalxa-serif);font-weight:600;font-size:clamp(28px,4vw,43px);letter-spacing:-.9px}
+.kalxa-paid-copy{margin:10px auto 13px;max-width:580px;color:var(--kalxa-text-soft);font-size:12px;line-height:1.75}
+.kalxa-paid-note{margin:0 auto 22px;color:#6f7580;font-size:10px;line-height:1.7}
+.kalxa-paid-button{display:inline-block;padding:13px 23px;border-radius:5px;background:#f4c430;color:#181511;font-size:12px;font-weight:800}
+.kalxa-paid-button:hover{background:#ffda58}
+
+@media(max-width:900px){.home-news-list{grid-template-columns:1fr}.home-masthead-inner{align-items:flex-start}.home-masthead p{text-align:left;max-width:320px}}
+@media(max-width:650px){
+    .home-masthead{padding:20px 0 15px}.home-masthead-inner{display:block}.home-masthead p{margin-top:9px;max-width:100%}
+    .story-categories{padding:15px 0}.category-hint{font-size:9px}.story-category-pill{min-height:41px;padding:0 14px;font-size:10px}
+    .newsroom-section{padding:22px 0 25px}.newsroom-heading{margin-bottom:11px}.newsroom-heading h2{font-size:26px}
+    .home-lead{grid-template-columns:1fr;gap:12px;padding:11px}.home-lead-media{aspect-ratio:16/9}.home-lead h3{font-size:26px;margin:8px 0}
+    .home-news-item{grid-template-columns:100px minmax(0,1fr);gap:12px;padding:13px 0}
+    .home-news-thumb{width:100px;height:76px}.home-news-thumb .image-placeholder{min-height:76px}
+    .home-news-title{font-size:18px;margin:4px 0 6px}.home-news-excerpt{display:none}
+    .kalxa-newsletter,.kalxa-paid-stories-cta{padding:42px 0}
+}
+@media(max-width:380px){.home-news-item{grid-template-columns:87px minmax(0,1fr);gap:10px}.home-news-thumb{width:87px;height:70px}.home-news-title{font-size:16px}}
 </style>
-
 {% endblock %}
 
-
 {% block content %}
-
-
-<!-- =========================================================
-     HOME HERO
-========================================================== -->
-
-<section class="home-hero">
-
-    <div class="page-container">
-
- 
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     STORY CATEGORIES
-========================================================== -->
-
-<section
-    class="story-categories"
-    aria-labelledby="story-categories-heading"
->
-
-    <div class="page-container">
-
-
-
-
-        <div class="story-categories-grid">
-
-
-            <!-- LOCAL DISCOVERIES -->
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='local'
-                ) }}"
-            >
-
-                <span>
-
-                    <small>
-                        Local Discoveries
-                    </small>
-
-                    <strong>
-                        What is happening locally?
-                    </strong>
-
-                </span>
-
-                <span
-                    class="category-arrow"
-                    aria-hidden="true"
-                >
-                    ↗
-                </span>
-
-            </a>
-
-
-
-            <!-- EVENTS AND EXPERIENCES -->
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='experiences'
-                ) }}"
-            >
-
-                <span>
-
-                    <small>
-                        Events &amp; Experiences
-                    </small>
-
-                    <strong>
-                        What experiences can people attend?
-                    </strong>
-
-                </span>
-
-                <span
-                    class="category-arrow"
-                    aria-hidden="true"
-                >
-                    ↗
-                </span>
-
-            </a>
-
-
-
-            <!-- FOOD AND LIFESTYLE -->
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='food'
-                ) }}"
-            >
-
-                <span>
-
-                    <small>
-                        Food &amp; Lifestyle
-                    </small>
-
-                    <strong>
-                        Where can people eat,
-                        socialise and explore?
-                    </strong>
-
-                </span>
-
-                <span
-                    class="category-arrow"
-                    aria-hidden="true"
-                >
-                    ↗
-                </span>
-
-            </a>
-
-
-
-            <!-- CREATORS -->
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='creators'
-                ) }}"
-            >
-
-                <span>
-
-                    <small>
-                        Creators &amp; Culture
-                    </small>
-
-                    <strong>
-                        Who is creating, entertaining
-                        and influencing locally?
-                    </strong>
-
-                </span>
-
-                <span
-                    class="category-arrow"
-                    aria-hidden="true"
-                >
-                    ↗
-                </span>
-
-            </a>
-
-
-
-            <!-- KWANDEBELE NEWS -->
-
-            <a
-                class="story-category-button"
-                href="{{ url_for(
-                    'public.story_category',
-                    category_slug='news-kwandebele'
-                ) }}"
-            >
-
-                <span>
-
-                    <small>
-                        KwaNdebele News
-                    </small>
-
-                    <strong>
-                        Latest news in KwaNdebele
-                    </strong>
-
-                </span>
-
-                <span
-                    class="category-arrow"
-                    aria-hidden="true"
-                >
-                    ↗
-                </span>
-
-            </a>
-
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     KALXA TRENDING STORIES
-========================================================== -->
-
-{% if trending_articles %}
-
-<section
-    class="latest-section trending-section"
-    aria-labelledby="trending-stories-heading"
->
-
-    <div class="page-container">
-
-        <div class="latest-header">
-
-            <div class="latest-header-copy">
-
-
-                <h2
-                    class="latest-heading-title"
-                    id="trending-stories-heading"
-                >
-                    Trending Stories
-                </h2>
-
+<div class="home-content">
+    <!-- NEWSROOM HEADING -->
+    <section class="home-masthead">
+        <div class="page-container home-masthead-inner">
+            <div>
+                <span class="home-eyebrow">KALXA STORIES · KWANDEBELE</span>
+                <h1>Stories from our community.</h1>
             </div>
-
-            <a href="{{ url_for('public.stories') }}">
-                Explore all stories →
-            </a>
-
+            <p>Local discoveries, experiences, culture and the latest stories shaping KwaNdebele.</p>
         </div>
+    </section>
 
-
-        <div class="story-grid">
-
-            {% for article in trending_articles %}
-
-            <article class="story-card">
-
-                <a
-                    class="story-image-link"
-                    href="{{ url_for(
-                        'public.article_detail',
-                        slug=article.slug
-                    ) }}"
-                    aria-label="Read {{ article.title }}"
-                >
-
-                    <div class="story-image">
-
-                        {% if article.display_cover_image_url %}
-
-                        <img
-                            src="{{ article.display_cover_image_url }}"
-                            alt="{{ article.title }}"
-                            loading="lazy"
-                        >
-
-                        {% else %}
-
-                        <div class="image-placeholder small">
-
-                            <span>
-                                K
-                            </span>
-
-                        </div>
-
-                        {% endif %}
-
-                    </div>
-
-                </a>
-
-
-                <div class="story-card-content">
-
-                    <div class="story-meta">
-
-                        {% if article.is_sponsored %}
-
-                        <span class="sponsored-label">
-                            Sponsored
-                        </span>
-
-                        {% endif %}
-
-                        <span>
-
-                            {{
-                                article.category.name
-                                if article.category
-                                else article.article_type
-                                    .replace('_', ' ')
-                                    .title()
-                            }}
-
-                        </span>
-
-                    </div>
-
-
-                    <h3>
-
-                        <a href="{{ url_for(
-                            'public.article_detail',
-                            slug=article.slug
-                        ) }}">
-
-                            {{ article.title }}
-
-                        </a>
-
-                    </h3>
-
-
-                    {% if article.excerpt %}
-
-                    <p>
-                        {{ article.excerpt }}
-                    </p>
-
-                    {% endif %}
-
-
-                    <a
-                        class="read-link"
-                        href="{{ url_for(
-                            'public.article_detail',
-                            slug=article.slug
-                        ) }}"
-                    >
-                        Read story
-                        <span>→</span>
-                    </a>
-
-                </div>
-
-            </article>
-
-            {% endfor %}
-
+    <!-- SWIPEABLE CATEGORY BAR -->
+    <section class="story-categories" aria-labelledby="story-categories-heading">
+        <div class="page-container">
+            <div class="category-topline">
+                <strong id="story-categories-heading">Explore categories</strong>
+                <span class="category-hint">Swipe to explore ↔</span>
+            </div>
+            <nav class="story-categories-scroll" aria-label="Story categories">
+                <a class="story-category-pill" href="{{ url_for('public.story_category', category_slug='local') }}">Local Discoveries</a>
+                <a class="story-category-pill" href="{{ url_for('public.story_category', category_slug='experiences') }}">Events &amp; Experiences</a>
+                <a class="story-category-pill" href="{{ url_for('public.story_category', category_slug='food') }}">Food &amp; Lifestyle</a>
+                <a class="story-category-pill" href="{{ url_for('public.story_category', category_slug='creators') }}">Creators &amp; Culture</a>
+                <a class="story-category-pill" href="{{ url_for('public.story_category', category_slug='news-kwandebele') }}">KwaNdebele News</a>
+            </nav>
         </div>
+    </section>
 
-    </div>
-
-</section>
-
-{% endif %}
-
-
-
-<!-- =========================================================
-     FEATURED STORY
-========================================================== -->
-
-{% if featured_article %}
-
-<section class="featured-section">
-
-    <div class="page-container">
-
-        <div class="section-heading">
-
-            <span>
-                The featured story
-            </span>
-
-        </div>
-
-
-        <a
-            href="{{ url_for(
-                'public.article_detail',
-                slug=featured_article.slug
-            ) }}"
-            class="featured-story"
-        >
-
-            <div class="featured-image">
-
-                {% if
-                    featured_article.images
-                    and
-                    featured_article.images | length > 0
-                %}
-
-                <img
-                    src="{{ featured_article.images[0].image_url }}"
-                    alt="{{ featured_article.title }}"
-                >
-
-                {% if featured_article.images | length > 1 %}
-
-                <span class="featured-photo-count">
-
-                    {{ featured_article.images | length }}
-
-                    {% if featured_article.images | length == 1 %}
-                        photo
+    <!-- LEAD FEATURE: compact editorial split layout -->
+    {% if featured_article %}
+    <section class="newsroom-section" aria-labelledby="featured-heading">
+        <div class="page-container">
+            <div class="newsroom-heading"><h2 id="featured-heading">Featured Story</h2><a href="{{ url_for('public.stories') }}">All stories →</a></div>
+            <article class="home-lead">
+                <a class="home-lead-media" href="{{ url_for('public.article_detail', slug=featured_article.slug) }}" aria-label="Read {{ featured_article.title }}">
+                    {% if featured_article.display_cover_image_url %}
+                    <img src="{{ featured_article.display_cover_image_url }}" alt="{{ featured_article.title }}" fetchpriority="high">
                     {% else %}
-                        photos
+                    <div class="image-placeholder small"><span>K</span></div>
                     {% endif %}
-
-                </span>
-
-                {% endif %}
-
-
-                {% elif featured_article.cover_image_url %}
-
-                <img
-                    src="{{ featured_article.cover_image_url }}"
-                    alt="{{ featured_article.title }}"
-                >
-
-
-                {% else %}
-
-                <div class="image-placeholder">
-
-                    <span>
-                        K
-                    </span>
-
-                </div>
-
-                {% endif %}
-
-            </div>
-
-
-
-            <div class="featured-content">
-
-                <div class="story-meta">
-
-                    {% if featured_article.is_sponsored %}
-
-                    <span class="sponsored-label">
-                        Sponsored
-                    </span>
-
-                    {% endif %}
-
-
-                    <span>
-
-                        {{
-                            featured_article.article_type
-                                .replace("_", " ")
-                                .title()
-                        }}
-
-                    </span>
-
-                </div>
-
-
-                <h2>
-                    {{ featured_article.title }}
-                </h2>
-
-
-                {% if featured_article.excerpt %}
-
-                <p>
-                    {{ featured_article.excerpt }}
-                </p>
-
-                {% endif %}
-
-
-                <span class="read-link">
-
-                    Read the story
-                    <span>→</span>
-
-                </span>
-
-            </div>
-
-        </a>
-
-    </div>
-
-</section>
-
-{% endif %}
-
-
-
-<!-- =========================================================
-     LATEST STORIES
-========================================================== -->
-
-<section class="latest-section">
-
-    <div class="page-container">
-
-        <div class="latest-header">
-
-            <div class="latest-header-copy">
-
-                <span>
-                    From the journal
-                </span>
-
-                <h2 class="latest-heading-title">
-                    Latest stories
-                </h2>
-
-            </div>
-
-            <a href="{{ url_for('public.stories') }}">
-                View all stories →
-            </a>
-
-        </div>
-
-
-        {% if articles %}
-
-        <div class="story-grid">
-
-            {% for article in articles %}
-
-            <article class="story-card">
-
-                <a
-                    href="{{ url_for(
-                        'public.article_detail',
-                        slug=article.slug
-                    ) }}"
-                    class="story-image-link"
-                    aria-label="Read {{ article.title }}"
-                >
-
-                    <div class="story-image">
-
-                        {% if
-                            article.images
-                            and
-                            article.images | length > 0
-                        %}
-
-                        <img
-                            src="{{ article.images[0].image_url }}"
-                            alt="{{ article.title }}"
-                            loading="lazy"
-                        >
-
-
-                        {% if article.images | length > 1 %}
-
-                        <span class="story-image-count">
-
-                            {{ article.images | length }}
-                            photos
-
-                        </span>
-
-                        {% endif %}
-
-
-                        {% elif article.cover_image_url %}
-
-                        <img
-                            src="{{ article.cover_image_url }}"
-                            alt="{{ article.title }}"
-                            loading="lazy"
-                        >
-
-
-                        {% else %}
-
-                        <div class="image-placeholder small">
-
-                            <span>
-                                K
-                            </span>
-
-                        </div>
-
-                        {% endif %}
-
-                    </div>
-
                 </a>
-
-
-
-                <div class="story-card-content">
-
-                    <div class="story-meta">
-
-                        {% if article.is_sponsored %}
-
-                        <span class="sponsored-label">
-                            Sponsored
-                        </span>
-
-                        {% endif %}
-
-
-                        <span>
-
-                            {{
-                                article.article_type
-                                    .replace("_", " ")
-                                    .title()
-                            }}
-
-                        </span>
-
+                <div class="home-lead-body">
+                    <div class="home-story-meta">
+                        {% if featured_article.is_sponsored %}<span class="sponsored-label">Sponsored</span>{% endif %}
+                        <span>{{ featured_article.category.name if featured_article.category else featured_article.article_type.replace('_',' ').title() }}</span>
+                        <span aria-hidden="true">·</span>
+                        <time class="home-story-date" datetime="{{ (featured_article.published_at or featured_article.created_at).date().isoformat() }}">{{ (featured_article.published_at or featured_article.created_at).strftime('%d %b %Y') }}</time>
                     </div>
-
-
-                    <h3>
-
-                        <a href="{{ url_for(
-                            'public.article_detail',
-                            slug=article.slug
-                        ) }}">
-
-                            {{ article.title }}
-
-                        </a>
-
-                    </h3>
-
-
-                    {% if article.excerpt %}
-
-                    <p>
-                        {{ article.excerpt }}
-                    </p>
-
-                    {% endif %}
-
-
-                    <a
-                        class="read-link"
-                        href="{{ url_for(
-                            'public.article_detail',
-                            slug=article.slug
-                        ) }}"
-                    >
-
-                        Read story
-                        <span>→</span>
-
-                    </a>
-
+                    <h3><a href="{{ url_for('public.article_detail', slug=featured_article.slug) }}">{{ featured_article.title }}</a></h3>
+                    {% if featured_article.excerpt %}<p>{{ featured_article.excerpt }}</p>{% endif %}
+                    <a class="read-link" href="{{ url_for('public.article_detail', slug=featured_article.slug) }}">Read story <span aria-hidden="true">→</span></a>
                 </div>
-
             </article>
-
-            {% endfor %}
-
         </div>
+    </section>
+    {% endif %}
 
-
-        {% else %}
-
-        <div class="empty-state">
-
-            <div class="empty-icon">
-                K
+    <!-- CURATED TRENDING: existing backend selection is preserved -->
+    {% if trending_articles %}
+    <section class="newsroom-section" aria-labelledby="trending-heading">
+        <div class="page-container">
+            <div class="newsroom-heading"><h2 id="trending-heading">Trending Stories</h2><a href="{{ url_for('public.stories') }}">Explore all →</a></div>
+            <div class="home-news-list">
+                {% for article in trending_articles %}
+                <article class="home-news-item">
+                    <a class="home-news-thumb" href="{{ url_for('public.article_detail', slug=article.slug) }}" aria-label="Read {{ article.title }}">
+                        {% if article.display_cover_image_url %}<img src="{{ article.display_cover_image_url }}" alt="{{ article.title }}" loading="lazy">
+                        {% else %}<div class="image-placeholder small"><span>K</span></div>{% endif %}
+                    </a>
+                    <div class="home-news-body">
+                        <div class="home-story-meta">
+                            {% if article.is_sponsored %}<span class="sponsored-label">Sponsored</span>{% endif %}
+                            <span>{{ article.category.name if article.category else article.article_type.replace('_',' ').title() }}</span>
+                            <span aria-hidden="true">·</span>
+                            <time class="home-story-date" datetime="{{ (article.published_at or article.created_at).date().isoformat() }}">{{ (article.published_at or article.created_at).strftime('%d %b %Y') }}</time>
+                        </div>
+                        <h3 class="home-news-title"><a href="{{ url_for('public.article_detail', slug=article.slug) }}">{{ article.title }}</a></h3>
+                        {% if article.excerpt %}<p class="home-news-excerpt">{{ article.excerpt }}</p>{% endif %}
+                    </div>
+                </article>
+                {% endfor %}
             </div>
-
-            <h2>
-                Stories are coming.
-            </h2>
-
-            <p>
-
-                We're discovering restaurants,
-                food and experiences worth sharing.
-
-            </p>
-
         </div>
+    </section>
+    {% endif %}
 
-        {% endif %}
+    <!-- LATEST: compact newspaper-style list -->
+    <section class="newsroom-section" aria-labelledby="latest-heading">
+        <div class="page-container">
+            <div class="newsroom-heading"><h2 id="latest-heading">Latest Stories</h2><a href="{{ url_for('public.stories') }}">View all →</a></div>
+            {% if articles %}
+            <div class="home-news-list">
+                {% for article in articles %}
+                <article class="home-news-item">
+                    <a class="home-news-thumb" href="{{ url_for('public.article_detail', slug=article.slug) }}" aria-label="Read {{ article.title }}">
+                        {% if article.display_cover_image_url %}<img src="{{ article.display_cover_image_url }}" alt="{{ article.title }}" loading="lazy">
+                        {% else %}<div class="image-placeholder small"><span>K</span></div>{% endif %}
+                    </a>
+                    <div class="home-news-body">
+                        <div class="home-story-meta">
+                            {% if article.is_sponsored %}<span class="sponsored-label">Sponsored</span>{% endif %}
+                            <span>{{ article.category.name if article.category else article.article_type.replace('_',' ').title() }}</span>
+                            <span aria-hidden="true">·</span>
+                            <time class="home-story-date" datetime="{{ (article.published_at or article.created_at).date().isoformat() }}">{{ (article.published_at or article.created_at).strftime('%d %b %Y') }}</time>
+                        </div>
+                        <h3 class="home-news-title"><a href="{{ url_for('public.article_detail', slug=article.slug) }}">{{ article.title }}</a></h3>
+                        {% if article.excerpt %}<p class="home-news-excerpt">{{ article.excerpt }}</p>{% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% elif not featured_article and not trending_articles %}
+            <div class="empty-state"><div class="empty-icon">K</div><h2>Stories are coming.</h2><p>We're discovering businesses, culture, food and experiences worth sharing.</p></div>
+            {% endif %}
+        </div>
+    </section>
+</div>
 
-    </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     LOCATION-BASED NEWSLETTER
-========================================================== -->
-
-<section
-    id="kalxa-area-newsletter"
-    class="kalxa-newsletter"
-    aria-labelledby="kalxa-newsletter-title"
->
-
+<!-- NEWSLETTER -->
+<section id="kalxa-area-newsletter" class="kalxa-newsletter" aria-labelledby="kalxa-newsletter-title">
     <div class="page-container kalxa-newsletter-inner">
-
-
-        <h2
-            id="kalxa-newsletter-title"
-            class="kalxa-newsletter-title"
-        >
-            Stay connected to your community.
-        </h2>
-        <a
-            href="{{ url_for('story_newsletter.signup_page') }}"
-            class="kalxa-newsletter-button"
-        >
-            Subscribe to local stories →
-        </a>
-
+        <h2 class="kalxa-newsletter-title" id="kalxa-newsletter-title">Stay connected to your community.</h2>
+        <p class="kalxa-newsletter-copy">Get local stories and updates from KwaNdebele.</p>
+        <a href="{{ url_for('story_newsletter.signup_page') }}" class="kalxa-newsletter-button">Subscribe to local stories →</a>
     </div>
-
 </section>
 
-
-
-<!-- =========================================================
-     PAID STORIES CTA — R200 PERMANENT PUBLISHING
-========================================================== -->
-
-<section
-    id="kalxa-paid-stories-cta"
-    class="kalxa-paid-stories-cta"
->
-
+<!-- PUBLISH WITH KALXA: same submission endpoint, white gradient card -->
+<section id="kalxa-paid-stories-cta" class="kalxa-paid-stories-cta" aria-labelledby="kalxa-paid-title">
     <div class="page-container kalxa-paid-inner">
-
-        <span class="kalxa-paid-eyebrow">
-            PUBLISH WITH KALXA
-        </span>
-        <a
-            href="{{ url_for('paid_stories.submit_story') }}"
-            class="kalxa-paid-button"
-        >
-            Submit your story →
-        </a>
-
+        <span class="kalxa-paid-eyebrow">PUBLISH WITH KALXA</span>
+        <h2 class="kalxa-paid-title" id="kalxa-paid-title">Your story deserves a permanent home.</h2>
+        <p class="kalxa-paid-copy">Showcase your business, brand or creative journey on KALXA Stories. Publish once and keep sharing your story link without renewal fees.</p>
+        <p class="kalxa-paid-note">Once-off publishing fee. No article expiry or renewal. Subject to editorial approval.</p>
+        <a href="{{ url_for('paid_stories.submit_story') }}" class="kalxa-paid-button">Submit your story →</a>
     </div>
-
 </section>
-
-
 {% endblock %}
