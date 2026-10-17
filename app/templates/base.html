@@ -1,2067 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#38251c">
+    <meta name="color-scheme" content="light">
+    <meta name="google-site-verification" content="7l0o5tGMJ_B4WBv_tMewPB0taSa5Su8HEY2RMWVj8rQ">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
-
-    <meta
-        name="theme-color"
-        content="#38251c"
-    >
-
-    <meta
-        name="color-scheme"
-        content="light"
-    >
-
-    <!-- =====================================================
-         GOOGLE SEARCH CONSOLE
-    ====================================================== -->
-
-    <meta
-        name="google-site-verification"
-        content="7l0o5tGMJ_B4WBv_tMewPB0taSa5Su8HEY2RMWVj8rQ"
-    >
-
-    <!-- =====================================================
-         PRIMARY SEO
-    ====================================================== -->
-
-    <title>
-        {% block title %}
-            KwaNdebele Kalxa Hub | Kalxa Stories
-        {% endblock %}
-    </title>
-
-    <meta
-        name="description"
-        content="{% block meta_description %}Discover local stories, restaurants, businesses, creators and experiences on KwaNdebele Kalxa Hub.{% endblock %}"
-    >
-
-    {% block canonical %}
-    {% endblock %}
-
+    <title>{% block title %}KwaNdebele Kalxa Hub | Kalxa Stories{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Discover local stories, restaurants, businesses, creators and experiences on KwaNdebele Kalxa Hub.{% endblock %}">
+    {% block canonical %}{% endblock %}
     {% block social_meta %}
-
-    <meta
-        property="og:type"
-        content="website"
-    >
-
-    <meta
-        property="og:title"
-        content="KwaNdebele Kalxa Hub | Kalxa Stories"
-    >
-
-    <meta
-        property="og:description"
-        content="Discover the people, businesses, creators, restaurants and experiences shaping KwaNdebele."
-    >
-
-    <meta
-        name="twitter:card"
-        content="summary_large_image"
-    >
-
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="KwaNdebele Kalxa Hub | Kalxa Stories">
+    <meta property="og:description" content="Discover the people, businesses, creators, restaurants and experiences shaping KwaNdebele.">
+    <meta name="twitter:card" content="summary_large_image">
     {% endblock %}
+    {% block structured_data %}{% endblock %}
 
-    {% block structured_data %}
-    {% endblock %}
-
-
-    <!-- =====================================================
-         GOOGLE FONTS
-    ====================================================== -->
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap"
-        rel="stylesheet"
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
-        rel="stylesheet"
-    >
-
-
-    <!-- =====================================================
-         MAIN STYLESHEET
-    ====================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for(
-            'static',
-            filename='css/style.css'
-        ) }}"
-    >
-
-
-    {% block extra_head %}
-    {% endblock %}
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
 
     <style>
-
-        /* =====================================================
-           GLOBAL DESIGN VARIABLES
-        ====================================================== */
-
         :root {
-
-            --kalxa-ink: #161511;
-            --kalxa-black: #11110f;
-            --kalxa-charcoal: #24221d;
-
-            --kalxa-text: #292720;
-            --kalxa-text-soft: #6e695e;
-            --kalxa-muted: #999184;
-
-            --kalxa-cream: #f3eee4;
-            --kalxa-cream-soft: #faf8f3;
-            --kalxa-paper: #fffdf9;
-
-            --kalxa-surface: #ffffff;
-            --kalxa-surface-soft: #f6f2e9;
-
-            --kalxa-border: #ddd5c7;
-            --kalxa-border-soft: #ebe5da;
-
-            --kalxa-gold: #a57b43;
-            --kalxa-gold-dark: #77552b;
-            --kalxa-gold-soft: #eee1cc;
-
-            --kalxa-accent: #a57b43;
-            --kalxa-accent-soft: #f4ead9;
-
-            --kalxa-green: #355f49;
-
-            --kalxa-max-width: 1280px;
-            --kalxa-reading-width: 760px;
-
-            --kalxa-serif:
-                "Playfair Display",
-                Georgia,
-                "Times New Roman",
-                serif;
-
-            --kalxa-sans:
-                "DM Sans",
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            --ndebele-art-font:
-                "Archivo Black",
-                "Arial Black",
-                sans-serif;
-
-            --kalxa-shadow:
-                0 24px 70px rgba(37, 31, 22, .08);
-
-            --kalxa-shadow-hover:
-                0 30px 90px rgba(37, 31, 22, .13);
-
-
-            /* =================================================
-               KWANDEBELE CULTURAL COLOURS
-
-               UNCHANGED
-            ================================================= */
-
-            --ndebele-brown: #38251c;
-            --ndebele-yellow: #f4c430;
-            --ndebele-blue: #0753bd;
-            --ndebele-red: #d52032;
-            --ndebele-green: #168447;
-            --ndebele-dark: #241711;
-
-
-            /* =================================================
-               CULTURAL GRADIENT
-
-               UNCHANGED
-            ================================================= */
-
-            --ndebele-gradient:
-                linear-gradient(
-                    110deg,
-                    #38251c 0%,
-                    #503326 16%,
-                    #f4c430 27%,
-                    #0753bd 48%,
-                    #d52032 69%,
-                    #168447 88%,
-                    #116b3b 100%
-                );
-
-
-            /* =================================================
-               FOOTER LIGHT-GREY GRADIENT
-
-               UNCHANGED
-            ================================================= */
-
-            --kalxa-footer-gradient:
-                linear-gradient(
-                    125deg,
-                    #e1e4e8 0%,
-                    #edf0f2 35%,
-                    #f5f6f7 70%,
-                    #ffffff 100%
-                );
-
-
-            /* =================================================
-               DONATION BUTTON LIGHT-GREEN GRADIENT
-
-               UNCHANGED
-            ================================================= */
-
-            --kalxa-donation-gradient:
-                linear-gradient(
-                    120deg,
-                    #b8e6c3 0%,
-                    #c9f2d1 40%,
-                    #dcf8df 75%,
-                    #edfff0 100%
-                );
-
-
-            /* =================================================
-               DONATION BUTTON HOVER GRADIENT
-
-               UNCHANGED
-            ================================================= */
-
-            --kalxa-donation-hover-gradient:
-                linear-gradient(
-                    120deg,
-                    #9dd9ad 0%,
-                    #b6e8c0 50%,
-                    #d2f4d8 100%
-                );
-
-
-            /* =================================================
-               PUBLISH WITH KALXA
-
-               UPDATED WHITE GRADIENT
-
-               Pure white → soft white → pearl white
-            ================================================= */
-
-            --kalxa-publish-gradient:
-                linear-gradient(
-                    135deg,
-                    #ffffff 0%,
-                    #ffffff 25%,
-                    #fafbfc 55%,
-                    #f3f5f7 80%,
-                    #e9edf1 100%
-                );
-
-        }
-
-
-        /* =====================================================
-           GLOBAL RESET
-        ====================================================== */
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-
-            margin: 0;
-
-            background:
-                var(--kalxa-cream-soft);
-
-            color:
-                var(--kalxa-text);
-
-            font-family:
-                var(--kalxa-sans);
-
-            -webkit-font-smoothing:
-                antialiased;
-
-            text-rendering:
-                optimizeLegibility;
-
-        }
-
-        body,
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-        }
-
-        img {
-            max-width: 100%;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        button,
-        a {
-            -webkit-tap-highlight-color:
-                transparent;
-        }
-
-        main {
-
-            min-height:
-                calc(100vh - 250px);
-
-        }
-
-        .page-container {
-
-            width:
-                min(
-                    calc(100% - 56px),
-                    var(--kalxa-max-width)
-                );
-
-            margin:
-                0 auto;
-
-        }
-
-
-        /* =====================================================
-           GLOBAL CULTURAL HEADER
-
-           FULL SCREEN WIDTH
-           THINNER HEADER
-           COLOURS UNCHANGED
-        ====================================================== */
-
-        .site-header {
-
-            position: sticky;
-
-            top: 0;
-
-            z-index: 1000;
-
-            width: 100%;
-
-            max-width: 100%;
-
-            margin-left: auto;
-            margin-right: auto;
-
-            background:
-                var(--ndebele-gradient);
-
-            border-bottom:
-                3px solid var(--ndebele-dark);
-
-            box-shadow:
-                0 6px 26px rgba(28, 17, 13, .2);
-
-        }
-
-
-        .header-inner {
-
-            position: relative;
-
-            width:
-                min(
-                    calc(100% - 28px),
-                    var(--kalxa-max-width)
-                );
-
-            min-height: 102px;
-
-            margin:
-                0 auto;
-
-            padding:
-                8px 0;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 4px;
-
-        }
-
-
-        /* =====================================================
-           BRAND
-        ====================================================== */
-
-        .brand {
-
-            display: inline-flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 2px;
-
-            min-width: 0;
-
-            width: 100%;
-
-            max-width: 100%;
-
-            margin: 0 auto;
-
-            background: transparent;
-
-            text-align: center;
-
-        }
-
-
-        .brand-name {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            width: 100%;
-
-            max-width: 100%;
-
-            min-height: 42px;
-
-            padding:
-                2px 0;
-
-            background: transparent;
-
-            border: none;
-
-            border-radius: 0;
-
-            box-shadow: none;
-
-            color: #ffffff;
-
-            font-family:
-                var(--ndebele-art-font);
-
-            font-size:
-                clamp(
-                    24px,
-                    2.6vw,
-                    42px
-                );
-
-            font-weight: 400;
-
-            font-style: normal;
-
-            line-height: 1.1;
-
-            letter-spacing: -1.5px;
-
-            text-transform: uppercase;
-
-            text-align: center;
-
-            white-space: normal;
-
-            overflow-wrap: normal;
-
-            word-break: normal;
-
-            text-shadow:
-                0 2px 3px rgba(0, 0, 0, .4),
-                0 4px 8px rgba(0, 0, 0, .3);
-
-            transition:
-                opacity .2s ease;
-
-        }
-
-
-        .brand:hover .brand-name {
-
-            background: transparent;
-
-            border: none;
-
-            box-shadow: none;
-
-            opacity: .94;
-
-        }
-
-
-        .brand-section {
-
-            position: relative;
-
-            display: inline-block;
-
-            padding-left: 0;
-
-            color: #ffffff;
-
-            font-family:
-                var(--kalxa-serif);
-
-            font-size: 17px;
-
-            font-weight: 700;
-
-            white-space: nowrap;
-
-            text-shadow:
-                0 2px 5px rgba(0, 0, 0, .4);
-
-        }
-
-
-        .brand-section::before {
-            display: none;
-        }
-
-
-        /* =====================================================
-           NAVIGATION
-        ====================================================== */
-
-        .main-nav {
-
-            position: static;
-
-            right: auto;
-            top: auto;
-
-            transform: none;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 26px;
-
-            flex-shrink: 0;
-
-        }
-
-
-        .main-nav a {
-
-            position: relative;
-
-            padding:
-                3px 0;
-
-            color: #ffffff;
-
-            font-size: 11px;
-
-            font-weight: 700;
-
-            letter-spacing: .25px;
-
-            white-space: nowrap;
-
-            text-shadow:
-                0 1px 4px rgba(0, 0, 0, .65);
-
-            transition:
-                opacity .2s ease;
-
-        }
-
-
-        .main-nav a::after {
-
-            content: "";
-
-            position: absolute;
-
-            left: 0;
-            right: 100%;
-            bottom: 0;
-
-            height: 2px;
-
-            background: #ffffff;
-
-            transition:
-                right .2s ease;
-
-        }
-
-
-        .main-nav a:hover {
-
-            color: #ffffff;
-
-            opacity: .9;
-
-        }
-
-
-        .main-nav a:hover::after {
-            right: 0;
-        }
-
-
-        .site-header a:focus-visible {
-
-            outline:
-                3px solid #ffffff;
-
-            outline-offset: 4px;
-
-            border-radius: 3px;
-
-        }
-
-
-        /* =====================================================
-           EDITORIAL ELEMENTS
-        ====================================================== */
-
-        .hero-label {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            margin-bottom: 22px;
-
-            color:
-                var(--kalxa-gold-dark);
-
-            font-size: 10px;
-
-            font-weight: 700;
-
-            letter-spacing: 2.4px;
-
-            text-transform: uppercase;
-
-        }
-
-
-        .hero-label::before {
-
-            content: "";
-
-            width: 35px;
-
-            height: 1px;
-
-            background: currentColor;
-
-        }
-
-
-        .section {
-
-            padding:
-                58px 0;
-
-        }
-
-
-        .section-heading {
-
-            margin-bottom: 30px;
-
-            padding-bottom: 15px;
-
-            display: flex;
-
-            align-items: flex-end;
-
-            justify-content: space-between;
-
-            gap: 20px;
-
-            border-bottom:
-                1px solid var(--kalxa-border);
-
-        }
-
-
-        .section-heading > span {
-
-            color:
-                var(--kalxa-text-soft);
-
-            font-size: 10px;
-
-            font-weight: 700;
-
-            letter-spacing: 2px;
-
-            text-transform: uppercase;
-
-        }
-
-
-        .section-heading > a {
-
-            color:
-                var(--kalxa-text-soft);
-
-            font-size: 11px;
-
-            font-weight: 600;
-
-            transition:
-                color .18s ease;
-
-        }
-
-
-        .section-heading > a:hover {
-
-            color:
-                var(--kalxa-gold-dark);
-
-        }
-
-
-        /* =====================================================
-           STORY META
-        ====================================================== */
-
-        .story-meta {
-
-            display: flex;
-
-            flex-wrap: wrap;
-
-            align-items: center;
-
-            gap: 9px;
-
-            color:
-                var(--kalxa-muted);
-
-            font-size: 9px;
-
-            font-weight: 700;
-
-            letter-spacing: 1.45px;
-
-            text-transform: uppercase;
-
-        }
-
-
-        .sponsored-label {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            min-height: 24px;
-
-            padding:
-                0 9px;
-
-            border:
-                1px solid rgba(165, 123, 67, .28);
-
-            border-radius: 999px;
-
-            background:
-                var(--kalxa-gold-soft);
-
-            color:
-                var(--kalxa-gold-dark);
-
-            font-size: 8px;
-
-            font-weight: 700;
-
-            letter-spacing: 1.2px;
-
-            text-transform: uppercase;
-
-        }
-
-
-        .read-link {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            color:
-                var(--kalxa-ink);
-
-            font-size: 11px;
-
-            font-weight: 700;
-
-            letter-spacing: .2px;
-
-            transition:
-                gap .18s ease,
-                color .18s ease;
-
-        }
-
-
-        .read-link:hover {
-
-            gap: 14px;
-
-            color:
-                var(--kalxa-gold-dark);
-
-        }
-
-
-        /* =====================================================
-           STORY GRID
-        ====================================================== */
-
-        .story-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(
-                    3,
-                    minmax(0, 1fr)
-                );
-
-            gap:
-                44px 28px;
-
-        }
-
-
-        .story-card {
-
-            min-width: 0;
-
-            background: transparent;
-
-        }
-
-
-        .story-image-link {
-
-            display: block;
-
-            overflow: hidden;
-
-            background: #e7e0d4;
-
-        }
-
-
-        .story-image {
-
-            position: relative;
-
-            overflow: hidden;
-
-            aspect-ratio: 4 / 3;
-
-            background: #e7e0d4;
-
-        }
-
-
-        .story-image::after {
-
-            content: "";
-
-            position: absolute;
-
-            inset: 0;
-
-            pointer-events: none;
-
-            box-shadow:
-                inset 0 0 0 1px
-                rgba(255, 255, 255, .08);
-
-        }
-
-
-        .story-image img {
-
-            width: 100%;
-
-            height: 100%;
-
-            display: block;
-
-            object-fit: cover;
-
-            transition:
-                transform .65s
-                cubic-bezier(.2, .7, .2, 1);
-
-        }
-
-
-        .story-card:hover .story-image img {
-
-            transform:
-                scale(1.035);
-
-        }
-
-
-        .story-image-count {
-
-            position: absolute;
-
-            right: 13px;
-            bottom: 13px;
-
-            z-index: 2;
-
-            min-height: 29px;
-
-            padding:
-                0 11px;
-
-            border:
-                1px solid rgba(255, 255, 255, .25);
-
-            border-radius: 999px;
-
-            background:
-                rgba(17, 17, 15, .68);
-
-            color: white;
-
-            backdrop-filter: blur(10px);
-
-            font-size: 9px;
-
-            font-weight: 600;
-
-            display: inline-flex;
-
-            align-items: center;
-
-        }
-
-
-        .story-card-content {
-
-            padding:
-                19px 2px 0;
-
-        }
-
-
-        .story-card-content h2,
-        .story-card-content h3 {
-
-            margin:
-                12px 0 11px;
-
-            color:
-                var(--kalxa-ink);
-
-            font-family:
-                var(--kalxa-serif);
-
-            font-size:
-                clamp(
-                    23px,
-                    2.1vw,
-                    30px
-                );
-
-            font-weight: 600;
-
-            line-height: 1.12;
-
-            letter-spacing: -.7px;
-
-        }
-
-
-        .story-card-content h3 {
-
-            font-size:
-                clamp(
-                    22px,
-                    2vw,
-                    28px
-                );
-
-        }
-
-
-        .story-card-content h2 a,
-        .story-card-content h3 a {
-
-            transition:
-                color .18s ease;
-
-        }
-
-
-        .story-card-content h2 a:hover,
-        .story-card-content h3 a:hover {
-
-            color:
-                var(--kalxa-gold-dark);
-
-        }
-
-
-        .story-card-content p {
-
-            margin:
-                0 0 18px;
-
-            color:
-                var(--kalxa-text-soft);
-
-            font-size: 12px;
-
-            line-height: 1.72;
-
-            display: -webkit-box;
-
-            -webkit-line-clamp: 3;
-
-            -webkit-box-orient: vertical;
-
-            overflow: hidden;
-
-        }
-
-
-        /* =====================================================
-           IMAGE PLACEHOLDER
-        ====================================================== */
-
-        .image-placeholder {
-
-            width: 100%;
-
-            height: 100%;
-
-            min-height: 250px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #181712,
-                    #373229
-                );
-
-        }
-
-
-        .image-placeholder span {
-
-            width: 74px;
-
-            height: 74px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border:
-                1px solid rgba(220, 192, 151, .4);
-
-            border-radius: 50%;
-
-            color: #eadbc3;
-
-            font-family:
-                var(--kalxa-serif);
-
-            font-size: 32px;
-
-        }
-
-
-        .image-placeholder.small {
-
-            min-height: 100%;
-
-        }
-
-
-        .image-placeholder.small span {
-
-            width: 55px;
-
-            height: 55px;
-
-            font-size: 24px;
-
-        }
-
-
-        /* =====================================================
-           EMPTY STATE
-        ====================================================== */
-
-        .empty-state {
-
-            max-width: 650px;
-
-            margin:
-                50px auto;
-
-            padding:
-                75px 40px;
-
-            border:
-                1px solid var(--kalxa-border);
-
-            background:
-                var(--kalxa-paper);
-
-            text-align: center;
-
-        }
-
-
-        .empty-icon {
-
-            width: 54px;
-
-            height: 54px;
-
-            margin:
-                0 auto 22px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border-radius: 50%;
-
-            background:
-                var(--kalxa-black);
-
-            color: #eadbc3;
-
-            font-family:
-                var(--kalxa-serif);
-
-            font-size: 23px;
-
-        }
-
-
-        .empty-state h2 {
-
-            margin:
-                0 0 10px;
-
-            font-family:
-                var(--kalxa-serif);
-
-            font-size: 30px;
-
-            font-weight: 600;
-
-        }
-
-
-        .empty-state p {
-
-            max-width: 430px;
-
-            margin:
-                0 auto;
-
-            color:
-                var(--kalxa-text-soft);
-
-            font-size: 13px;
-
-            line-height: 1.75;
-
-        }
-
-
-        /* =====================================================
-           PUBLISH WITH KALXA
-
-           UPDATED: WHITE GRADIENT CARD BACKGROUND
-
-           This targets the publishing card without changing
-           its layout, text, or submission button.
-
-           The actual card must use:
-           class="publish-with-kalxa"
-        ====================================================== */
-
-        .publish-with-kalxa {
-
-            background:
-                var(--kalxa-publish-gradient) !important;
-
-            background-color:
-                #ffffff;
-
-            border:
-                1px solid #e4e7eb;
-
-            border-radius: 10px;
-
-            box-shadow:
-                0 12px 35px rgba(30, 40, 55, .05);
-
-            color:
-                var(--kalxa-text);
-
-        }
-
-
-        /* =====================================================
-           PUBLISH CARD TEXT
-
-           UNCHANGED
-        ====================================================== */
-
-        .publish-with-kalxa h2,
-        .publish-with-kalxa h3 {
-
-            color:
-                var(--kalxa-ink);
-
-        }
-
-
-        .publish-with-kalxa p {
-
-            color:
-                var(--kalxa-text-soft);
-
-        }
-
-
-        /* =====================================================
-           FOOTER
-
-           LIGHT-GREY GRADIENT BACKGROUND
-
-           UNCHANGED
-        ====================================================== */
-
-        .site-footer {
-
-            position: relative;
-
-            margin-top: 30px;
-
-            padding:
-                62px 0 38px;
-
-            background:
-                var(--kalxa-footer-gradient);
-
-            color:
-                var(--kalxa-ink);
-
-        }
-
-
-        /* Cultural accent remains unchanged */
-
-        .site-footer::before {
-
-            content: "";
-
-            position: absolute;
-
-            top: 0;
-            left: 0;
-            right: 0;
-
-            height: 4px;
-
-            background:
-                var(--ndebele-gradient);
-
-        }
-
-
-        .footer-inner {
-
-            width:
-                min(
-                    calc(100% - 56px),
-                    var(--kalxa-max-width)
-                );
-
-            margin:
-                0 auto;
-
-            display: flex;
-
-            align-items: flex-end;
-
-            justify-content: space-between;
-
-            gap: 40px;
-
-        }
-
-
-        /* =====================================================
-           SUPPORT SECTION
-        ====================================================== */
-
-        .footer-support {
-
-            max-width: 620px;
-
-        }
-
-
-        .footer-brand {
-
-            margin-bottom: 12px;
-
-            font-family:
-                var(--kalxa-serif);
-
-            font-size: 28px;
-
-            font-weight: 600;
-
-            color:
-                #1b2530;
-
-        }
-
-
-        .footer-inner p {
-
-            max-width: 480px;
-
-            margin: 0;
-
-            color:
-                #47515d;
-
-            font-size: 12px;
-
-            line-height: 1.8;
-
-        }
-
-
-        /* =====================================================
-           DONATION BUTTON
-
-           LIGHT-GREEN GRADIENT
-
-           UNCHANGED
-        ====================================================== */
-
-        .footer-donate-button {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 9px;
-
-            margin-top: 20px;
-
-            padding:
-                13px 22px;
-
-            border:
-                1px solid #a7d9b2;
-
-            border-radius: 5px;
-
-            background:
-                var(--kalxa-donation-gradient);
-
-            color:
-                #19452a;
-
-            font-family:
-                var(--kalxa-sans);
-
-            font-size: 12px;
-
-            font-weight: 800;
-
-            letter-spacing: .15px;
-
-            text-decoration: none;
-
-            box-shadow:
-                0 5px 16px rgba(46, 124, 69, .12);
-
-            transition:
-                background .2s ease,
-                transform .2s ease,
-                box-shadow .2s ease;
-
-        }
-
-
-        .footer-donate-button:hover {
-
-            background:
-                var(--kalxa-donation-hover-gradient);
-
-            color:
-                #123b22;
-
-            transform:
-                translateY(-2px);
-
-            box-shadow:
-                0 8px 20px rgba(46, 124, 69, .18);
-
-        }
-
-
-        .footer-donate-button:focus-visible {
-
-            outline:
-                3px solid #247443;
-
-            outline-offset: 4px;
-
-        }
-
-
-        .footer-support-note {
-
-            margin-top: 12px !important;
-
-            font-size: 10px !important;
-
-            color:
-                #64717b !important;
-
-        }
-
-
-        /* =====================================================
-           FOOTER CREDIT
-        ====================================================== */
-
-        .footer-small {
-
-            color:
-                #69747e;
-
-            font-size: 10px;
-
-            letter-spacing: .9px;
-
-            text-transform: uppercase;
-
-        }
-
-
-        /* =====================================================
-           RESPONSIVE STORY GRID
-        ====================================================== */
-
-        @media (max-width: 950px) {
-
-            .story-grid {
-
-                grid-template-columns:
-                    repeat(
-                        2,
-                        minmax(0, 1fr)
-                    );
-
-            }
-
-        }
-
-
-        /* =====================================================
-           TABLET
-        ====================================================== */
-
-        @media (max-width: 1100px) {
-
-            .site-header {
-                width: 100%;
-            }
-
-
-            .header-inner {
-
-                min-height: 95px;
-
-                padding:
-                    7px 0;
-
-                gap: 3px;
-
-            }
-
-
-            .brand-name {
-
-                font-size:
-                    clamp(
-                        21px,
-                        3.2vw,
-                        34px
-                    );
-
-                min-height: 40px;
-
-                letter-spacing: -1.2px;
-
-            }
-
-
-            .brand-section {
-                font-size: 17px;
-            }
-
-
-            .main-nav {
-                gap: 23px;
-            }
-
-        }
-
-
-        /* =====================================================
-           MOBILE
-        ====================================================== */
-
-        @media (max-width: 650px) {
-
-            .page-container,
-            .footer-inner {
-
-                width:
-                    min(
-                        calc(100% - 30px),
-                        var(--kalxa-max-width)
-                    );
-
-            }
-
-
-            .site-header {
-
-                width: 100%;
-
-                background:
-                    linear-gradient(
-                        115deg,
-                        #38251c 0%,
-                        #f4c430 24%,
-                        #0753bd 46%,
-                        #d52032 69%,
-                        #168447 100%
-                    );
-
-            }
-
-
-            .header-inner {
-
-                width:
-                    calc(100% - 20px);
-
-                min-height: 88px;
-
-                padding:
-                    6px 0;
-
-                flex-direction: column;
-
-                align-items: center;
-
-                justify-content: center;
-
-                gap: 4px;
-
-            }
-
-
-            .brand {
-
-                width: 100%;
-
-                gap: 1px;
-
-                margin: 0 auto;
-
-                justify-content: center;
-
-            }
-
-
-            .brand-name {
-
-                width: 100%;
-
-                min-width: 0;
-
-                max-width: 100%;
-
-                min-height: 35px;
-
-                padding:
-                    2px 0;
-
-                background: transparent;
-
-                border: none;
-
-                box-shadow: none;
-
-                font-family:
-                    var(--ndebele-art-font);
-
-                font-size:
-                    clamp(
-                        18px,
-                        5vw,
-                        28px
-                    );
-
-                font-weight: 400;
-
-                line-height: 1.1;
-
-                letter-spacing: -1px;
-
-                white-space: normal;
-
-                overflow-wrap: normal;
-
-                text-align: center;
-
-            }
-
-
-            .brand-section {
-
-                padding-left: 0;
-
-                font-size: 15px;
-
-            }
-
-
-            .brand-section::before {
-                display: none;
-            }
-
-
-            .main-nav {
-
-                position: static;
-
-                transform: none;
-
-                width: 100%;
-
-                justify-content: center;
-
-                gap: 25px;
-
-            }
-
-
-            .main-nav a {
-
-                font-size: 10px;
-
-                padding:
-                    2px 0;
-
-            }
-
-
-            .section {
-                padding: 40px 0;
-            }
-
-
-            .story-grid {
-
-                grid-template-columns: 1fr;
-
-                gap: 38px;
-
-            }
-
-
-            .story-card-content {
-                padding-top: 17px;
-            }
-
-
-            .story-card-content h2,
-            .story-card-content h3 {
-                font-size: 27px;
-            }
-
-
-            /* Light-grey footer stacks on mobile */
-
-            .footer-inner {
-
-                align-items: flex-start;
-
-                flex-direction: column;
-
-                gap: 25px;
-
-            }
-
-
-            .footer-donate-button {
-
-                width: 100%;
-
-                max-width: 330px;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           VERY SMALL SCREENS
-        ====================================================== */
-
-        @media (max-width: 380px) {
-
-            .site-header {
-                width: 100%;
-            }
-
-
-            .header-inner {
-
-                min-height: 90px;
-
-                gap: 3px;
-
-            }
-
-
-            .brand {
-                gap: 1px;
-            }
-
-
-            .brand-name {
-
-                width: 100%;
-
-                max-width: 100%;
-
-                white-space: normal;
-
-                text-align: center;
-
-                font-size:
-                    clamp(
-                        17px,
-                        5vw,
-                        21px
-                    );
-
-                font-family:
-                    var(--ndebele-art-font);
-
-                font-weight: 400;
-
-                letter-spacing: -.9px;
-
-                padding:
-                    2px 0;
-
-                background: transparent;
-
-                border: none;
-
-                box-shadow: none;
-
-            }
-
-
-            .brand-section {
-
-                font-size: 14px;
-
-                padding-left: 0;
-
-            }
-
-
-            .main-nav {
-                gap: 22px;
-            }
-
-
-            .main-nav a {
-                font-size: 10px;
-            }
-
-        }
-
-
-        /* =====================================================
-           REDUCED MOTION
-        ====================================================== */
-
-        @media (
-            prefers-reduced-motion: reduce
-        ) {
-
-            html {
-                scroll-behavior: auto;
-            }
-
-
-            *,
-            *::before,
-            *::after {
-
-                transition-duration:
-                    .01ms !important;
-
-                animation-duration:
-                    .01ms !important;
-
-                animation-iteration-count:
-                    1 !important;
-
-            }
-
-        }
-
+            --kalxa-ink:#161511;
+            --kalxa-black:#11110f;
+            --kalxa-charcoal:#24221d;
+            --kalxa-text:#292720;
+            --kalxa-text-soft:#6e695e;
+            --kalxa-muted:#999184;
+            --kalxa-cream:#f3eee4;
+            --kalxa-cream-soft:#faf8f3;
+            --kalxa-paper:#fffdf9;
+            --kalxa-surface:#fff;
+            --kalxa-surface-soft:#f6f2e9;
+            --kalxa-border:#ddd5c7;
+            --kalxa-border-soft:#ebe5da;
+            --kalxa-gold:#a57b43;
+            --kalxa-gold-dark:#77552b;
+            --kalxa-gold-soft:#eee1cc;
+            --kalxa-accent:#a57b43;
+            --kalxa-accent-soft:#f4ead9;
+            --kalxa-green:#355f49;
+            --kalxa-max-width:1280px;
+            --kalxa-reading-width:760px;
+            --kalxa-serif:"Playfair Display",Georgia,"Times New Roman",serif;
+            --kalxa-sans:"DM Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+            --ndebele-art-font:"Archivo Black","Arial Black",sans-serif;
+            --kalxa-shadow:0 24px 70px rgba(37,31,22,.08);
+            --kalxa-shadow-hover:0 30px 90px rgba(37,31,22,.13);
+            --ndebele-brown:#38251c;
+            --ndebele-yellow:#f4c430;
+            --ndebele-blue:#0753bd;
+            --ndebele-red:#d52032;
+            --ndebele-green:#168447;
+            --ndebele-dark:#241711;
+            --ndebele-gradient:linear-gradient(110deg,#38251c 0%,#503326 16%,#f4c430 27%,#0753bd 48%,#d52032 69%,#168447 88%,#116b3b 100%);
+            --kalxa-footer-gradient:linear-gradient(125deg,#e1e4e8 0%,#edf0f2 35%,#f5f6f7 70%,#fff 100%);
+            --kalxa-donation-gradient:linear-gradient(120deg,#b8e6c3 0%,#c9f2d1 40%,#dcf8df 75%,#edfff0 100%);
+            --kalxa-donation-hover-gradient:linear-gradient(120deg,#9dd9ad 0%,#b6e8c0 50%,#d2f4d8 100%);
+            --kalxa-publish-gradient:linear-gradient(135deg,#fff 0%,#fff 25%,#fafbfc 55%,#f3f5f7 80%,#e9edf1 100%);
+        }
+        *{box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{margin:0;background:var(--kalxa-cream-soft);color:var(--kalxa-text);font-family:var(--kalxa-sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+        body,button,input,textarea,select{font:inherit}
+        img{max-width:100%}
+        a{color:inherit;text-decoration:none}
+        button,a{-webkit-tap-highlight-color:transparent}
+        main{min-height:calc(100vh - 250px)}
+        .page-container{width:min(calc(100% - 56px),var(--kalxa-max-width));margin:0 auto}
+
+        /* Cultural masthead: keep the existing colours and identity. */
+        .site-header{position:sticky;top:0;z-index:1000;width:100%;background:var(--ndebele-gradient);border-bottom:3px solid var(--ndebele-dark);box-shadow:0 6px 26px rgba(28,17,13,.2)}
+        .header-inner{position:relative;width:min(calc(100% - 28px),var(--kalxa-max-width));min-height:102px;margin:0 auto;padding:8px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+        .brand{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;width:100%;margin:0 auto;text-align:center}
+        .brand-name{display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:42px;padding:2px 0;color:#fff;font-family:var(--ndebele-art-font);font-size:clamp(24px,2.6vw,42px);font-weight:400;line-height:1.1;letter-spacing:-1.5px;text-transform:uppercase;text-shadow:0 2px 3px rgba(0,0,0,.4),0 4px 8px rgba(0,0,0,.3);transition:opacity .2s ease}
+        .brand:hover .brand-name{opacity:.94}
+        .brand-section{color:#fff;font-family:var(--kalxa-serif);font-size:17px;font-weight:700;text-shadow:0 2px 5px rgba(0,0,0,.4)}
+        .main-nav{display:flex;align-items:center;justify-content:center;gap:26px}
+        .main-nav a{position:relative;padding:3px 0;color:#fff;font-size:11px;font-weight:700;letter-spacing:.25px;text-shadow:0 1px 4px rgba(0,0,0,.65)}
+        .main-nav a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:#fff;transition:right .2s ease}
+        .main-nav a:hover::after{right:0}
+        .site-header a:focus-visible,.site-header button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+        /* Global editorial components reused throughout the site. */
+        .hero-label{display:inline-flex;align-items:center;gap:12px;margin-bottom:22px;color:var(--kalxa-gold-dark);font-size:10px;font-weight:700;letter-spacing:2.4px;text-transform:uppercase}
+        .hero-label::before{content:"";width:35px;height:1px;background:currentColor}
+        .section{padding:58px 0}
+        .section-heading{margin-bottom:30px;padding-bottom:15px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;border-bottom:1px solid var(--kalxa-border)}
+        .section-heading>span{color:var(--kalxa-text-soft);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+        .section-heading>a{color:var(--kalxa-text-soft);font-size:11px;font-weight:600}
+        .section-heading>a:hover{color:var(--kalxa-gold-dark)}
+        .story-meta{display:flex;flex-wrap:wrap;align-items:center;gap:9px;color:var(--kalxa-muted);font-size:9px;font-weight:700;letter-spacing:1.45px;text-transform:uppercase}
+        .sponsored-label{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border:1px solid rgba(165,123,67,.28);border-radius:999px;background:var(--kalxa-gold-soft);color:var(--kalxa-gold-dark);font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+        .read-link{display:inline-flex;align-items:center;gap:10px;color:var(--kalxa-ink);font-size:11px;font-weight:700;transition:gap .18s ease,color .18s ease}
+        .read-link:hover{gap:14px;color:var(--kalxa-gold-dark)}
+        .story-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:44px 28px}
+        .story-card{min-width:0;background:transparent}
+        .story-image-link{display:block;overflow:hidden;background:#e7e0d4}
+        .story-image{position:relative;overflow:hidden;aspect-ratio:4/3;background:#e7e0d4}
+        .story-image::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+        .story-image img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .65s cubic-bezier(.2,.7,.2,1)}
+        .story-card:hover .story-image img{transform:scale(1.035)}
+        .story-image-count{position:absolute;right:13px;bottom:13px;z-index:2;min-height:29px;padding:0 11px;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(17,17,15,.68);color:#fff;backdrop-filter:blur(10px);font-size:9px;font-weight:600}
+        .story-card-content{padding:19px 2px 0}
+        .story-card-content h2,.story-card-content h3{margin:12px 0 11px;color:var(--kalxa-ink);font-family:var(--kalxa-serif);font-size:clamp(23px,2.1vw,30px);font-weight:600;line-height:1.12;letter-spacing:-.7px}
+        .story-card-content h3{font-size:clamp(22px,2vw,28px)}
+        .story-card-content h2 a:hover,.story-card-content h3 a:hover{color:var(--kalxa-gold-dark)}
+        .story-card-content p{margin:0 0 18px;color:var(--kalxa-text-soft);font-size:12px;line-height:1.72;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+        .image-placeholder{width:100%;height:100%;min-height:250px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#181712,#373229)}
+        .image-placeholder span{width:74px;height:74px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(220,192,151,.4);border-radius:50%;color:#eadbc3;font-family:var(--kalxa-serif);font-size:32px}
+        .image-placeholder.small{min-height:100%}
+        .image-placeholder.small span{width:55px;height:55px;font-size:24px}
+        .empty-state{max-width:650px;margin:50px auto;padding:75px 40px;border:1px solid var(--kalxa-border);background:var(--kalxa-paper);text-align:center}
+        .empty-icon{width:54px;height:54px;margin:0 auto 22px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--kalxa-black);color:#eadbc3;font-family:var(--kalxa-serif);font-size:23px}
+        .empty-state h2{margin:0 0 10px;font-family:var(--kalxa-serif);font-size:30px;font-weight:600}
+        .empty-state p{max-width:430px;margin:0 auto;color:var(--kalxa-text-soft);font-size:13px;line-height:1.75}
+        .publish-with-kalxa{background:var(--kalxa-publish-gradient)!important;background-color:#fff;border:1px solid #e4e7eb;border-radius:10px;box-shadow:0 12px 35px rgba(30,40,55,.05);color:var(--kalxa-text)}
+        .publish-with-kalxa h2,.publish-with-kalxa h3{color:var(--kalxa-ink)}
+        .publish-with-kalxa p{color:var(--kalxa-text-soft)}
+
+        /* NEW: universally available slide-out side navigation. */
+        .sidebar-toggle{position:absolute;left:0;top:50%;transform:translateY(-50%);width:43px;height:43px;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.7);border-radius:8px;background:rgba(15,19,24,.25);color:#fff;cursor:pointer;font-size:22px;line-height:1}
+        .sidebar-toggle:hover{background:rgba(15,19,24,.45)}
+        .sidebar-overlay{position:fixed;inset:0;z-index:1500;background:rgba(14,20,30,.5);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s}
+        .sidebar-overlay.is-open{opacity:1;visibility:visible;pointer-events:auto}
+        .site-sidebar{position:fixed;z-index:1501;inset:0 auto 0 0;width:min(340px,90vw);background:#fff;box-shadow:20px 0 60px rgba(0,0,0,.15);transform:translateX(-103%);visibility:hidden;transition:transform .24s ease,visibility .24s;display:flex;flex-direction:column;padding:25px 22px;overflow-y:auto}
+        .site-sidebar.is-open{transform:translateX(0);visibility:visible}
+        .sidebar-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding-bottom:20px;border-bottom:1px solid #e3e6e9}
+        .sidebar-heading strong{font-family:var(--kalxa-serif);font-size:22px;color:#17212e}
+        .sidebar-heading span{display:block;margin-top:6px;color:#64717b;font-size:11px}
+        .sidebar-close{width:36px;height:36px;border:1px solid #dce2e7;border-radius:7px;background:#f6f8f9;cursor:pointer;font-size:23px;color:#17212e}
+        .sidebar-links{display:flex;flex-direction:column;gap:8px;margin-top:25px}
+        .sidebar-links a,.sidebar-disabled{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border-radius:9px;background:linear-gradient(110deg,#f9fafb,#edf1f5);color:#24303a;font-size:13px;font-weight:700;transition:background .2s,transform .2s}
+        .sidebar-links a:hover{background:#e7eff7;transform:translateX(2px)}
+        .sidebar-links a:focus-visible,.sidebar-close:focus-visible{outline:3px solid #0753bd;outline-offset:2px}
+        .sidebar-disabled{opacity:.55;cursor:not-allowed}
+        .sidebar-footer{margin-top:auto;padding-top:30px;font-size:11px;color:#76818b}
+        body.sidebar-open{overflow:hidden}
+
+        /* Existing light-grey gradient footer and green support button. */
+        .site-footer{position:relative;margin-top:30px;padding:62px 0 38px;background:var(--kalxa-footer-gradient);color:var(--kalxa-ink)}
+        .site-footer::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--ndebele-gradient)}
+        .footer-inner{width:min(calc(100% - 56px),var(--kalxa-max-width));margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:40px}
+        .footer-support{max-width:620px}
+        .footer-brand{margin-bottom:12px;font-family:var(--kalxa-serif);font-size:28px;font-weight:600;color:#1b2530}
+        .footer-inner p{max-width:480px;margin:0;color:#47515d;font-size:12px;line-height:1.8}
+        .footer-donate-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;margin-top:20px;padding:13px 22px;border:1px solid #a7d9b2;border-radius:5px;background:var(--kalxa-donation-gradient);color:#19452a;font-size:12px;font-weight:800;box-shadow:0 5px 16px rgba(46,124,69,.12);transition:background .2s,transform .2s,box-shadow .2s}
+        .footer-donate-button:hover{background:var(--kalxa-donation-hover-gradient);color:#123b22;transform:translateY(-2px);box-shadow:0 8px 20px rgba(46,124,69,.18)}
+        .footer-donate-button:focus-visible{outline:3px solid #247443;outline-offset:4px}
+        .footer-support-note{margin-top:12px!important;font-size:10px!important;color:#64717b!important}
+        .footer-small{color:#69747e;font-size:10px;letter-spacing:.9px;text-transform:uppercase}
+
+        @media(max-width:1100px){.header-inner{min-height:95px;padding:7px 0;gap:3px}.brand-name{font-size:clamp(21px,3.2vw,34px);min-height:40px;letter-spacing:-1.2px}.main-nav{gap:23px}}
+        @media(max-width:950px){.story-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+        @media(max-width:650px){
+            .page-container,.footer-inner{width:min(calc(100% - 30px),var(--kalxa-max-width))}
+            .site-header{background:linear-gradient(115deg,#38251c 0%,#f4c430 24%,#0753bd 46%,#d52032 69%,#168447 100%)}
+            .header-inner{width:calc(100% - 20px);min-height:88px;padding:6px 0;gap:4px}
+            .brand-name{min-height:35px;padding:2px 36px;font-size:clamp(18px,5vw,28px);letter-spacing:-1px;overflow-wrap:break-word}
+            .brand-section{font-size:15px}
+            .sidebar-toggle{width:36px;height:36px;left:0;top:26px;transform:none;font-size:20px}
+            .main-nav{width:100%;gap:25px}.main-nav a{font-size:10px}
+            .section{padding:40px 0}.story-grid{grid-template-columns:1fr;gap:38px}
+            .story-card-content{padding-top:17px}.story-card-content h2,.story-card-content h3{font-size:27px}
+            .footer-inner{align-items:flex-start;flex-direction:column;gap:25px}.footer-donate-button{width:100%;max-width:330px}
+        }
+        @media(max-width:380px){.brand-name{font-size:clamp(17px,5vw,21px)}.brand-section{font-size:14px}.main-nav{gap:22px}}
+        @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
     </style>
-
 </head>
-
-
 <body>
 
-
-<!-- =========================================================
-     GLOBAL HEADER
-========================================================== -->
-
+<!-- GLOBAL HEADER -->
 <header class="site-header">
-
     <div class="header-inner">
-
-        <a
-            href="{{ url_for('public.home') }}"
-            class="brand"
-            aria-label="KwaNdebele Kalxa Hub home"
-        >
-
-            <span class="brand-name">
-                KwaNdebele Kalxa Hub
-            </span>
-
-            <span class="brand-section">
-                Stories
-            </span>
-
+        <button type="button" class="sidebar-toggle" id="sidebar-toggle" aria-label="Open Kalxa navigation" aria-expanded="false" aria-controls="site-sidebar">☰</button>
+        <a href="{{ url_for('public.home') }}" class="brand" aria-label="KwaNdebele Kalxa Hub home">
+            <span class="brand-name">KwaNdebele Kalxa Hub</span>
+            <span class="brand-section">Stories</span>
         </a>
-
-
-        <nav
-            class="main-nav"
-            aria-label="Main navigation"
-        >
-
-            <a href="{{ url_for('public.home') }}">
-                Discover
-            </a>
-
-            <a href="{{ url_for('public.stories') }}">
-                Stories
-            </a>
-
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="{{ url_for('public.home') }}">Discover</a>
+            <a href="{{ url_for('public.stories') }}">Stories</a>
         </nav>
-
     </div>
-
 </header>
 
-
-<!-- =========================================================
-     MAIN CONTENT
-========================================================== -->
-
-<main>
-
-    {% block content %}
-    {% endblock %}
-
-</main>
-
-
-<!-- =========================================================
-     GLOBAL FOOTER
-
-     LIGHT-GREY GRADIENT SUPPORT SECTION
-========================================================== -->
-
-<footer class="site-footer">
-
-    <div class="footer-inner">
-
-        <!-- ===============================================
-             SUPPORT KWANDEBELE HUB
-        =============================================== -->
-
-        <div class="footer-support">
-
-            <div class="footer-brand">
-                Support the KwaNdebele Hub
-            </div>
-
-
-            <p>
-
-                Your contribution helps us reach more
-                communities.
-
-            </p>
-
-
-            <!-- ===========================================
-                 LIGHT-GREEN DONATION BUTTON
-            ============================================ -->
-
-            <a
-                href="{{ url_for('story_donations.donate_page') }}"
-                class="footer-donate-button"
-            >
-
-                <span aria-hidden="true">
-                    ❤️
-                </span>
-
-                <span>
-                    Help Us Grow KwaNdebele Hub
-                </span>
-
-                <span aria-hidden="true">
-                    →
-                </span>
-
-            </a>
-
-
-            <p class="footer-support-note">
-
-                Voluntary contributions ·
-                From R5 ·
-                Okuncani onako
-
-            </p>
-
-        </div>
-
-
-        <!-- ===============================================
-             FOOTER CREDIT
-        =============================================== -->
-
-        <div class="footer-small">
-            Powered by Kalxa
-        </div>
-
+<!-- SIDEBAR: Configured external URLs are used rather than invented routes. -->
+<div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+<aside class="site-sidebar" id="site-sidebar" role="dialog" aria-modal="true" aria-label="Kalxa navigation" aria-hidden="true" inert>
+    <div class="sidebar-heading">
+        <div><strong>Explore Kalxa</strong><span>The connected local ecosystem</span></div>
+        <button type="button" id="sidebar-close" class="sidebar-close" aria-label="Close menu">×</button>
     </div>
+    <nav class="sidebar-links" aria-label="Kalxa ecosystem">
+        <a href="{{ url_for('public.home') }}"><span>KwaNdebele Hub</span><span aria-hidden="true">↗</span></a>
+        <a href="{{ url_for('public.stories') }}"><span>All Stories</span><span aria-hidden="true">↗</span></a>
+        {% set ticketing_link = config.get('KALXA_TICKETING_URL', '') %}
+        {% if ticketing_link %}
+        <a href="{{ ticketing_link }}" target="_blank" rel="noopener noreferrer"><span>Kalxa Ticketing</span><span aria-hidden="true">↗</span></a>
+        {% else %}
+        <span class="sidebar-disabled" title="Set KALXA_TICKETING_URL">Kalxa Ticketing · Coming soon</span>
+        {% endif %}
+        {% set discovery_link = config.get('KALXA_DISCOVERY_URL', '') %}
+        {% if discovery_link %}
+        <a href="{{ discovery_link }}" target="_blank" rel="noopener noreferrer"><span>Kalxa Discoveries</span><span aria-hidden="true">↗</span></a>
+        {% else %}
+        <span class="sidebar-disabled" title="Set KALXA_DISCOVERY_URL">Kalxa Discoveries · Coming soon</span>
+        {% endif %}
+        <a href="{{ url_for('story_donations.donate_page') }}"><span>Support Us</span><span aria-hidden="true">♥</span></a>
+        {% set main_website_link = config.get('KALXA_MAIN_WEBSITE_URL', 'https://kalxa.co.za') %}
+        <a href="{{ main_website_link }}" target="_blank" rel="noopener noreferrer"><span>Main Website</span><span aria-hidden="true">↗</span></a>
+    </nav>
+    <div class="sidebar-footer">Powered by Kalxa</div>
+</aside>
 
+<main>{% block content %}{% endblock %}</main>
+
+<!-- GLOBAL FOOTER -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-support">
+            <div class="footer-brand">Support the KwaNdebele Hub</div>
+            <p>Help us grow a platform that celebrates KwaNdebele's culture, lifestyle, businesses, people and local stories. Your contribution helps us reach more communities, share more stories and expand the KwaNdebele Hub.</p>
+            <a href="{{ url_for('story_donations.donate_page') }}" class="footer-donate-button"><span aria-hidden="true">❤️</span><span>Help Grow KwaNdebele Hub</span><span aria-hidden="true">→</span></a>
+            <p class="footer-support-note">Voluntary contributions · From R5 · Secure payment via Yoco</p>
+        </div>
+        <div class="footer-small">Powered by Kalxa</div>
+    </div>
 </footer>
 
-
-<!-- =========================================================
-     PAGE-SPECIFIC SCRIPTS
-========================================================== -->
-
-{% block scripts %}
-{% endblock %}
-
-
+<script>
+(function () {
+    const toggle = document.getElementById('sidebar-toggle');
+    const panel = document.getElementById('site-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const closeButton = document.getElementById('sidebar-close');
+    if (!toggle || !panel || !overlay || !closeButton) return;
+    let previousFocus = null;
+    function setOpen(isOpen) {
+        panel.classList.toggle('is-open', isOpen);
+        overlay.classList.toggle('is-open', isOpen);
+        panel.setAttribute('aria-hidden', String(!isOpen));
+        overlay.setAttribute('aria-hidden', String(!isOpen));
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        document.body.classList.toggle('sidebar-open', isOpen);
+        panel.inert = !isOpen;
+        if (isOpen) {
+            previousFocus = document.activeElement;
+            closeButton.focus();
+        } else if (previousFocus && typeof previousFocus.focus === 'function') {
+            previousFocus.focus();
+        }
+    }
+    toggle.addEventListener('click', function () { setOpen(true); });
+    closeButton.addEventListener('click', function () { setOpen(false); });
+    overlay.addEventListener('click', function () { setOpen(false); });
+    document.addEventListener('keydown', function (event) {
+        if (!panel.classList.contains('is-open')) return;
+        if (event.key === 'Escape') { setOpen(false); return; }
+        if (event.key !== 'Tab') return;
+        const focusable = Array.from(panel.querySelectorAll('a[href],button:not([disabled])'));
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+})();
+</script>
+{% block scripts %}{% endblock %}
 </body>
-
 </html>
