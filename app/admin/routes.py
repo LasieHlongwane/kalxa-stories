@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta, timezone
 from functools import wraps
+from zoneinfo import ZoneInfo
+import hmac
 import os
 
+import click
 import cloudinary
 import cloudinary.uploader
+
 from sqlalchemy import and_, case, func
 
 from flask import (
@@ -29,8 +33,11 @@ from app.models import (
     StoryAnalyticsEvent,
 )
 
-from app.models.article_comment import (
-    ArticleComment,
+from app.models.article_comment import ArticleComment
+
+from app.models.story_category import (
+    TRENDING_NOW_CATEGORY_SLUG,
+    TRENDING_NOW_CATEGORY_NAME,
 )
 
 from app.kalxa.client import (
@@ -40,6 +47,10 @@ from app.kalxa.client import (
 )
 
 
+# ============================================================
+# ADMIN BLUEPRINT
+# ============================================================
+
 admin_bp = Blueprint(
     "admin",
     __name__,
@@ -48,7 +59,21 @@ admin_bp = Blueprint(
 
 
 # ============================================================
-# STORY MEDIA
+# TRENDING NOW SETTINGS
+# ============================================================
+
+SOUTH_AFRICA_TIMEZONE = ZoneInfo(
+    "Africa/Johannesburg"
+)
+
+TRENDING_NOW_DESCRIPTION = (
+    "Temporary local stories, updates and announcements "
+    "selected by the Kalxa editorial team."
+)
+
+
+# ============================================================
+# STORY MEDIA SETTINGS
 # ============================================================
 
 STORY_MAX_IMAGES = 3
@@ -66,33 +91,29 @@ STORY_IMAGE_EXTENSIONS = {
 
 
 # ============================================================
-# CLOUDINARY
+# CLOUDINARY CONFIGURATION
 # ============================================================
 
 CLOUDINARY_CLOUD_NAME = (
     os.environ.get(
         "CLOUDINARY_CLOUD_NAME",
         "",
-    )
-    .strip()
+    ).strip()
 )
 
 CLOUDINARY_API_KEY = (
     os.environ.get(
         "CLOUDINARY_API_KEY",
         "",
-    )
-    .strip()
+    ).strip()
 )
 
 CLOUDINARY_API_SECRET = (
     os.environ.get(
         "CLOUDINARY_API_SECRET",
         "",
-    )
-    .strip()
+    ).strip()
 )
-
 
 cloudinary.config(
     cloud_name=CLOUDINARY_CLOUD_NAME,
@@ -104,68 +125,43 @@ cloudinary.config(
 
 def cloudinary_story_images_configured():
 
-    return all(
-        [
-            CLOUDINARY_CLOUD_NAME,
-            CLOUDINARY_API_KEY,
-            CLOUDINARY_API_SECRET,
-        ]
-    )
+    return all([
+        CLOUDINARY_CLOUD_NAME,
+        CLOUDINARY_API_KEY,
+        CLOUDINARY_API_SECRET,
+    ])
 
 
-def allowed_story_image_filename(
-    filename,
-):
+def allowed_story_image_filename(filename):
 
-    if (
-        not filename
-        or
-        "." not in filename
-    ):
-
+    if not filename or "." not in filename:
         return False
 
-    extension = (
-        filename
-        .rsplit(
-            ".",
-            1,
-        )[1]
-        .lower()
-    )
+    extension = filename.rsplit(
+        ".",
+        1,
+    )[1].lower()
 
-    return (
-        extension
-        in STORY_IMAGE_EXTENSIONS
-    )
+    return extension in STORY_IMAGE_EXTENSIONS
 
 
-def get_uploaded_file_size(
-    uploaded_file,
-):
+def get_uploaded_file_size(uploaded_file):
 
     uploaded_file.stream.seek(
         0,
         os.SEEK_END,
     )
 
-    file_size = (
-        uploaded_file.stream.tell()
-    )
+    file_size = uploaded_file.stream.tell()
 
-    uploaded_file.stream.seek(
-        0
-    )
+    uploaded_file.stream.seek(0)
 
     return file_size
 
 
-def delete_cloudinary_story_image(
-    public_id,
-):
+def delete_cloudinary_story_image(public_id):
 
     if not public_id:
-
         return
 
     try:
@@ -186,7 +182,344 @@ def delete_cloudinary_story_image(
 
 
 # ============================================================
-# AUTHENTICATION DECORATOR
+# TRENDING NOW HELPERS
+# ============================================================
+
+def is_trending_now_category(category):
+    """
+    Return True when a category is the special
+    administrator-controlled Trending Now category.
+    """
+
+    return bool(
+        category is not None
+        and category.slug == TRENDING_NOW_CATEGORY_SLUG
+    )
+
+
+def normalise_datetime_to_utc(value):
+    """
+    Normalise stored datetimes to UTC.
+
+    Existing application datetimes may be naive if they
+    were returned by a database driver without tzinfo.
+
+    The application stores expiry timestamps in UTC,
+    so naive database values are treated as UTC.
+    """
+
+    if value is None:
+        return None
+
+    if value.tzinfo is None:
+
+        return value.replace(
+            tzinfo=timezone.utc
+        )
+
+    return value.astimezone(
+        timezone.utc
+    )
+
+
+def parse_admin_expiry_datetime(raw_value):
+    """
+    Parse the admin form's datetime-local value.
+
+    Input:
+        2026-10-25T23:59
+
+    The entered time is interpreted as SAST.
+
+    Returned value:
+        UTC-aware datetime.
+
+    Raises:
+        ValueError for an invalid value.
+    """
+
+    raw_value = (
+        raw_value or ""
+    ).strip()
+
+    if not raw_value:
+        return None
+
+    parsed = None
+
+    for date_format in (
+        "%Y-%m-%dT%H:%M",
+        "%Y-%m-%dT%H:%M:%S",
+    ):
+
+        try:
+
+            parsed = datetime.strptime(
+                raw_value,
+                date_format,
+            )
+
+            break
+
+        except ValueError:
+            continue
+
+    if parsed is None:
+
+        raise ValueError(
+            "Invalid expiry date and time."
+        )
+
+    local_datetime = parsed.replace(
+        tzinfo=SOUTH_AFRICA_TIMEZONE
+    )
+
+    return local_datetime.astimezone(
+        timezone.utc
+    )
+
+
+def admin_expiry_input_value(value):
+    """
+    Convert an existing UTC expiry timestamp into
+    South African time for the datetime-local input.
+    """
+
+    if value is None:
+        return ""
+
+    utc_datetime = normalise_datetime_to_utc(
+        value
+    )
+
+    local_datetime = utc_datetime.astimezone(
+        SOUTH_AFRICA_TIMEZONE
+    )
+
+    return local_datetime.strftime(
+        "%Y-%m-%dT%H:%M"
+    )
+
+
+def validate_trending_now_expiry(
+    category,
+    expires_at,
+    status,
+):
+    """
+    Enforce the special category's expiry rules.
+
+    Returns True when valid.
+
+    Drafts must have an expiry date too, but are
+    permitted to retain a past expiry date while
+    being edited.
+
+    Publishing requires an expiry in the future.
+    """
+
+    if not is_trending_now_category(category):
+        return True
+
+    if expires_at is None:
+
+        flash(
+            "Trending Now stories must have "
+            "an expiry date and time.",
+            "error",
+        )
+
+        return False
+
+    if status == "published":
+
+        now = datetime.now(
+            timezone.utc
+        )
+
+        if normalise_datetime_to_utc(
+            expires_at
+        ) <= now:
+
+            flash(
+                "The expiry date for a Trending Now "
+                "story must be in the future "
+                "when publishing.",
+                "error",
+            )
+
+            return False
+
+    return True
+
+
+def get_admin_article_comments(article_id):
+
+    if article_id is None:
+        return []
+
+    return (
+        ArticleComment.query
+        .filter_by(
+            article_id=article_id
+        )
+        .order_by(
+            ArticleComment.created_at.desc()
+        )
+        .all()
+    )
+
+
+def get_admin_restaurant_ids(article):
+
+    if article is None or article.id is None:
+        return ""
+
+    return ", ".join(
+        str(relation.kalxa_restaurant_id)
+        for relation in sorted(
+            article.restaurants,
+            key=lambda relation: relation.display_order,
+        )
+    )
+
+
+def render_admin_article_form(
+    article,
+    page_mode,
+    restaurant_ids="",
+    article_comments=None,
+):
+    """
+    Centralised article-form rendering.
+
+    The existing template receives its original
+    variables plus Trending Now metadata.
+    """
+
+    if article_comments is None:
+
+        article_comments = get_admin_article_comments(
+            article.id if article else None
+        )
+
+    expires_at_input = ""
+
+    if request.method == "POST":
+
+        expires_at_input = (
+            request.form.get(
+                "expires_at",
+                "",
+            ).strip()
+        )
+
+    elif article is not None:
+
+        expires_at_input = admin_expiry_input_value(
+            article.expires_at
+        )
+
+    return render_template(
+        "admin/article_form.html",
+
+        story_categories=available_story_categories(),
+
+        article=article,
+
+        restaurant_ids=restaurant_ids,
+
+        page_mode=page_mode,
+
+        article_comments=article_comments,
+
+        trending_now_category_slug=(
+            TRENDING_NOW_CATEGORY_SLUG
+        ),
+
+        trending_now_category_name=(
+            TRENDING_NOW_CATEGORY_NAME
+        ),
+
+        south_africa_timezone_label="SAST (UTC+02:00)",
+
+        expires_at_input=expires_at_input,
+    )
+
+
+# ============================================================
+# CLI: CREATE TRENDING NOW CATEGORY
+# ============================================================
+
+@admin_bp.cli.command("seed-trending-now")
+def seed_trending_now():
+    """
+    Idempotently create or activate the Trending Now
+    category in the current database.
+
+    Command:
+        flask --app app admin seed-trending-now
+    """
+
+    category = (
+        StoryCategory.query
+        .filter_by(
+            slug=TRENDING_NOW_CATEGORY_SLUG
+        )
+        .first()
+    )
+
+    if category is None:
+
+        category = StoryCategory(
+            name=TRENDING_NOW_CATEGORY_NAME,
+            slug=TRENDING_NOW_CATEGORY_SLUG,
+            description=TRENDING_NOW_DESCRIPTION,
+            is_active=True,
+            display_order=0,
+        )
+
+        db.session.add(category)
+
+        action = "created"
+
+    else:
+
+        category.name = TRENDING_NOW_CATEGORY_NAME
+
+        category.description = (
+            category.description
+            or TRENDING_NOW_DESCRIPTION
+        )
+
+        category.is_active = True
+
+        action = "updated"
+
+    try:
+
+        db.session.commit()
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to seed Trending Now category."
+        )
+
+        raise click.ClickException(
+            "Unable to create Trending Now category."
+        )
+
+    click.echo(
+        f"Trending Now category {action}. "
+        f"Category ID: {category.id}"
+    )
+
+
+# ============================================================
+# AUTHENTICATION
 # ============================================================
 
 def admin_required(view_function):
@@ -219,10 +552,7 @@ def admin_required(view_function):
 
 @admin_bp.route(
     "/login",
-    methods=[
-        "GET",
-        "POST",
-    ],
+    methods=["GET", "POST"],
 )
 def login():
 
@@ -239,20 +569,15 @@ def login():
     if request.method == "POST":
 
         username = (
-            request.form
-            .get(
+            request.form.get(
                 "username",
                 "",
-            )
-            .strip()
+            ).strip()
         )
 
-        password = (
-            request.form
-            .get(
-                "password",
-                "",
-            )
+        password = request.form.get(
+            "password",
+            "",
         )
 
         expected_username = (
@@ -267,13 +592,25 @@ def login():
             )
         )
 
-        if (
-            username == expected_username
-            and
-            password == expected_password
-            and
-            expected_password
-        ):
+        valid_username = (
+            isinstance(expected_username, str)
+            and bool(expected_username)
+            and hmac.compare_digest(
+                username,
+                expected_username,
+            )
+        )
+
+        valid_password = (
+            isinstance(expected_password, str)
+            and bool(expected_password)
+            and hmac.compare_digest(
+                password,
+                expected_password,
+            )
+        )
+
+        if valid_username and valid_password:
 
             session.clear()
 
@@ -291,10 +628,9 @@ def login():
 
             if (
                 next_url
-                and
-                next_url.startswith("/")
-                and
-                not next_url.startswith("//")
+                and next_url.startswith("/")
+                and not next_url.startswith("//")
+                and not next_url.startswith("/\\")
             ):
 
                 return redirect(
@@ -350,13 +686,10 @@ def dashboard():
     # ========================================================
 
     analytics_period = (
-        request.args
-        .get(
+        request.args.get(
             "period",
             "30d",
-        )
-        .strip()
-        .lower()
+        ).strip().lower()
     )
 
     allowed_analytics_periods = {
@@ -366,130 +699,83 @@ def dashboard():
         "all",
     }
 
-    if (
-        analytics_period
-        not in allowed_analytics_periods
-    ):
-
+    if analytics_period not in allowed_analytics_periods:
         analytics_period = "30d"
 
-
-    analytics_now = (
-        datetime.now(
-            timezone.utc
-        )
+    analytics_now = datetime.now(
+        timezone.utc
     )
-
 
     if analytics_period == "today":
 
-        analytics_start = (
-            analytics_now.replace(
-                hour=0,
-                minute=0,
-                second=0,
-                microsecond=0,
-            )
+        analytics_start = analytics_now.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
         )
 
-        analytics_period_label = (
-            "Today"
-        )
-
+        analytics_period_label = "Today"
 
     elif analytics_period == "7d":
 
         analytics_start = (
             analytics_now
-            -
-            timedelta(
-                days=7
-            )
+            - timedelta(days=7)
         )
 
-        analytics_period_label = (
-            "Last 7 Days"
-        )
-
+        analytics_period_label = "Last 7 Days"
 
     elif analytics_period == "30d":
 
         analytics_start = (
             analytics_now
-            -
-            timedelta(
-                days=30
-            )
+            - timedelta(days=30)
         )
 
-        analytics_period_label = (
-            "Last 30 Days"
-        )
-
+        analytics_period_label = "Last 30 Days"
 
     else:
 
         analytics_start = None
-
-        analytics_period_label = (
-            "All Time"
-        )
-
+        analytics_period_label = "All Time"
 
     # ========================================================
     # STORY COUNTS
     # ========================================================
-    #
-    # These are content inventory counts, not analytics.
-    # They therefore remain all-time regardless of the
-    # selected analytics period.
-    # ========================================================
 
-    total_articles = (
-        Article.query.count()
-    )
+    total_articles = Article.query.count()
 
     published_articles = (
         Article.query
-        .filter_by(
-            status="published"
-        )
+        .filter_by(status="published")
         .count()
     )
 
     draft_articles = (
         Article.query
-        .filter_by(
-            status="draft"
-        )
+        .filter_by(status="draft")
         .count()
     )
 
     sponsored_articles = (
         Article.query
-        .filter_by(
-            is_sponsored=True
-        )
+        .filter_by(is_sponsored=True)
         .count()
     )
 
     recent_articles = (
         Article.query
-        .order_by(
-            Article.created_at.desc()
-        )
+        .order_by(Article.created_at.desc())
         .limit(8)
         .all()
     )
-
 
     # ========================================================
     # ANALYTICS PERIOD FILTER HELPER
     # ========================================================
 
-    def apply_analytics_period(
-        query
-    ):
+    def apply_analytics_period(query):
 
         if analytics_start is not None:
 
@@ -499,7 +785,6 @@ def dashboard():
             )
 
         return query
-
 
     # ========================================================
     # OVERALL STORIES ANALYTICS
@@ -513,16 +798,11 @@ def dashboard():
         )
     )
 
-    story_views_query = (
-        apply_analytics_period(
-            story_views_query
-        )
+    story_views_query = apply_analytics_period(
+        story_views_query
     )
 
-    total_story_views = (
-        story_views_query.count()
-    )
-
+    total_story_views = story_views_query.count()
 
     restaurant_impressions_query = (
         StoryAnalyticsEvent.query
@@ -542,7 +822,6 @@ def dashboard():
         restaurant_impressions_query.count()
     )
 
-
     restaurant_clicks_query = (
         StoryAnalyticsEvent.query
         .filter(
@@ -560,7 +839,6 @@ def dashboard():
     total_restaurant_clicks = (
         restaurant_clicks_query.count()
     )
-
 
     # ========================================================
     # UNIQUE STORY VISITORS
@@ -597,9 +875,8 @@ def dashboard():
         or 0
     )
 
-
     # ========================================================
-    # OVERALL RESTAURANT CTR
+    # RESTAURANT CTR
     # ========================================================
 
     if total_restaurant_impressions > 0:
@@ -607,17 +884,14 @@ def dashboard():
         restaurant_ctr = round(
             (
                 total_restaurant_clicks
-                /
-                total_restaurant_impressions
-            )
-            * 100,
+                / total_restaurant_impressions
+            ) * 100,
             1,
         )
 
     else:
 
         restaurant_ctr = 0.0
-
 
     # ========================================================
     # PERFORMANCE BY PUBLISHED STORY
@@ -650,21 +924,6 @@ def dashboard():
         else_=0,
     )
 
-
-    # --------------------------------------------------------
-    # IMPORTANT
-    # --------------------------------------------------------
-    #
-    # The period condition belongs inside the OUTER JOIN.
-    #
-    # If it were added as a normal WHERE filter, published
-    # stories with zero events during the selected period
-    # would disappear from the performance table.
-    #
-    # Keeping it inside the join means they remain visible
-    # with zero views / impressions / clicks.
-    # --------------------------------------------------------
-
     article_event_join_conditions = [
         StoryAnalyticsEvent.article_id
         == Article.id
@@ -677,7 +936,6 @@ def dashboard():
             >= analytics_start
         )
 
-
     article_rows = (
         db.session.query(
             Article.id,
@@ -686,21 +944,15 @@ def dashboard():
 
             func.sum(
                 article_view_case
-            ).label(
-                "views"
-            ),
+            ).label("views"),
 
             func.sum(
                 restaurant_impression_case
-            ).label(
-                "impressions"
-            ),
+            ).label("impressions"),
 
             func.sum(
                 restaurant_click_case
-            ).label(
-                "clicks"
-            ),
+            ).label("clicks"),
         )
         .outerjoin(
             StoryAnalyticsEvent,
@@ -709,8 +961,7 @@ def dashboard():
             ),
         )
         .filter(
-            Article.status
-            == "published"
+            Article.status == "published"
         )
         .group_by(
             Article.id,
@@ -726,25 +977,8 @@ def dashboard():
         .all()
     )
 
-
     # ========================================================
     # TICKETING CONVERSION ANALYTICS
-    # ========================================================
-    #
-    # IMPORTANT:
-    #
-    # Ticketing currently returns aggregate conversion data
-    # for each story.
-    #
-    # Until the Ticketing API accepts a start/end date, these
-    # downstream values remain ALL-TIME even when the Stories
-    # dashboard is filtered to Today / 7d / 30d.
-    #
-    # The template receives:
-    #
-    # ticketing_analytics_period_label = "All Time"
-    #
-    # so the UI can make this distinction clear.
     # ========================================================
 
     published_story_ids = [
@@ -773,11 +1007,7 @@ def dashboard():
 
             ticketing_conversion_analytics = {}
 
-
-    ticketing_analytics_period_label = (
-        "All Time"
-    )
-
+    ticketing_analytics_period_label = "All Time"
 
     # ========================================================
     # BUILD STORY PERFORMANCE
@@ -787,9 +1017,7 @@ def dashboard():
 
     for row in article_rows:
 
-        views = int(
-            row.views or 0
-        )
+        views = int(row.views or 0)
 
         impressions = int(
             row.impressions or 0
@@ -799,16 +1027,10 @@ def dashboard():
             row.clicks or 0
         )
 
-
         if impressions > 0:
 
             ctr = round(
-                (
-                    clicks
-                    /
-                    impressions
-                )
-                * 100,
+                (clicks / impressions) * 100,
                 1,
             )
 
@@ -816,10 +1038,8 @@ def dashboard():
 
             ctr = 0.0
 
-
         ticketing_story = (
-            ticketing_conversion_analytics
-            .get(
+            ticketing_conversion_analytics.get(
                 row.id,
                 {},
             )
@@ -830,84 +1050,58 @@ def dashboard():
                 "totals",
                 {},
             )
-            or
-            {}
+            or {}
         )
-
 
         restaurant_views = int(
             ticketing_totals.get(
                 "restaurant_views",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         experience_views = int(
             ticketing_totals.get(
                 "experience_views",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         whatsapp_clicks = int(
             ticketing_totals.get(
                 "whatsapp_clicks",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         phone_clicks = int(
             ticketing_totals.get(
                 "phone_clicks",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         directions_clicks = int(
             ticketing_totals.get(
                 "directions_clicks",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         meaningful_actions = int(
             ticketing_totals.get(
                 "meaningful_actions",
                 0,
-            )
-            or 0
+            ) or 0
         )
-
-
-        # ----------------------------------------------------
-        # CLICK → RESTAURANT VIEW RATE
-        # ----------------------------------------------------
-        #
-        # NOTE:
-        #
-        # Until Ticketing supports the same period filter,
-        # this mixes period-filtered Story clicks with
-        # all-time Ticketing restaurant views.
-        #
-        # Keep it available for backwards compatibility,
-        # but the UI should not present it as a period-
-        # matched conversion rate yet.
-        # ----------------------------------------------------
 
         if clicks > 0:
 
             restaurant_view_rate = round(
                 (
                     restaurant_views
-                    /
-                    clicks
-                )
-                * 100,
+                    / clicks
+                ) * 100,
                 1,
             )
 
@@ -915,24 +1109,13 @@ def dashboard():
 
             restaurant_view_rate = 0.0
 
-
-        # ----------------------------------------------------
-        # RESTAURANT VIEW → MEANINGFUL ACTION RATE
-        # ----------------------------------------------------
-        #
-        # Both values come from Ticketing and are therefore
-        # currently all-time.
-        # ----------------------------------------------------
-
         if restaurant_views > 0:
 
             action_rate = round(
                 (
                     meaningful_actions
-                    /
-                    restaurant_views
-                )
-                * 100,
+                    / restaurant_views
+                ) * 100,
                 1,
             )
 
@@ -940,132 +1123,80 @@ def dashboard():
 
             action_rate = 0.0
 
-
         story_performance.append({
-            "id":
-                row.id,
 
-            "title":
-                row.title,
+            "id": row.id,
 
-            "slug":
-                row.slug,
+            "title": row.title,
 
-            "views":
-                views,
+            "slug": row.slug,
 
-            "impressions":
-                impressions,
+            "views": views,
 
-            "clicks":
-                clicks,
+            "impressions": impressions,
 
-            "ctr":
-                ctr,
+            "clicks": clicks,
 
-            "restaurant_views":
-                restaurant_views,
+            "ctr": ctr,
 
-            "experience_views":
-                experience_views,
+            "restaurant_views": restaurant_views,
 
-            "whatsapp_clicks":
-                whatsapp_clicks,
+            "experience_views": experience_views,
 
-            "phone_clicks":
-                phone_clicks,
+            "whatsapp_clicks": whatsapp_clicks,
 
-            "directions_clicks":
-                directions_clicks,
+            "phone_clicks": phone_clicks,
 
-            "meaningful_actions":
-                meaningful_actions,
+            "directions_clicks": directions_clicks,
 
-            "restaurant_view_rate":
-                restaurant_view_rate,
+            "meaningful_actions": meaningful_actions,
 
-            "action_rate":
-                action_rate,
+            "restaurant_view_rate": restaurant_view_rate,
+
+            "action_rate": action_rate,
         })
 
-
     # ========================================================
-    # OVERALL TICKETING CONVERSION TOTALS
+    # OVERALL TICKETING TOTALS
     # ========================================================
 
     total_ticketing_restaurant_views = sum(
-        item[
-            "restaurant_views"
-        ]
-        for item
-        in story_performance
+        item["restaurant_views"]
+        for item in story_performance
     )
 
     total_experience_views = sum(
-        item[
-            "experience_views"
-        ]
-        for item
-        in story_performance
+        item["experience_views"]
+        for item in story_performance
     )
 
     total_whatsapp_clicks = sum(
-        item[
-            "whatsapp_clicks"
-        ]
-        for item
-        in story_performance
+        item["whatsapp_clicks"]
+        for item in story_performance
     )
 
     total_phone_clicks = sum(
-        item[
-            "phone_clicks"
-        ]
-        for item
-        in story_performance
+        item["phone_clicks"]
+        for item in story_performance
     )
 
     total_directions_clicks = sum(
-        item[
-            "directions_clicks"
-        ]
-        for item
-        in story_performance
+        item["directions_clicks"]
+        for item in story_performance
     )
 
     total_meaningful_actions = sum(
-        item[
-            "meaningful_actions"
-        ]
-        for item
-        in story_performance
+        item["meaningful_actions"]
+        for item in story_performance
     )
-
-
-    # ========================================================
-    # OVERALL DOWNSTREAM CONVERSION RATES
-    # ========================================================
-    #
-    # ticketing_visit_rate currently compares:
-    #
-    # selected-period Story clicks
-    #       vs
-    # all-time Ticketing restaurant views.
-    #
-    # We preserve the value for compatibility with the
-    # existing dashboard, but the template should make clear
-    # that downstream Ticketing totals are currently all-time.
-    # ========================================================
 
     if total_restaurant_clicks > 0:
 
         ticketing_visit_rate = round(
             (
                 total_ticketing_restaurant_views
-                /
-                total_restaurant_clicks
-            )
-            * 100,
+                / total_restaurant_clicks
+            ) * 100,
             1,
         )
 
@@ -1073,23 +1204,19 @@ def dashboard():
 
         ticketing_visit_rate = 0.0
 
-
     if total_ticketing_restaurant_views > 0:
 
         meaningful_action_rate = round(
             (
                 total_meaningful_actions
-                /
-                total_ticketing_restaurant_views
-            )
-            * 100,
+                / total_ticketing_restaurant_views
+            ) * 100,
             1,
         )
 
     else:
 
         meaningful_action_rate = 0.0
-
 
     # ========================================================
     # RESTAURANT PERFORMANCE
@@ -1113,31 +1240,23 @@ def dashboard():
         else_=0,
     )
 
-
     restaurant_rows_query = (
         db.session.query(
-            StoryAnalyticsEvent
-            .kalxa_restaurant_id,
+            StoryAnalyticsEvent.kalxa_restaurant_id,
 
             func.sum(
                 restaurant_impression_case
-            ).label(
-                "impressions"
-            ),
+            ).label("impressions"),
 
             func.sum(
                 restaurant_click_case
-            ).label(
-                "clicks"
-            ),
+            ).label("clicks"),
         )
         .filter(
-            StoryAnalyticsEvent
-            .kalxa_restaurant_id
+            StoryAnalyticsEvent.kalxa_restaurant_id
             .isnot(None)
         )
     )
-
 
     if analytics_start is not None:
 
@@ -1148,12 +1267,10 @@ def dashboard():
             )
         )
 
-
     restaurant_rows = (
         restaurant_rows_query
         .group_by(
-            StoryAnalyticsEvent
-            .kalxa_restaurant_id
+            StoryAnalyticsEvent.kalxa_restaurant_id
         )
         .order_by(
             func.sum(
@@ -1167,7 +1284,6 @@ def dashboard():
         .all()
     )
 
-
     # ========================================================
     # TICKETING TOTALS BY RESTAURANT
     # ========================================================
@@ -1175,8 +1291,7 @@ def dashboard():
     ticketing_by_restaurant = {}
 
     for story_data in (
-        ticketing_conversion_analytics
-        .values()
+        ticketing_conversion_analytics.values()
     ):
 
         restaurants = (
@@ -1184,8 +1299,7 @@ def dashboard():
                 "restaurants",
                 [],
             )
-            or
-            []
+            or []
         )
 
         for restaurant_data in restaurants:
@@ -1197,7 +1311,6 @@ def dashboard():
             )
 
             if restaurant_id is None:
-
                 continue
 
             try:
@@ -1206,13 +1319,8 @@ def dashboard():
                     restaurant_id
                 )
 
-            except (
-                TypeError,
-                ValueError,
-            ):
-
+            except (TypeError, ValueError):
                 continue
-
 
             if (
                 restaurant_id
@@ -1222,96 +1330,62 @@ def dashboard():
                 ticketing_by_restaurant[
                     restaurant_id
                 ] = {
-                    "restaurant_views":
-                        0,
-
-                    "experience_views":
-                        0,
-
-                    "whatsapp_clicks":
-                        0,
-
-                    "phone_clicks":
-                        0,
-
-                    "directions_clicks":
-                        0,
-
-                    "meaningful_actions":
-                        0,
+                    "restaurant_views": 0,
+                    "experience_views": 0,
+                    "whatsapp_clicks": 0,
+                    "phone_clicks": 0,
+                    "directions_clicks": 0,
+                    "meaningful_actions": 0,
                 }
 
+            totals = ticketing_by_restaurant[
+                restaurant_id
+            ]
 
-            totals = (
-                ticketing_by_restaurant[
-                    restaurant_id
-                ]
-            )
-
-
-            totals[
-                "restaurant_views"
-            ] += int(
+            totals["restaurant_views"] += int(
                 restaurant_data.get(
                     "restaurant_views",
                     0,
-                )
-                or 0
+                ) or 0
             )
 
-            totals[
-                "experience_views"
-            ] += int(
+            totals["experience_views"] += int(
                 restaurant_data.get(
                     "experience_views",
                     0,
-                )
-                or 0
+                ) or 0
             )
 
-            totals[
-                "whatsapp_clicks"
-            ] += int(
+            totals["whatsapp_clicks"] += int(
                 restaurant_data.get(
                     "whatsapp_clicks",
                     0,
-                )
-                or 0
+                ) or 0
             )
 
-            totals[
-                "phone_clicks"
-            ] += int(
+            totals["phone_clicks"] += int(
                 restaurant_data.get(
                     "phone_clicks",
                     0,
-                )
-                or 0
+                ) or 0
             )
 
-            totals[
-                "directions_clicks"
-            ] += int(
+            totals["directions_clicks"] += int(
                 restaurant_data.get(
                     "directions_clicks",
                     0,
-                )
-                or 0
+                ) or 0
             )
 
-            totals[
-                "meaningful_actions"
-            ] += int(
+            totals["meaningful_actions"] += int(
                 restaurant_data.get(
                     "meaningful_actions",
                     0,
-                )
-                or 0
+                ) or 0
             )
 
-
     # ========================================================
-    # FETCH LIVE RESTAURANT NAMES FROM TICKETING
+    # FETCH RESTAURANT NAMES
     # ========================================================
 
     restaurant_ids = {
@@ -1324,19 +1398,14 @@ def dashboard():
         ticketing_by_restaurant.keys()
     )
 
-
     live_restaurants = []
 
     if restaurant_ids:
 
         try:
 
-            live_restaurants = (
-                get_restaurants_by_ids(
-                    sorted(
-                        restaurant_ids
-                    )
-                )
+            live_restaurants = get_restaurants_by_ids(
+                sorted(restaurant_ids)
             )
 
         except Exception:
@@ -1348,18 +1417,13 @@ def dashboard():
 
             live_restaurants = []
 
-
     restaurant_lookup = {
-        restaurant.get("id"):
-            restaurant
+        restaurant.get("id"): restaurant
 
-        for restaurant
-        in live_restaurants
+        for restaurant in live_restaurants
 
-        if restaurant.get("id")
-        is not None
+        if restaurant.get("id") is not None
     }
-
 
     # ========================================================
     # STORIES RESTAURANT METRICS LOOKUP
@@ -1369,30 +1433,19 @@ def dashboard():
 
     for row in restaurant_rows:
 
-        restaurant_id = (
-            row.kalxa_restaurant_id
-        )
+        restaurant_id = row.kalxa_restaurant_id
 
         stories_restaurant_lookup[
             restaurant_id
         ] = {
-            "impressions":
-                int(
-                    row.impressions
-                    or 0
-                ),
+            "impressions": int(
+                row.impressions or 0
+            ),
 
-            "clicks":
-                int(
-                    row.clicks
-                    or 0
-                ),
+            "clicks": int(
+                row.clicks or 0
+            ),
         }
-
-
-    # ========================================================
-    # BUILD RESTAURANT PERFORMANCE
-    # ========================================================
 
     all_performance_restaurant_ids = set(
         stories_restaurant_lookup.keys()
@@ -1402,9 +1455,11 @@ def dashboard():
         ticketing_by_restaurant.keys()
     )
 
+    # ========================================================
+    # BUILD RESTAURANT PERFORMANCE
+    # ========================================================
 
     restaurant_performance = []
-
 
     for restaurant_id in sorted(
         all_performance_restaurant_ids
@@ -1424,81 +1479,68 @@ def dashboard():
             )
         )
 
-
         impressions = int(
             stories_metrics.get(
                 "impressions",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         clicks = int(
             stories_metrics.get(
                 "clicks",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         restaurant_views = int(
             ticketing_metrics.get(
                 "restaurant_views",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         experience_views = int(
             ticketing_metrics.get(
                 "experience_views",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         whatsapp_clicks = int(
             ticketing_metrics.get(
                 "whatsapp_clicks",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         phone_clicks = int(
             ticketing_metrics.get(
                 "phone_clicks",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         directions_clicks = int(
             ticketing_metrics.get(
                 "directions_clicks",
                 0,
-            )
-            or 0
+            ) or 0
         )
 
         meaningful_actions = int(
             ticketing_metrics.get(
                 "meaningful_actions",
                 0,
-            )
-            or 0
+            ) or 0
         )
-
 
         if impressions > 0:
 
             ctr = round(
                 (
-                    clicks
-                    /
-                    impressions
-                )
-                * 100,
+                    clicks / impressions
+                ) * 100,
                 1,
             )
 
@@ -1506,16 +1548,13 @@ def dashboard():
 
             ctr = 0.0
 
-
         if restaurant_views > 0:
 
             action_rate = round(
                 (
                     meaningful_actions
-                    /
-                    restaurant_views
-                )
-                * 100,
+                    / restaurant_views
+                ) * 100,
                 1,
             )
 
@@ -1523,91 +1562,62 @@ def dashboard():
 
             action_rate = 0.0
 
-
-        restaurant = (
-            restaurant_lookup.get(
-                restaurant_id,
-                {},
-            )
+        restaurant = restaurant_lookup.get(
+            restaurant_id,
+            {},
         )
 
-
         restaurant_performance.append({
-            "restaurant_id":
-                restaurant_id,
 
-            "business_name":
-                restaurant.get(
-                    "business_name"
-                )
-                or
-                f"Restaurant #{restaurant_id}",
+            "restaurant_id": restaurant_id,
 
-            "area":
-                restaurant.get(
-                    "area"
-                )
-                or
-                "",
+            "business_name": (
+                restaurant.get("business_name")
+                or f"Restaurant #{restaurant_id}"
+            ),
 
-            "impressions":
-                impressions,
+            "area": (
+                restaurant.get("area")
+                or ""
+            ),
 
-            "clicks":
-                clicks,
+            "impressions": impressions,
 
-            "ctr":
-                ctr,
+            "clicks": clicks,
 
-            "restaurant_views":
-                restaurant_views,
+            "ctr": ctr,
 
-            "experience_views":
-                experience_views,
+            "restaurant_views": restaurant_views,
 
-            "whatsapp_clicks":
-                whatsapp_clicks,
+            "experience_views": experience_views,
 
-            "phone_clicks":
-                phone_clicks,
+            "whatsapp_clicks": whatsapp_clicks,
 
-            "directions_clicks":
-                directions_clicks,
+            "phone_clicks": phone_clicks,
 
-            "meaningful_actions":
-                meaningful_actions,
+            "directions_clicks": directions_clicks,
 
-            "action_rate":
-                action_rate,
+            "meaningful_actions": meaningful_actions,
+
+            "action_rate": action_rate,
         })
-
 
     restaurant_performance.sort(
         key=lambda item: (
-            -item[
-                "meaningful_actions"
-            ],
-            -item[
-                "restaurant_views"
-            ],
-            -item[
-                "clicks"
-            ],
-            item[
-                "restaurant_id"
-            ],
+            -item["meaningful_actions"],
+            -item["restaurant_views"],
+            -item["clicks"],
+            item["restaurant_id"],
         )
     )
 
-
     # ========================================================
-    # RECENT STORIES ANALYTICS ACTIVITY
+    # RECENT ANALYTICS ACTIVITY
     # ========================================================
 
     recent_events_query = (
         StoryAnalyticsEvent.query
     )
-
 
     if analytics_start is not None:
 
@@ -1618,22 +1628,14 @@ def dashboard():
             )
         )
 
-
     recent_events = (
         recent_events_query
         .order_by(
-            StoryAnalyticsEvent
-            .created_at
-            .desc()
+            StoryAnalyticsEvent.created_at.desc()
         )
         .limit(20)
         .all()
     )
-
-
-    # ========================================================
-    # ARTICLE LOOKUP FOR RECENT EVENTS
-    # ========================================================
 
     recent_article_ids = {
         event.article_id
@@ -1641,9 +1643,7 @@ def dashboard():
         if event.article_id is not None
     }
 
-
     recent_article_lookup = {}
-
 
     if recent_article_ids:
 
@@ -1658,39 +1658,25 @@ def dashboard():
         )
 
         recent_article_lookup = {
-            article.id:
-                article
-
-            for article
-            in recent_event_articles
+            article.id: article
+            for article in recent_event_articles
         }
-
-
-    # ========================================================
-    # RESTAURANT LOOKUP FOR RECENT EVENTS
-    # ========================================================
 
     recent_restaurant_ids = {
         event.kalxa_restaurant_id
 
-        for event
-        in recent_events
+        for event in recent_events
 
-        if event.kalxa_restaurant_id
-        is not None
+        if event.kalxa_restaurant_id is not None
     }
-
 
     missing_restaurant_ids = [
         restaurant_id
 
-        for restaurant_id
-        in recent_restaurant_ids
+        for restaurant_id in recent_restaurant_ids
 
-        if restaurant_id
-        not in restaurant_lookup
+        if restaurant_id not in restaurant_lookup
     ]
-
 
     if missing_restaurant_ids:
 
@@ -1702,14 +1688,10 @@ def dashboard():
                 )
             )
 
-            for restaurant in (
-                additional_restaurants
-            ):
+            for restaurant in additional_restaurants:
 
-                restaurant_id = (
-                    restaurant.get(
-                        "id"
-                    )
+                restaurant_id = restaurant.get(
+                    "id"
                 )
 
                 if restaurant_id is not None:
@@ -1725,69 +1707,104 @@ def dashboard():
                 "analytics restaurant data."
             )
 
-
-    # ========================================================
-    # BUILD RECENT ACTIVITY
-    # ========================================================
-
     recent_activity = []
-
 
     for event in recent_events:
 
-        article = (
-            recent_article_lookup.get(
-                event.article_id
-            )
+        article = recent_article_lookup.get(
+            event.article_id
         )
 
         restaurant = None
 
+        if event.kalxa_restaurant_id is not None:
 
-        if (
-            event.kalxa_restaurant_id
-            is not None
-        ):
-
-            restaurant = (
-                restaurant_lookup.get(
-                    event.kalxa_restaurant_id
-                )
+            restaurant = restaurant_lookup.get(
+                event.kalxa_restaurant_id
             )
 
-
         recent_activity.append({
-            "event_type":
-                event.event_type,
 
-            "article_id":
-                event.article_id,
+            "event_type": event.event_type,
 
-            "article_title":
-                (
-                    article.title
-                    if article
-                    else
-                    f"Story #{event.article_id}"
-                ),
+            "article_id": event.article_id,
 
-            "restaurant_id":
-                event.kalxa_restaurant_id,
+            "article_title": (
+                article.title
+                if article
+                else f"Story #{event.article_id}"
+            ),
 
-            "restaurant_name":
-                (
-                    restaurant.get(
-                        "business_name"
-                    )
-                    if restaurant
-                    else
-                    None
-                ),
+            "restaurant_id": event.kalxa_restaurant_id,
 
-            "created_at":
-                event.created_at,
+            "restaurant_name": (
+                restaurant.get("business_name")
+                if restaurant
+                else None
+            ),
+
+            "created_at": event.created_at,
         })
 
+    # ========================================================
+    # TRENDING NOW DASHBOARD COUNTS
+    # ========================================================
+
+    trending_category = (
+        StoryCategory.query
+        .filter_by(
+            slug=TRENDING_NOW_CATEGORY_SLUG
+        )
+        .first()
+    )
+
+    trending_now_total = 0
+
+    trending_now_active = 0
+
+    trending_now_expired = 0
+
+    if trending_category is not None:
+
+        now_utc = datetime.now(
+            timezone.utc
+        )
+
+        trending_now_total = (
+            Article.query
+            .filter(
+                Article.category_id
+                == trending_category.id
+            )
+            .count()
+        )
+
+        trending_now_active = (
+            Article.query
+            .filter(
+                Article.category_id
+                == trending_category.id,
+
+                Article.status
+                == "published",
+
+                Article.expires_at
+                > now_utc,
+            )
+            .count()
+        )
+
+        trending_now_expired = (
+            Article.query
+            .filter(
+                Article.category_id
+                == trending_category.id,
+
+                Article.expires_at
+                <= now_utc,
+            )
+            .count()
+        )
 
     # ========================================================
     # RENDER DASHBOARD
@@ -1796,61 +1813,31 @@ def dashboard():
     return render_template(
         "admin/dashboard.html",
 
-        # ----------------------------------------------------
-        # ANALYTICS PERIOD
-        # ----------------------------------------------------
-
-        analytics_period=(
-            analytics_period
-        ),
+        analytics_period=analytics_period,
 
         analytics_period_label=(
             analytics_period_label
         ),
 
-        analytics_start=(
-            analytics_start
-        ),
+        analytics_start=analytics_start,
 
-        analytics_now=(
-            analytics_now
-        ),
+        analytics_now=analytics_now,
 
         ticketing_analytics_period_label=(
             ticketing_analytics_period_label
         ),
 
-        # ----------------------------------------------------
-        # STORY INVENTORY
-        # ----------------------------------------------------
+        total_articles=total_articles,
 
-        total_articles=(
-            total_articles
-        ),
+        published_articles=published_articles,
 
-        published_articles=(
-            published_articles
-        ),
+        draft_articles=draft_articles,
 
-        draft_articles=(
-            draft_articles
-        ),
+        sponsored_articles=sponsored_articles,
 
-        sponsored_articles=(
-            sponsored_articles
-        ),
+        recent_articles=recent_articles,
 
-        recent_articles=(
-            recent_articles
-        ),
-
-        # ----------------------------------------------------
-        # STORIES ANALYTICS
-        # ----------------------------------------------------
-
-        total_story_views=(
-            total_story_views
-        ),
+        total_story_views=total_story_views,
 
         unique_story_visitors=(
             unique_story_visitors
@@ -1864,13 +1851,7 @@ def dashboard():
             total_restaurant_clicks
         ),
 
-        restaurant_ctr=(
-            restaurant_ctr
-        ),
-
-        # ----------------------------------------------------
-        # TICKETING ANALYTICS
-        # ----------------------------------------------------
+        restaurant_ctr=restaurant_ctr,
 
         total_ticketing_restaurant_views=(
             total_ticketing_restaurant_views
@@ -1904,10 +1885,6 @@ def dashboard():
             meaningful_action_rate
         ),
 
-        # ----------------------------------------------------
-        # PERFORMANCE TABLES
-        # ----------------------------------------------------
-
         story_performance=(
             story_performance
         ),
@@ -1916,29 +1893,29 @@ def dashboard():
             restaurant_performance
         ),
 
-        recent_activity=(
-            recent_activity
-        ),
+        recent_activity=recent_activity,
+
+        trending_now_total=trending_now_total,
+
+        trending_now_active=trending_now_active,
+
+        trending_now_expired=trending_now_expired,
     )
 
 
 # ============================================================
-# ARTICLES
+# ARTICLES LIST
 # ============================================================
 
-@admin_bp.route(
-    "/articles"
-)
+@admin_bp.route("/articles")
 @admin_required
 def articles():
 
     status = (
-        request.args
-        .get(
+        request.args.get(
             "status",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
     query = Article.query
@@ -1963,7 +1940,9 @@ def articles():
 
     return render_template(
         "admin/articles.html",
+
         articles=articles,
+
         selected_status=status,
     )
 
@@ -1976,7 +1955,9 @@ def available_story_categories():
 
     return (
         StoryCategory.query
-        .filter_by(is_active=True)
+        .filter_by(
+            is_active=True
+        )
         .order_by(
             StoryCategory.display_order.asc(),
             StoryCategory.name.asc(),
@@ -1991,10 +1972,7 @@ def available_story_categories():
 
 @admin_bp.route(
     "/articles/new",
-    methods=[
-        "GET",
-        "POST",
-    ],
+    methods=["GET", "POST"],
 )
 @admin_required
 def article_new():
@@ -2003,38 +1981,33 @@ def article_new():
 
         article = Article()
 
-        success = (
-            populate_article_from_form(
-                article
-            )
+        success = populate_article_from_form(
+            article
         )
 
         if not success:
 
-            return render_template(
-                "admin/article_form.html",
-                story_categories=available_story_categories(),
+            return render_admin_article_form(
                 article=article,
+                page_mode="new",
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
                 ),
-                page_mode="new",
                 article_comments=[],
             )
 
         try:
 
-            db.session.add(
-                article
-            )
+            db.session.add(article)
 
             db.session.flush()
 
             replace_restaurant_links(
                 article=article,
+
                 raw_restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
@@ -2058,25 +2031,21 @@ def article_new():
                 "error",
             )
 
-            return render_template(
-                "admin/article_form.html",
-                story_categories=available_story_categories(),
+            return render_admin_article_form(
                 article=article,
+                page_mode="new",
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
                 ),
-                page_mode="new",
                 article_comments=[],
             )
 
         flash(
-            (
-                "Article created. "
-                "You can now add story images."
-            ),
+            "Article created. You can now "
+            "add story images.",
             "success",
         )
 
@@ -2087,9 +2056,7 @@ def article_new():
             )
         )
 
-    return render_template(
-        "admin/article_form.html",
-                story_categories=available_story_categories(),
+    return render_admin_article_form(
         article=None,
         restaurant_ids="",
         page_mode="new",
@@ -2103,65 +2070,37 @@ def article_new():
 
 @admin_bp.route(
     "/articles/<int:article_id>/edit",
-    methods=[
-        "GET",
-        "POST",
-    ],
+    methods=["GET", "POST"],
 )
 @admin_required
-def article_edit(
-    article_id,
-):
+def article_edit(article_id):
 
-    article = (
-        db.session.get(
-            Article,
-            article_id,
-        )
+    article = db.session.get(
+        Article,
+        article_id,
     )
 
     if article is None:
-
-        abort(
-            404
-        )
+        abort(404)
 
     if request.method == "POST":
 
-        success = (
-            populate_article_from_form(
-                article
-            )
+        success = populate_article_from_form(
+            article
         )
 
         if not success:
 
-            article_comments = (
-                ArticleComment.query
-                .filter_by(
-                    article_id=article.id
-                )
-                .order_by(
-                    ArticleComment
-                    .created_at
-                    .desc()
-                )
-                .all()
-            )
+            db.session.rollback()
 
-            return render_template(
-                "admin/article_form.html",
-                story_categories=available_story_categories(),
+            return render_admin_article_form(
                 article=article,
+                page_mode="edit",
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
-                ),
-                page_mode="edit",
-                article_comments=(
-                    article_comments
                 ),
             )
 
@@ -2169,6 +2108,7 @@ def article_edit(
 
             replace_restaurant_links(
                 article=article,
+
                 raw_restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
@@ -2192,32 +2132,14 @@ def article_edit(
                 "error",
             )
 
-            article_comments = (
-                ArticleComment.query
-                .filter_by(
-                    article_id=article.id
-                )
-                .order_by(
-                    ArticleComment
-                    .created_at
-                    .desc()
-                )
-                .all()
-            )
-
-            return render_template(
-                "admin/article_form.html",
-                story_categories=available_story_categories(),
+            return render_admin_article_form(
                 article=article,
+                page_mode="edit",
                 restaurant_ids=(
                     request.form.get(
                         "restaurant_ids",
                         "",
                     )
-                ),
-                page_mode="edit",
-                article_comments=(
-                    article_comments
                 ),
             )
 
@@ -2233,40 +2155,12 @@ def article_edit(
             )
         )
 
-    restaurant_ids = ", ".join(
-        str(
-            relation.kalxa_restaurant_id
-        )
-        for relation
-        in sorted(
-            article.restaurants,
-            key=lambda relation:
-                relation.display_order,
-        )
-    )
-
-    article_comments = (
-        ArticleComment.query
-        .filter_by(
-            article_id=article.id
-        )
-        .order_by(
-            ArticleComment
-            .created_at
-            .desc()
-        )
-        .all()
-    )
-
-    return render_template(
-        "admin/article_form.html",
-                story_categories=available_story_categories(),
+    return render_admin_article_form(
         article=article,
-        restaurant_ids=restaurant_ids,
-        page_mode="edit",
-        article_comments=(
-            article_comments
+        restaurant_ids=get_admin_restaurant_ids(
+            article
         ),
+        page_mode="edit",
     )
 
 
@@ -2279,30 +2173,19 @@ def article_edit(
     methods=["POST"],
 )
 @admin_required
-def article_comment_approve(
-    comment_id,
-):
+def article_comment_approve(comment_id):
 
-    comment = (
-        db.session.get(
-            ArticleComment,
-            comment_id,
-        )
+    comment = db.session.get(
+        ArticleComment,
+        comment_id,
     )
 
     if comment is None:
+        abort(404)
 
-        abort(
-            404
-        )
+    article_id = comment.article_id
 
-    article_id = (
-        comment.article_id
-    )
-
-    comment.moderation_status = (
-        "approved"
-    )
+    comment.moderation_status = "approved"
 
     comment.active = True
 
@@ -2335,8 +2218,7 @@ def article_comment_approve(
             "admin.article_edit",
             article_id=article_id,
         )
-        +
-        "#story-comments"
+        + "#story-comments"
     )
 
 
@@ -2349,30 +2231,19 @@ def article_comment_approve(
     methods=["POST"],
 )
 @admin_required
-def article_comment_reject(
-    comment_id,
-):
+def article_comment_reject(comment_id):
 
-    comment = (
-        db.session.get(
-            ArticleComment,
-            comment_id,
-        )
+    comment = db.session.get(
+        ArticleComment,
+        comment_id,
     )
 
     if comment is None:
+        abort(404)
 
-        abort(
-            404
-        )
+    article_id = comment.article_id
 
-    article_id = (
-        comment.article_id
-    )
-
-    comment.moderation_status = (
-        "rejected"
-    )
+    comment.moderation_status = "rejected"
 
     comment.active = True
 
@@ -2405,13 +2276,12 @@ def article_comment_reject(
             "admin.article_edit",
             article_id=article_id,
         )
-        +
-        "#story-comments"
+        + "#story-comments"
     )
 
 
 # ============================================================
-# DELETE / DEACTIVATE COMMENT
+# REMOVE COMMENT
 # ============================================================
 
 @admin_bp.route(
@@ -2419,26 +2289,17 @@ def article_comment_reject(
     methods=["POST"],
 )
 @admin_required
-def article_comment_remove(
-    comment_id,
-):
+def article_comment_remove(comment_id):
 
-    comment = (
-        db.session.get(
-            ArticleComment,
-            comment_id,
-        )
+    comment = db.session.get(
+        ArticleComment,
+        comment_id,
     )
 
     if comment is None:
+        abort(404)
 
-        abort(
-            404
-        )
-
-    article_id = (
-        comment.article_id
-    )
+    article_id = comment.article_id
 
     comment.active = False
 
@@ -2471,105 +2332,93 @@ def article_comment_remove(
             "admin.article_edit",
             article_id=article_id,
         )
-        +
-        "#story-comments"
+        + "#story-comments"
     )
 
 
 # ============================================================
-# FORM HELPERS
+# POPULATE ARTICLE FROM FORM
 # ============================================================
 
-def populate_article_from_form(
-    article
-):
+def populate_article_from_form(article):
+
+    # ========================================================
+    # BASIC FIELDS
+    # ========================================================
 
     title = (
-        request.form
-        .get(
+        request.form.get(
             "title",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
     slug = (
-        request.form
-        .get(
+        request.form.get(
             "slug",
             "",
-        )
-        .strip()
-        .lower()
+        ).strip().lower()
     )
 
     excerpt = (
-        request.form
-        .get(
+        request.form.get(
             "excerpt",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
     body = (
-        request.form
-        .get(
+        request.form.get(
             "body",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
     article_type = (
-        request.form
-        .get(
+        request.form.get(
             "article_type",
             "restaurant_story",
-        )
-        .strip()
+        ).strip()
     )
 
     status = (
-        request.form
-        .get(
+        request.form.get(
             "status",
             "draft",
-        )
-        .strip()
+        ).strip()
     )
 
     meta_title = (
-        request.form
-        .get(
+        request.form.get(
             "meta_title",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
     meta_description = (
-        request.form
-        .get(
+        request.form.get(
             "meta_description",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
     expires_at_raw = (
-        request.form
-        .get(
+        request.form.get(
             "expires_at",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
+    raw_category_id = (
+        request.form.get(
+            "category_id",
+            "",
+        ).strip()
+    )
 
-    # --------------------------------------------------------
-    # VALIDATION
-    # --------------------------------------------------------
+    # ========================================================
+    # REQUIRED FIELDS
+    # ========================================================
 
     if not title:
 
@@ -2598,6 +2447,9 @@ def populate_article_from_form(
 
         return False
 
+    # ========================================================
+    # ARTICLE TYPE
+    # ========================================================
 
     allowed_types = {
         "restaurant_story",
@@ -2609,10 +2461,11 @@ def populate_article_from_form(
 
     if article_type not in allowed_types:
 
-        article_type = (
-            "restaurant_story"
-        )
+        article_type = "restaurant_story"
 
+    # ========================================================
+    # STATUS
+    # ========================================================
 
     allowed_statuses = {
         "draft",
@@ -2622,60 +2475,35 @@ def populate_article_from_form(
 
     if status not in allowed_statuses:
 
-        status = (
-            "draft"
+        status = "draft"
+
+    # ========================================================
+    # EXPIRY DATE
+    # ========================================================
+
+    try:
+
+        expires_at = parse_admin_expiry_datetime(
+            expires_at_raw
         )
 
+    except ValueError:
 
-    # --------------------------------------------------------
-    # EXPIRATION DATE
-    # --------------------------------------------------------
-
-    expires_at = None
-
-    if expires_at_raw:
-
-        try:
-
-            expires_at = (
-                datetime.strptime(
-                    expires_at_raw,
-                    "%Y-%m-%dT%H:%M",
-                )
-            )
-
-            expires_at = (
-                expires_at.replace(
-                    tzinfo=timezone.utc
-                )
-            )
-
-        except ValueError:
-
-            flash(
-                (
-                    "Story expiration date/time "
-                    "is invalid."
-                ),
-                "error",
-            )
-
-            return False
-
-
-    # --------------------------------------------------------
-    # OPTIONAL EDITORIAL CATEGORY
-    # --------------------------------------------------------
-
-    raw_category_id = (
-        request.form.get(
-            "category_id",
-            "",
+        flash(
+            "Story expiration date/time is invalid. "
+            "Use a valid South African date and time.",
+            "error",
         )
-        .strip()
-    )
+
+        return False
+
+    # ========================================================
+    # EDITORIAL CATEGORY
+    # ========================================================
 
     category_id = None
+
+    category = None
 
     if raw_category_id:
 
@@ -2685,7 +2513,7 @@ def populate_article_from_form(
                 raw_category_id
             )
 
-        except ValueError:
+        except (TypeError, ValueError):
 
             flash(
                 "Invalid story category.",
@@ -2703,7 +2531,7 @@ def populate_article_from_form(
 
             return False
 
-        category_exists = (
+        category = (
             StoryCategory.query
             .filter_by(
                 id=category_id,
@@ -2712,91 +2540,66 @@ def populate_article_from_form(
             .first()
         )
 
-        if category_exists is None:
+        if category is None:
 
             flash(
-                "Selected story category does not exist.",
+                "Selected story category "
+                "does not exist.",
                 "error",
             )
 
             return False
 
+    # ========================================================
+    # TRENDING NOW VALIDATION
+    # ========================================================
 
-    # --------------------------------------------------------
+    if not validate_trending_now_expiry(
+        category=category,
+        expires_at=expires_at,
+        status=status,
+    ):
+
+        return False
+
+    # ========================================================
     # DUPLICATE SLUG
-    # --------------------------------------------------------
+    # ========================================================
 
     existing_article = (
         Article.query
         .filter(
-            Article.slug
-            == slug
+            Article.slug == slug
         )
         .first()
     )
 
     if (
         existing_article
-        and
-        existing_article.id
-        != article.id
+        and existing_article.id != article.id
     ):
 
         flash(
-            (
-                "Another article already "
-                "uses that slug."
-            ),
+            "Another article already "
+            "uses that slug.",
             "error",
         )
 
         return False
 
-
-    # --------------------------------------------------------
-    # PAID ARTICLE LIFECYCLE GUARD
-    # --------------------------------------------------------
+    # ========================================================
+    # PAID STORY LIFECYCLE PROTECTION
+    # ========================================================
     #
-    # Existing Premium Restaurant articles are unaffected.
+    # Paid submissions remain permanent.
     #
-    # Paid articles must not be published before their
-    # payment and review lifecycle has been completed.
-    # --------------------------------------------------------
-
-    from app.paid.models import PaidStorySubmission
-
-    if article.id is not None:
-
-        paid_submission = (
-            PaidStorySubmission.query
-            .filter_by(
-                article_id=article.id
-            )
-            .first()
-        )
-
-        if (
-            paid_submission is not None
-            and status == "published"
-            and paid_submission.review_status
-                != "published"
-        ):
-
-            flash(
-                "Publish paid stories through the "
-                "Paid Submissions admin screen after "
-                "payment verification.",
-                "error",
-            )
-
-            return False
-
-
-    # --------------------------------------------------------
-    # PERMANENT PAID STORY GUARD R200
-    # --------------------------------------------------------
-    # Only articles associated with paid submissions are
-    # affected. Premium Restaurant articles are unchanged.
+    # They cannot be converted into Trending Now stories,
+    # given expiry dates, or published through the normal
+    # article editor before verification.
+    #
+    # Premium restaurant articles without paid-submission
+    # records retain their existing publishing workflow.
+    # ========================================================
 
     from app.paid.models import PaidStorySubmission
 
@@ -2804,13 +2607,24 @@ def populate_article_from_form(
 
         paid_record = (
             PaidStorySubmission.query
-            .filter_by(article_id=article.id)
+            .filter_by(
+                article_id=article.id
+            )
             .first()
         )
 
         if paid_record is not None:
 
-            # Paid stories cannot receive an expiry.
+            if is_trending_now_category(category):
+
+                flash(
+                    "Permanent paid stories cannot "
+                    "be assigned to Trending Now.",
+                    "error",
+                )
+
+                return False
+
             if expires_at is not None:
 
                 flash(
@@ -2818,9 +2632,9 @@ def populate_article_from_form(
                     "have an expiration date.",
                     "error",
                 )
+
                 return False
 
-            # Preserve original published URL.
             if (
                 article.status == "published"
                 and slug != article.slug
@@ -2831,10 +2645,9 @@ def populate_article_from_form(
                     "cannot be changed.",
                     "error",
                 )
+
                 return False
 
-            # Admin editor cannot bypass the paid
-            # submission approval process.
             if (
                 status == "published"
                 and paid_record.review_status
@@ -2846,40 +2659,28 @@ def populate_article_from_form(
                     "Paid Submissions after verification.",
                     "error",
                 )
+
                 return False
 
+    # ========================================================
+    # ASSIGN ARTICLE FIELDS
+    # ========================================================
 
-    # --------------------------------------------------------
-    # ASSIGN
-    # --------------------------------------------------------
+    article.title = title
 
-    article.title = (
-        title
-    )
-
-    article.slug = (
-        slug
-    )
+    article.slug = slug
 
     article.excerpt = (
-        excerpt
-        or
-        None
+        excerpt or None
     )
 
-    article.body = (
-        body
-    )
+    article.body = body
 
-    article.article_type = (
-        article_type
-    )
+    article.article_type = article_type
 
     article.category_id = category_id
 
-    article.status = (
-        status
-    )
+    article.status = status
 
     article.is_sponsored = (
         request.form.get(
@@ -2889,36 +2690,26 @@ def populate_article_from_form(
     )
 
     article.meta_title = (
-        meta_title
-        or
-        None
+        meta_title or None
     )
 
     article.meta_description = (
-        meta_description
-        or
-        None
+        meta_description or None
     )
 
-    article.expires_at = (
-        expires_at
-    )
+    article.expires_at = expires_at
 
-
-    # --------------------------------------------------------
+    # ========================================================
     # PUBLISHED DATE
-    # --------------------------------------------------------
+    # ========================================================
 
     if (
         status == "published"
-        and
-        article.published_at is None
+        and article.published_at is None
     ):
 
-        article.published_at = (
-            datetime.now(
-                timezone.utc
-            )
+        article.published_at = datetime.now(
+            timezone.utc
         )
 
     return True
@@ -2933,25 +2724,15 @@ def populate_article_from_form(
     methods=["POST"],
 )
 @admin_required
-def article_images_upload(
-    article_id,
-):
+def article_images_upload(article_id):
 
-    article = (
-        db.session.get(
-            Article,
-            article_id,
-        )
+    article = db.session.get(
+        Article,
+        article_id,
     )
 
     if article is None:
-
         abort(404)
-
-
-    # ========================================================
-    # RECEIVE IMAGE FILES
-    # ========================================================
 
     uploaded_files = [
         uploaded_file
@@ -2963,11 +2744,9 @@ def article_images_upload(
 
         if (
             uploaded_file
-            and
-            uploaded_file.filename
+            and uploaded_file.filename
         )
     ]
-
 
     if not uploaded_files:
 
@@ -2983,11 +2762,6 @@ def article_images_upload(
             )
         )
 
-
-    # ========================================================
-    # CLOUDINARY CONFIGURATION
-    # ========================================================
-
     if not cloudinary_story_images_configured():
 
         flash(
@@ -3002,11 +2776,6 @@ def article_images_upload(
             )
         )
 
-
-    # ========================================================
-    # CURRENT IMAGE COUNT
-    # ========================================================
-
     existing_count = (
         ArticleImage.query
         .filter_by(
@@ -3017,15 +2786,14 @@ def article_images_upload(
 
     available_slots = (
         STORY_MAX_IMAGES
-        -
-        existing_count
+        - existing_count
     )
-
 
     if available_slots <= 0:
 
         flash(
-            "This story already has the maximum of 3 images.",
+            "This story already has the "
+            "maximum of 3 images.",
             "error",
         )
 
@@ -3035,17 +2803,14 @@ def article_images_upload(
                 article_id=article.id,
             )
         )
-
 
     if len(uploaded_files) > available_slots:
 
         flash(
-            (
-                "Each story can contain a maximum "
-                "of 3 images. "
-                f"You can currently add "
-                f"{available_slots} more."
-            ),
+            "Each story can contain a maximum "
+            "of 3 images. "
+            f"You can currently add "
+            f"{available_slots} more.",
             "error",
         )
 
@@ -3056,9 +2821,8 @@ def article_images_upload(
             )
         )
 
-
     # ========================================================
-    # VALIDATE ALL FILES BEFORE CLOUDINARY UPLOAD
+    # VALIDATE FILES
     # ========================================================
 
     for uploaded_file in uploaded_files:
@@ -3068,10 +2832,8 @@ def article_images_upload(
         ):
 
             flash(
-                (
-                    "Story images must be JPG, JPEG, "
-                    "PNG or WebP."
-                ),
+                "Story images must be "
+                "JPG, JPEG, PNG or WebP.",
                 "error",
             )
 
@@ -3082,13 +2844,10 @@ def article_images_upload(
                 )
             )
 
-
         try:
 
-            file_size = (
-                get_uploaded_file_size(
-                    uploaded_file
-                )
+            file_size = get_uploaded_file_size(
+                uploaded_file
             )
 
         except Exception:
@@ -3099,11 +2858,8 @@ def article_images_upload(
             )
 
             flash(
-                (
-                    "Kalxa could not read one of the "
-                    "selected images. Please choose "
-                    "the image again."
-                ),
+                "Kalxa could not read one of "
+                "the selected images.",
                 "error",
             )
 
@@ -3113,15 +2869,12 @@ def article_images_upload(
                     article_id=article.id,
                 )
             )
-
 
         if file_size <= 0:
 
             flash(
-                (
-                    "One of the selected images is empty "
-                    "or could not be read."
-                ),
+                "One of the selected images "
+                "is empty or could not be read.",
                 "error",
             )
 
@@ -3132,18 +2885,11 @@ def article_images_upload(
                 )
             )
 
-
-        if (
-            file_size
-            >
-            STORY_IMAGE_MAX_FILE_BYTES
-        ):
+        if file_size > STORY_IMAGE_MAX_FILE_BYTES:
 
             flash(
-                (
-                    "Each story image must be "
-                    "8 MB or smaller."
-                ),
+                "Each story image must be "
+                "8 MB or smaller.",
                 "error",
             )
 
@@ -3154,9 +2900,8 @@ def article_images_upload(
                 )
             )
 
-
     # ========================================================
-    # UPLOAD TO CLOUDINARY
+    # UPLOAD IMAGES TO CLOUDINARY
     # ========================================================
 
     uploaded_public_ids = []
@@ -3182,18 +2927,11 @@ def article_images_upload(
 
         else:
 
-            next_order = (
-                int(next_order)
-                + 1
-            )
-
+            next_order = int(next_order) + 1
 
         for uploaded_file in uploaded_files:
 
-            uploaded_file.stream.seek(
-                0
-            )
-
+            uploaded_file.stream.seek(0)
 
             upload_result = (
                 cloudinary.uploader.upload(
@@ -3214,110 +2952,73 @@ def article_images_upload(
                 )
             )
 
-
-            public_id = (
-                upload_result.get(
-                    "public_id"
-                )
+            public_id = upload_result.get(
+                "public_id"
             )
 
-            secure_url = (
-                upload_result.get(
-                    "secure_url"
-                )
+            secure_url = upload_result.get(
+                "secure_url"
             )
 
-
-            if (
-                not public_id
-                or
-                not secure_url
-            ):
+            if not public_id or not secure_url:
 
                 raise RuntimeError(
                     "Cloudinary did not return "
                     "the uploaded story image."
                 )
 
-
             uploaded_public_ids.append(
                 public_id
             )
 
-
             image = ArticleImage(
                 article_id=article.id,
 
-                cloudinary_public_id=(
-                    public_id
+                cloudinary_public_id=public_id,
+
+                image_url=secure_url,
+
+                display_order=next_order,
+
+                width=upload_result.get(
+                    "width"
                 ),
 
-                image_url=(
-                    secure_url
+                height=upload_result.get(
+                    "height"
                 ),
 
-                display_order=(
-                    next_order
-                ),
-
-                width=(
-                    upload_result.get(
-                        "width"
-                    )
-                ),
-
-                height=(
-                    upload_result.get(
-                        "height"
-                    )
-                ),
-
-                file_bytes=(
-                    upload_result.get(
-                        "bytes"
-                    )
+                file_bytes=upload_result.get(
+                    "bytes"
                 ),
             )
 
-
-            db.session.add(
-                image
-            )
+            db.session.add(image)
 
             next_order += 1
 
-
         db.session.commit()
-
 
     except Exception:
 
         db.session.rollback()
 
-
-        for public_id in (
-            uploaded_public_ids
-        ):
+        for public_id in uploaded_public_ids:
 
             delete_cloudinary_story_image(
                 public_id
             )
 
-
         current_app.logger.exception(
             "Unable to upload Kalxa Stories images."
         )
 
-
         flash(
-            (
-                "Kalxa could not upload the story "
-                "images. Please choose them again "
-                "and retry."
-            ),
+            "Kalxa could not upload the story "
+            "images. Please choose them again "
+            "and retry.",
             "error",
         )
-
 
         return redirect(
             url_for(
@@ -3326,15 +3027,9 @@ def article_images_upload(
             )
         )
 
-
-    # ========================================================
-    # SUCCESS
-    # ========================================================
-
     uploaded_count = len(
         uploaded_files
     )
-
 
     if uploaded_count == 1:
 
@@ -3346,10 +3041,10 @@ def article_images_upload(
     else:
 
         flash(
-            f"{uploaded_count} story images uploaded.",
+            f"{uploaded_count} story "
+            "images uploaded.",
             "success",
         )
-
 
     return redirect(
         url_for(
@@ -3364,10 +3059,7 @@ def article_images_upload(
 # ============================================================
 
 @admin_bp.route(
-    (
-        "/articles/<int:article_id>"
-        "/images/<int:image_id>/delete"
-    ),
+    "/articles/<int:article_id>/images/<int:image_id>/delete",
     methods=["POST"],
 )
 @admin_required
@@ -3376,17 +3068,13 @@ def article_image_delete(
     image_id,
 ):
 
-    article = (
-        db.session.get(
-            Article,
-            article_id,
-        )
+    article = db.session.get(
+        Article,
+        article_id,
     )
 
     if article is None:
-
         abort(404)
-
 
     image = (
         ArticleImage.query
@@ -3397,25 +3085,18 @@ def article_image_delete(
         .first()
     )
 
-
     if image is None:
-
         abort(404)
-
 
     public_id = (
         image.cloudinary_public_id
     )
 
-
     try:
 
-        db.session.delete(
-            image
-        )
+        db.session.delete(image)
 
         db.session.flush()
-
 
         remaining_images = (
             ArticleImage.query
@@ -3430,18 +3111,13 @@ def article_image_delete(
             .all()
         )
 
-
         for index, remaining_image in enumerate(
             remaining_images
         ):
 
-            remaining_image.display_order = (
-                index
-            )
-
+            remaining_image.display_order = index
 
         db.session.commit()
-
 
     except Exception:
 
@@ -3464,17 +3140,14 @@ def article_image_delete(
             )
         )
 
-
     delete_cloudinary_story_image(
         public_id
     )
-
 
     flash(
         "Story image removed.",
         "success",
     )
-
 
     return redirect(
         url_for(
@@ -3488,27 +3161,21 @@ def article_image_delete(
 # RESTAURANT SEARCH
 # ============================================================
 
-@admin_bp.route(
-    "/api/restaurants"
-)
+@admin_bp.route("/api/restaurants")
 @admin_required
 def restaurant_search():
 
     search = (
-        request.args
-        .get(
+        request.args.get(
             "q",
             "",
-        )
-        .strip()
+        ).strip()
     )
 
     try:
 
-        restaurants = (
-            search_restaurants(
-                search
-            )
+        restaurants = search_restaurants(
+            search
         )
 
     except Exception:
@@ -3519,10 +3186,8 @@ def restaurant_search():
 
         restaurants = []
 
-
     return jsonify({
-        "restaurants":
-            restaurants
+        "restaurants": restaurants
     })
 
 
@@ -3535,32 +3200,27 @@ def restaurant_search():
     methods=["POST"],
 )
 @admin_required
-def article_publish(
-    article_id
-):
+def article_publish(article_id):
 
-    article = (
-        db.session.get(
-            Article,
-            article_id,
-        )
+    article = db.session.get(
+        Article,
+        article_id,
     )
 
     if article is None:
-
         abort(404)
 
-
-    # --------------------------------------------------------
-    # QUICK PUBLISH PAID SAFETY GUARD R200
-    # --------------------------------------------------------
-    # Paid articles must use the independent approval flow.
+    # ========================================================
+    # PAID STORY PROTECTION
+    # ========================================================
 
     from app.paid.models import PaidStorySubmission
 
     paid_submission = (
         PaidStorySubmission.query
-        .filter_by(article_id=article.id)
+        .filter_by(
+            article_id=article.id
+        )
         .first()
     )
 
@@ -3579,41 +3239,70 @@ def article_publish(
             )
         )
 
+    # ========================================================
+    # TRENDING NOW PROTECTION
+    # ========================================================
 
-    article.status = (
-        "published"
-    )
+    if not validate_trending_now_expiry(
+        category=article.category,
+        expires_at=article.expires_at,
+        status="published",
+    ):
 
-
-    if article.published_at is None:
-
-        article.published_at = (
-            datetime.now(
-                timezone.utc
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
             )
         )
 
+    article.status = "published"
 
-    db.session.commit()
+    if article.published_at is None:
 
+        article.published_at = datetime.now(
+            timezone.utc
+        )
+
+    try:
+
+        db.session.commit()
+
+    except Exception:
+
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to publish article."
+        )
+
+        flash(
+            "Unable to publish article.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
 
     flash(
         "Article published.",
         "success",
     )
 
-
     return redirect(
         request.referrer
-        or
-        url_for(
+        or url_for(
             "admin.articles"
         )
     )
 
 
 # ============================================================
-# ARCHIVE
+# ARCHIVE ARTICLE
 # ============================================================
 
 @admin_bp.route(
@@ -3621,40 +3310,50 @@ def article_publish(
     methods=["POST"],
 )
 @admin_required
-def article_archive(
-    article_id
-):
+def article_archive(article_id):
 
-    article = (
-        db.session.get(
-            Article,
-            article_id,
-        )
+    article = db.session.get(
+        Article,
+        article_id,
     )
 
     if article is None:
-
         abort(404)
 
+    article.status = "archived"
 
-    article.status = (
-        "archived"
-    )
+    try:
 
+        db.session.commit()
 
-    db.session.commit()
+    except Exception:
 
+        db.session.rollback()
+
+        current_app.logger.exception(
+            "Unable to archive article."
+        )
+
+        flash(
+            "Unable to archive article.",
+            "error",
+        )
+
+        return redirect(
+            url_for(
+                "admin.article_edit",
+                article_id=article.id,
+            )
+        )
 
     flash(
         "Article archived.",
         "success",
     )
 
-
     return redirect(
         request.referrer
-        or
-        url_for(
+        or url_for(
             "admin.articles"
         )
     )
@@ -3669,25 +3368,15 @@ def article_archive(
     methods=["POST"],
 )
 @admin_required
-def article_delete(
-    article_id
-):
+def article_delete(article_id):
 
-    article = (
-        db.session.get(
-            Article,
-            article_id,
-        )
+    article = db.session.get(
+        Article,
+        article_id,
     )
 
     if article is None:
-
         abort(404)
-
-
-    # ========================================================
-    # SAVE CLOUDINARY IDS BEFORE DATABASE DELETE
-    # ========================================================
 
     image_public_ids = [
         image.cloudinary_public_id
@@ -3697,15 +3386,11 @@ def article_delete(
         if image.cloudinary_public_id
     ]
 
-
     try:
 
-        db.session.delete(
-            article
-        )
+        db.session.delete(article)
 
         db.session.commit()
-
 
     except Exception:
 
@@ -3727,23 +3412,16 @@ def article_delete(
             )
         )
 
-
-    # ========================================================
-    # REMOVE CLOUDINARY ASSETS
-    # ========================================================
-
     for public_id in image_public_ids:
 
         delete_cloudinary_story_image(
             public_id
         )
 
-
     flash(
         "Article deleted.",
         "success",
     )
-
 
     return redirect(
         url_for(
@@ -3753,7 +3431,7 @@ def article_delete(
 
 
 # ============================================================
-# STORY IMAGE UPLOAD HELPER
+# UPLOAD ARTICLE IMAGES HELPER
 # ============================================================
 
 def upload_article_images(
@@ -3763,18 +3441,14 @@ def upload_article_images(
     """
     Upload already-validated story images to Cloudinary.
 
-    IMPORTANT:
-        This helper does NOT commit or rollback.
-
-        The calling route owns the database transaction.
+    This helper does not commit or roll back.
+    The calling route owns the database transaction.
 
     Maximum:
-        3 images total per article.
+        3 images per article.
 
     Returns:
-        List of Cloudinary public IDs uploaded during this
-        operation. The caller can use these for cleanup if a
-        later database operation fails.
+        List of uploaded Cloudinary public IDs.
     """
 
     if not cloudinary_story_images_configured():
@@ -3782,7 +3456,6 @@ def upload_article_images(
         raise RuntimeError(
             "Story image storage is not configured."
         )
-
 
     existing_count = (
         ArticleImage.query
@@ -3792,23 +3465,17 @@ def upload_article_images(
         .count()
     )
 
-
     available_slots = (
         STORY_MAX_IMAGES
-        -
-        existing_count
+        - existing_count
     )
-
 
     if len(uploaded_files) > available_slots:
 
         raise ValueError(
-            (
-                "Each story can contain a maximum "
-                "of 3 images."
-            )
+            "Each story can contain a "
+            "maximum of 3 images."
         )
-
 
     next_order = (
         db.session.query(
@@ -3823,28 +3490,19 @@ def upload_article_images(
         .scalar()
     )
 
-
     if next_order is None:
 
         next_order = 0
 
     else:
 
-        next_order = (
-            int(next_order)
-            + 1
-        )
-
+        next_order = int(next_order) + 1
 
     uploaded_public_ids = []
 
-
     for uploaded_file in uploaded_files:
 
-        uploaded_file.stream.seek(
-            0
-        )
-
+        uploaded_file.stream.seek(0)
 
         upload_result = (
             cloudinary.uploader.upload(
@@ -3865,78 +3523,50 @@ def upload_article_images(
             )
         )
 
-
-        public_id = (
-            upload_result.get(
-                "public_id"
-            )
+        public_id = upload_result.get(
+            "public_id"
         )
 
-        secure_url = (
-            upload_result.get(
-                "secure_url"
-            )
+        secure_url = upload_result.get(
+            "secure_url"
         )
 
-
-        if (
-            not public_id
-            or
-            not secure_url
-        ):
+        if not public_id or not secure_url:
 
             raise RuntimeError(
                 "Cloudinary did not return "
                 "the uploaded story image."
             )
 
-
         uploaded_public_ids.append(
             public_id
         )
 
-
         image = ArticleImage(
             article_id=article.id,
 
-            cloudinary_public_id=(
-                public_id
+            cloudinary_public_id=public_id,
+
+            image_url=secure_url,
+
+            display_order=next_order,
+
+            width=upload_result.get(
+                "width"
             ),
 
-            image_url=(
-                secure_url
+            height=upload_result.get(
+                "height"
             ),
 
-            display_order=(
-                next_order
-            ),
-
-            width=(
-                upload_result.get(
-                    "width"
-                )
-            ),
-
-            height=(
-                upload_result.get(
-                    "height"
-                )
-            ),
-
-            file_bytes=(
-                upload_result.get(
-                    "bytes"
-                )
+            file_bytes=upload_result.get(
+                "bytes"
             ),
         )
 
-
-        db.session.add(
-            image
-        )
+        db.session.add(image)
 
         next_order += 1
-
 
     db.session.flush()
 
@@ -3955,9 +3585,7 @@ def replace_restaurant_links(
     restaurant_ids = []
 
     raw_restaurant_ids = (
-        raw_restaurant_ids
-        or
-        ""
+        raw_restaurant_ids or ""
     )
 
     raw_values = (
@@ -3969,15 +3597,11 @@ def replace_restaurant_links(
         .split(",")
     )
 
-
     for raw_value in raw_values:
 
-        value = (
-            raw_value.strip()
-        )
+        value = raw_value.strip()
 
         if not value:
-
             continue
 
         try:
@@ -3987,28 +3611,20 @@ def replace_restaurant_links(
             )
 
         except ValueError:
-
             continue
-
 
         if restaurant_id <= 0:
-
             continue
 
-
-        if (
-            restaurant_id
-            not in restaurant_ids
-        ):
+        if restaurant_id not in restaurant_ids:
 
             restaurant_ids.append(
                 restaurant_id
             )
 
-
-    # --------------------------------------------------------
+    # ========================================================
     # DELETE EXISTING LINKS
-    # --------------------------------------------------------
+    # ========================================================
 
     ArticleRestaurant.query.filter_by(
         article_id=article.id
@@ -4016,10 +3632,9 @@ def replace_restaurant_links(
         synchronize_session=False
     )
 
-
-    # --------------------------------------------------------
+    # ========================================================
     # CREATE NEW LINKS
-    # --------------------------------------------------------
+    # ========================================================
 
     for index, restaurant_id in enumerate(
         restaurant_ids
@@ -4028,17 +3643,11 @@ def replace_restaurant_links(
         relation = ArticleRestaurant(
             article_id=article.id,
 
-            kalxa_restaurant_id=(
-                restaurant_id
-            ),
+            kalxa_restaurant_id=restaurant_id,
 
-            display_order=(
-                index
-            ),
+            display_order=index,
 
-            is_primary=(
-                index == 0
-            ),
+            is_primary=(index == 0),
         )
 
         db.session.add(
