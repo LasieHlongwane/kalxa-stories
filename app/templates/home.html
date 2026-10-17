@@ -101,22 +101,14 @@
 {% block content %}
 <div class="home-content">
     <!-- NEWSROOM HEADING -->
-    <section class="home-masthead">
-        <div class="page-container home-masthead-inner">
-            <div>
-                <span class="home-eyebrow">KALXA STORIES · KWANDEBELE</span>
-                <h1>Stories from our community.</h1>
-            </div>
-            <p>Local discoveries, experiences, culture and the latest stories shaping KwaNdebele.</p>
-        </div>
-    </section>
+
 
     <!-- SWIPEABLE CATEGORY BAR -->
     <section class="story-categories" aria-labelledby="story-categories-heading">
         <div class="page-container">
             <div class="category-topline">
-                <strong id="story-categories-heading">Explore categories</strong>
-                <span class="category-hint">Swipe to explore ↔</span>
+                <strong id="story-categories-heading">Explore </strong>
+                <span class="category-hint">Swipe ↔</span>
             </div>
             <nav class="story-categories-scroll" aria-label="Story categories">
                 <a class="story-category-pill" href="{{ url_for('public.story_category', category_slug='local') }}">Local Discoveries</a>
@@ -161,7 +153,7 @@
     {% if trending_articles %}
     <section class="newsroom-section" aria-labelledby="trending-heading">
         <div class="page-container">
-            <div class="newsroom-heading"><h2 id="trending-heading">Trending Stories</h2><a href="{{ url_for('public.stories') }}">Explore all →</a></div>
+            <div class="newsroom-heading"><h2 id="trending-heading">Trending </h2><a href="{{ url_for('public.stories') }}">Explore all →</a></div>
             <div class="home-news-list">
                 {% for article in trending_articles %}
                 <article class="home-news-item">
