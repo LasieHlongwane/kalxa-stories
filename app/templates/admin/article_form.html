@@ -1,15 +1,12 @@
 {% extends "admin/base.html" %}
 
 {% block title %}
-
-{% if page_mode == "new" %}
-New Story
-{% else %}
-Edit Story
-{% endif %}
-
-| Kalxa
-
+    {% if page_mode == "new" %}
+        New Story
+    {% else %}
+        Edit Story
+    {% endif %}
+    | Kalxa
 {% endblock %}
 
 
@@ -17,1081 +14,807 @@ Edit Story
 
 <style>
 
-    /* =====================================================
-       EDITOR LAYOUT
-    ====================================================== */
+/* ============================================================
+   EDITOR LAYOUT
+============================================================ */
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 24px;
+    align-items: start;
+}
+
+.form-section {
+    margin-bottom: 20px;
+    padding: 25px;
+    border: 1px solid #d7dade;
+    border-radius: 16px;
+    background: white;
+}
+
+.form-section h2 {
+    margin: 0 0 22px;
+    color: #17191d;
+    font-size: 18px;
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+.field:last-child {
+    margin-bottom: 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="datetime-local"],
+textarea,
+select {
+    width: 100%;
+    border: 1px solid #d7dade;
+    border-radius: 9px;
+    background: white;
+    color: #17191d;
+    outline: none;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="datetime-local"],
+select {
+    min-height: 45px;
+    padding: 0 12px;
+}
+
+textarea {
+    min-height: 115px;
+    padding: 12px;
+    resize: vertical;
+}
+
+textarea.body-editor {
+    min-height: 500px;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    line-height: 1.6;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #111318;
+}
+
+.help {
+    margin-top: 6px;
+    color: #81868e;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.checkbox-row label {
+    margin: 0;
+}
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+.side-panel {
+    position: sticky;
+    top: 25px;
+}
+
+.side-actions {
+    display: grid;
+    gap: 9px;
+}
+
+.side-actions .button {
+    width: 100%;
+}
+
+.danger-zone {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #eceef1;
+}
+
+/* ============================================================
+   TRENDING NOW — NEW
+============================================================ */
+
+.trending-category-notice {
+    display: none;
+    margin-top: 14px;
+    padding: 17px;
+    border: 1px solid #b8cdef;
+    border-left: 4px solid #0753bd;
+    border-radius: 10px;
+    background: #f1f6ff;
+    color: #18365c;
+}
+
+.trending-category-notice.visible {
+    display: block;
+}
+
+.trending-category-notice strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.trending-category-notice p {
+    margin: 0 0 10px;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.trending-category-notice p:last-child {
+    margin-bottom: 0;
+}
+
+.trending-category-notice ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+    font-size: 11px;
+    line-height: 1.9;
+}
+
+.trending-category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+    border-radius: 999px;
+    background: #0753bd;
+    color: white;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.trending-expiry-required {
+    display: none;
+    margin-top: 9px;
+    color: #a52c2c;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.trending-expiry-required.visible {
+    display: block;
+}
+
+.trending-expiry-indicator {
+    display: none;
+    margin-left: 5px;
+    color: #b42318;
+}
+
+.trending-expiry-indicator.visible {
+    display: inline;
+}
+
+.trending-live-status {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border: 1px solid #b9dcc9;
+    border-radius: 9px;
+    background: #eef9f1;
+    color: #24613e;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.trending-live-status.visible {
+    display: block;
+}
+
+.trending-live-status.warning {
+    border-color: #ead2a1;
+    background: #fff7e7;
+    color: #795515;
+}
+
+.trending-live-status.error {
+    border-color: #efc0c0;
+    background: #fff0ee;
+    color: #96362d;
+}
+
+/* ============================================================
+   EXPIRATION
+============================================================ */
+
+.expiry-status {
+    margin-top: 10px;
+    padding: 11px 13px;
+    border-radius: 9px;
+    background: #f5f6f7;
+    color: #555b63;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+.expiry-status.expired {
+    background: #fff0ee;
+    color: #96362d;
+}
+
+.expiry-status.active {
+    background: #edf8f1;
+    color: #23613d;
+}
+
+.expiry-timezone-label {
+    display: block;
+    margin-top: 8px;
+    color: #69747e;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* ============================================================
+   COMMENT MODERATION
+============================================================ */
+
+.comment-moderation-list {
+    display: grid;
+    gap: 12px;
+}
+
+.comment-moderation-card {
+    padding: 16px;
+    border: 1px solid #d7dade;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+.comment-moderation-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.comment-author {
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.comment-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #eceef1;
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.comment-status.pending {
+    background: #fff3d6;
+    color: #765413;
+}
+
+.comment-status.approved {
+    background: #e8f5ed;
+    color: #23613d;
+}
+
+.comment-status.rejected {
+    background: #f8e7e7;
+    color: #8b3030;
+}
+
+.comment-status.inactive {
+    background: #eceef1;
+    color: #666b73;
+}
+
+.comment-body {
+    margin: 0 0 12px;
+    color: #444a52;
+    font-size: 12px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.comment-date {
+    margin-bottom: 12px;
+    color: #858a92;
+    font-size: 10px;
+}
+
+.comment-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.comment-actions form {
+    margin: 0;
+}
+
+.comment-action-button {
+    min-height: 32px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.comment-action-button.approve {
+    background: #1f7047;
+    color: white;
+}
+
+.comment-action-button.reject {
+    background: #8d3434;
+    color: white;
+}
+
+.comment-action-button.remove {
+    background: #e7e9ec;
+    color: #444a52;
+}
+
+/* ============================================================
+   RESTAURANT SEARCH
+============================================================ */
+
+.restaurant-search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+}
+
+.restaurant-search-status {
+    margin: 8px 0 14px;
+    color: #777c84;
+    font-size: 12px;
+}
+
+.restaurant-search-results,
+.selected-restaurants {
+    display: grid;
+    gap: 10px;
+}
+
+.restaurant-search-results {
+    margin-bottom: 22px;
+}
+
+.restaurant-result,
+.selected-restaurant {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px;
+    border: 1px solid #d7dade;
+    border-radius: 11px;
+    background: #f8f9fa;
+}
+
+.restaurant-result-info,
+.selected-restaurant-info {
+    min-width: 0;
+}
+
+.restaurant-result-name,
+.selected-restaurant-name {
+    color: #17191d;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.restaurant-result-area,
+.selected-restaurant-area {
+    margin-top: 3px;
+    color: #777c84;
+    font-size: 11px;
+}
+
+.restaurant-result-button,
+.selected-restaurant-remove {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.restaurant-result-button {
+    padding: 8px 12px;
+    background: #111318;
+    color: white;
+}
+
+.restaurant-result-button:disabled {
+    cursor: default;
+    opacity: .55;
+}
+
+.selected-restaurant-remove {
+    padding: 6px;
+    background: transparent;
+    color: #a52c2c;
+}
+
+.selected-restaurants-heading {
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.selected-restaurants-empty {
+    padding: 14px;
+    border: 1px dashed #d7dade;
+    border-radius: 10px;
+    color: #81868e;
+    font-size: 11px;
+}
+
+/* ============================================================
+   STORY MEDIA
+============================================================ */
+
+.media-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.media-section-header h2 {
+    margin-bottom: 6px;
+}
+
+.media-section-copy {
+    margin: 0;
+    color: #777c84;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.media-limit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #111318;
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+/* ============================================================
+   EXISTING IMAGES
+============================================================ */
+
+.story-media-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.story-media-item {
+    overflow: hidden;
+    border: 1px solid #d7dade;
+    border-radius: 13px;
+    background: #f7f8f9;
+}
+
+.story-media-preview {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #eceef1;
+}
+
+.story-media-preview img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.cover-badge,
+.image-number {
+    position: absolute;
+    left: 9px;
+    bottom: 9px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: rgba(17, 19, 24, .88);
+    color: white;
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.story-media-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.story-media-delete-form {
+    margin: 0;
+}
+
+.media-remove-button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #a52c2c;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+/* ============================================================
+   IMAGE UPLOAD
+============================================================ */
+
+.story-image-upload-form {
+    margin: 0;
+}
+
+.story-upload-zone {
+    position: relative;
+    min-height: 125px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 22px;
+    border: 2px dashed #cfd3d8;
+    border-radius: 14px;
+    background: #fafafa;
+    transition:
+        border-color .18s ease,
+        background .18s ease;
+}
+
+.story-upload-zone:hover,
+.story-upload-zone.has-files {
+    border-color: #111318;
+    background: #f5f6f7;
+}
+
+.story-upload-zone input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #111318;
+    color: white;
+    font-size: 24px;
+}
+
+.upload-copy {
+    display: grid;
+    gap: 4px;
+}
+
+.upload-copy strong {
+    font-size: 13px;
+}
+
+.upload-copy span {
+    color: #777c84;
+    font-size: 11px;
+}
+
+.image-upload-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.image-upload-status {
+    min-width: 0;
+    color: #777c84;
+    font-size: 11px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.image-upload-button {
+    flex: 0 0 auto;
+}
+
+.image-upload-button:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+}
+
+.selected-file-summary {
+    display: none;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid #e1e3e6;
+    border-radius: 10px;
+    background: #f7f8f9;
+    color: #555b63;
+    font-size: 11px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.selected-file-summary.visible {
+    display: block;
+}
+
+.media-full-message {
+    padding: 15px;
+    border-radius: 11px;
+    background: #f3f4f5;
+    color: #666b73;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.media-save-first {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 17px;
+    border: 1px solid #dedfe2;
+    border-radius: 13px;
+    background: #f7f8f9;
+}
+
+.media-save-first-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #111318;
+    color: white;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.media-save-first-copy {
+    min-width: 0;
+}
+
+.media-save-first-copy strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #17191d;
+    font-size: 13px;
+}
+
+.media-save-first-copy p {
+    margin: 0;
+    color: #777c84;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+.legacy-cover-notice {
+    margin-bottom: 18px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #fff8e5;
+}
+
+.legacy-cover-notice p {
+    margin: 5px 0 12px;
+    color: #766635;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.legacy-cover-notice img {
+    display: block;
+    width: 180px;
+    max-width: 100%;
+    border-radius: 9px;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 950px) {
 
     .editor-layout {
-        display: grid;
-        grid-template-columns:
-            minmax(0, 1fr)
-            310px;
-        gap: 24px;
-        align-items: start;
+        grid-template-columns: 1fr;
     }
-
-
-    .form-section {
-        margin-bottom: 20px;
-        padding: 25px;
-
-        border:
-            1px solid
-            #d7dade;
-
-        border-radius: 16px;
-        background: white;
-    }
-
-
-    .form-section h2 {
-        margin:
-            0
-            0
-            22px;
-
-        font-size: 18px;
-    }
-
-
-    .field {
-        margin-bottom: 20px;
-    }
-
-
-    .field:last-child {
-        margin-bottom: 0;
-    }
-
-
-    label {
-        display: block;
-        margin-bottom: 7px;
-
-        font-size: 12px;
-        font-weight: 800;
-    }
-
-
-    input[type="text"],
-    input[type="url"],
-    input[type="datetime-local"],
-    textarea,
-    select {
-        width: 100%;
-
-        border:
-            1px solid
-            #d7dade;
-
-        border-radius: 9px;
-
-        background: white;
-        color: #17191d;
-
-        outline: none;
-    }
-
-
-    input[type="text"],
-    input[type="url"],
-    input[type="datetime-local"],
-    select {
-        min-height: 45px;
-
-        padding:
-            0
-            12px;
-    }
-
-
-    textarea {
-        min-height: 115px;
-
-        padding: 12px;
-
-        resize: vertical;
-    }
-
-
-    textarea.body-editor {
-        min-height: 500px;
-
-        font-family:
-            "SFMono-Regular",
-            Consolas,
-            monospace;
-
-        line-height: 1.6;
-    }
-
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-        border-color: #111318;
-    }
-
-
-    .help {
-        margin-top: 6px;
-
-        color: #81868e;
-
-        font-size: 11px;
-        line-height: 1.5;
-    }
-
-
-    .checkbox-row {
-        display: flex;
-
-        align-items: center;
-
-        gap: 9px;
-    }
-
-
-    .checkbox-row label {
-        margin: 0;
-    }
-
-
-    /* =====================================================
-       SIDEBAR
-    ====================================================== */
 
     .side-panel {
-        position: sticky;
-
-        top: 25px;
+        position: static;
     }
 
+}
 
-    .side-actions {
-        display: grid;
+@media (max-width: 650px) {
 
-        gap: 9px;
+    .form-section {
+        padding: 18px;
     }
-
-
-    .side-actions .button {
-        width: 100%;
-    }
-
-
-    .danger-zone {
-        margin-top: 18px;
-
-        padding-top: 18px;
-
-        border-top:
-            1px solid
-            #eceef1;
-    }
-
-
-    /* =====================================================
-       EXPIRATION
-    ====================================================== */
-
-    .expiry-status {
-        margin-top: 10px;
-
-        padding: 11px 13px;
-
-        border-radius: 9px;
-
-        background: #f5f6f7;
-
-        color: #555b63;
-
-        font-size: 11px;
-
-        line-height: 1.55;
-    }
-
-
-    .expiry-status.expired {
-        background: #fff0ee;
-        color: #96362d;
-    }
-
-
-    /* =====================================================
-       COMMENT MODERATION
-    ====================================================== */
-
-    .comment-moderation-list {
-        display: grid;
-
-        gap: 12px;
-    }
-
-
-    .comment-moderation-card {
-        padding: 16px;
-
-        border:
-            1px solid
-            #d7dade;
-
-        border-radius: 12px;
-
-        background: #f8f9fa;
-    }
-
-
-    .comment-moderation-top {
-        display: flex;
-
-        align-items: center;
-
-        justify-content: space-between;
-
-        gap: 12px;
-
-        margin-bottom: 10px;
-    }
-
-
-    .comment-author {
-        font-size: 13px;
-        font-weight: 900;
-    }
-
-
-    .comment-status {
-        display: inline-flex;
-
-        align-items: center;
-
-        min-height: 24px;
-
-        padding:
-            0
-            8px;
-
-        border-radius: 999px;
-
-        background: #eceef1;
-
-        font-size: 9px;
-        font-weight: 900;
-
-        text-transform: uppercase;
-    }
-
-
-    .comment-status.pending {
-        background: #fff3d6;
-        color: #765413;
-    }
-
-
-    .comment-status.approved {
-        background: #e8f5ed;
-        color: #23613d;
-    }
-
-
-    .comment-status.rejected {
-        background: #f8e7e7;
-        color: #8b3030;
-    }
-
-
-    .comment-status.inactive {
-        background: #eceef1;
-        color: #666b73;
-    }
-
-
-    .comment-body {
-        margin:
-            0
-            0
-            12px;
-
-        color: #444a52;
-
-        font-size: 12px;
-        line-height: 1.65;
-
-        white-space: pre-wrap;
-
-        overflow-wrap: anywhere;
-    }
-
-
-    .comment-date {
-        margin-bottom: 12px;
-
-        color: #858a92;
-
-        font-size: 10px;
-    }
-
-
-    .comment-actions {
-        display: flex;
-
-        flex-wrap: wrap;
-
-        gap: 7px;
-    }
-
-
-    .comment-actions form {
-        margin: 0;
-    }
-
-
-    .comment-action-button {
-        min-height: 32px;
-
-        padding:
-            0
-            11px;
-
-        border: 0;
-
-        border-radius: 7px;
-
-        cursor: pointer;
-
-        font-size: 10px;
-        font-weight: 900;
-    }
-
-
-    .comment-action-button.approve {
-        background: #1f7047;
-        color: white;
-    }
-
-
-    .comment-action-button.reject {
-        background: #8d3434;
-        color: white;
-    }
-
-
-    .comment-action-button.remove {
-        background: #e7e9ec;
-        color: #444a52;
-    }
-
-
-    /* =====================================================
-       RESTAURANT SEARCH
-    ====================================================== */
-
-    .restaurant-search-row {
-        display: grid;
-
-        grid-template-columns:
-            minmax(0, 1fr)
-            auto;
-
-        gap: 8px;
-    }
-
-
-    .restaurant-search-status {
-        margin:
-            8px
-            0
-            14px;
-
-        color: #777c84;
-
-        font-size: 12px;
-    }
-
-
-    .restaurant-search-results,
-    .selected-restaurants {
-        display: grid;
-
-        gap: 10px;
-    }
-
-
-    .restaurant-search-results {
-        margin-bottom: 22px;
-    }
-
-
-    .restaurant-result,
-    .selected-restaurant {
-        display: flex;
-
-        align-items: center;
-
-        justify-content:
-            space-between;
-
-        gap: 12px;
-
-        padding: 13px;
-
-        border:
-            1px solid
-            #d7dade;
-
-        border-radius: 11px;
-
-        background: #f8f9fa;
-    }
-
-
-    .restaurant-result-info,
-    .selected-restaurant-info {
-        min-width: 0;
-    }
-
-
-    .restaurant-result-name,
-    .selected-restaurant-name {
-        color: #17191d;
-
-        font-size: 13px;
-        font-weight: 900;
-    }
-
-
-    .restaurant-result-area,
-    .selected-restaurant-area {
-        margin-top: 3px;
-
-        color: #777c84;
-
-        font-size: 11px;
-    }
-
-
-    .restaurant-result-button,
-    .selected-restaurant-remove {
-        flex:
-            0
-            0
-            auto;
-
-        border: 0;
-
-        border-radius: 8px;
-
-        cursor: pointer;
-
-        font-size: 11px;
-        font-weight: 900;
-    }
-
-
-    .restaurant-result-button {
-        padding:
-            8px
-            12px;
-
-        background: #111318;
-        color: white;
-    }
-
-
-    .restaurant-result-button:disabled {
-        cursor: default;
-
-        opacity: .55;
-    }
-
-
-    .selected-restaurant-remove {
-        padding: 6px;
-
-        background: transparent;
-        color: #a52c2c;
-    }
-
-
-    .selected-restaurants-heading {
-        margin-bottom: 10px;
-
-        font-size: 12px;
-        font-weight: 900;
-    }
-
-
-    .selected-restaurants-empty {
-        padding: 14px;
-
-        border:
-            1px dashed
-            #d7dade;
-
-        border-radius: 10px;
-
-        color: #81868e;
-
-        font-size: 11px;
-    }
-
-
-    /* =====================================================
-       STORY MEDIA
-    ====================================================== */
-
-    .media-section-header {
-        display: flex;
-
-        align-items: flex-start;
-
-        justify-content:
-            space-between;
-
-        gap: 20px;
-
-        margin-bottom: 22px;
-    }
-
-
-    .media-section-header h2 {
-        margin-bottom: 6px;
-    }
-
-
-    .media-section-copy {
-        margin: 0;
-
-        color: #777c84;
-
-        font-size: 13px;
-
-        line-height: 1.55;
-    }
-
-
-    .media-limit {
-        display: inline-flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        min-width: 52px;
-
-        height: 32px;
-
-        padding:
-            0
-            12px;
-
-        border-radius: 999px;
-
-        background: #111318;
-        color: white;
-
-        font-size: 12px;
-        font-weight: 900;
-    }
-
-
-    /* =====================================================
-       EXISTING STORY IMAGES
-    ====================================================== */
 
     .story-media-grid {
-        display: grid;
-
         grid-template-columns:
-            repeat(
-                3,
-                minmax(0, 1fr)
-            );
-
-        gap: 12px;
-
-        margin-bottom: 20px;
+            repeat(2, minmax(0, 1fr));
     }
 
-
-    .story-media-item {
-        overflow: hidden;
-
-        border:
-            1px solid
-            #d7dade;
-
-        border-radius: 13px;
-
-        background: #f7f8f9;
+    .restaurant-search-row {
+        grid-template-columns: 1fr;
     }
 
-
-    .story-media-preview {
-        position: relative;
-
-        aspect-ratio:
-            4 / 3;
-
-        overflow: hidden;
-
-        background: #eceef1;
-    }
-
-
-    .story-media-preview img {
-        width: 100%;
-        height: 100%;
-
-        display: block;
-
-        object-fit: cover;
-    }
-
-
-    .cover-badge,
-    .image-number {
-        position: absolute;
-
-        left: 9px;
-        bottom: 9px;
-
-        padding:
-            5px
-            8px;
-
-        border-radius: 999px;
-
-        background:
-            rgba(
-                17,
-                19,
-                24,
-                .88
-            );
-
-        color: white;
-
-        font-size: 9px;
-        font-weight: 900;
-
-        text-transform: uppercase;
-
-        letter-spacing: .5px;
-    }
-
-
-    .story-media-actions {
-        display: flex;
-
+    .media-section-header {
         align-items: center;
-
-        justify-content:
-            space-between;
-
-        gap: 8px;
-
-        padding: 10px;
-
-        font-size: 11px;
-        font-weight: 800;
     }
-
-
-    .story-media-delete-form {
-        margin: 0;
-    }
-
-
-    .media-remove-button {
-        padding: 0;
-
-        border: 0;
-
-        background: transparent;
-        color: #a52c2c;
-
-        font-size: 11px;
-        font-weight: 900;
-
-        cursor: pointer;
-    }
-
-
-    /* =====================================================
-       IMAGE UPLOAD FORM
-    ====================================================== */
-
-    .story-image-upload-form {
-        margin: 0;
-    }
-
-
-    .story-upload-zone {
-        position: relative;
-
-        min-height: 125px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        gap: 15px;
-
-        padding: 22px;
-
-        border:
-            2px dashed
-            #cfd3d8;
-
-        border-radius: 14px;
-
-        background: #fafafa;
-
-        transition:
-            border-color .18s ease,
-            background .18s ease;
-    }
-
-
-    .story-upload-zone:hover {
-        border-color: #111318;
-
-        background: #f5f6f7;
-    }
-
-
-    .story-upload-zone.has-files {
-        border-color: #111318;
-
-        background: #f5f6f7;
-    }
-
-
-    .story-upload-zone input {
-        position: absolute;
-
-        inset: 0;
-
-        width: 100%;
-        height: 100%;
-
-        opacity: 0;
-
-        cursor: pointer;
-    }
-
-
-    .upload-icon {
-        width: 42px;
-        height: 42px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        flex:
-            0
-            0
-            auto;
-
-        border-radius: 50%;
-
-        background: #111318;
-        color: white;
-
-        font-size: 24px;
-        font-weight: 400;
-    }
-
-
-    .upload-copy {
-        display: grid;
-
-        gap: 4px;
-    }
-
-
-    .upload-copy strong {
-        font-size: 13px;
-    }
-
-
-    .upload-copy span {
-        color: #777c84;
-
-        font-size: 11px;
-    }
-
 
     .image-upload-actions {
-        display: flex;
-
-        align-items: center;
-
-        justify-content:
-            space-between;
-
-        gap: 12px;
-
-        margin-top: 14px;
+        align-items: stretch;
+        flex-direction: column;
     }
-
-
-    .image-upload-status {
-        min-width: 0;
-
-        color: #777c84;
-
-        font-size: 11px;
-
-        line-height: 1.45;
-
-        overflow-wrap: anywhere;
-    }
-
 
     .image-upload-button {
-        flex:
-            0
-            0
-            auto;
+        width: 100%;
     }
 
-
-    .image-upload-button:disabled {
-        cursor: not-allowed;
-
-        opacity: .5;
-    }
-
-
-    .selected-file-summary {
-        display: none;
-
-        margin-top: 12px;
-
-        padding: 12px 14px;
-
-        border:
-            1px solid
-            #e1e3e6;
-
-        border-radius: 10px;
-
-        background: #f7f8f9;
-
-        color: #555b63;
-
-        font-size: 11px;
-
-        line-height: 1.55;
-
-        overflow-wrap: anywhere;
-    }
-
-
-    .selected-file-summary.visible {
-        display: block;
-    }
-
-
-    /* =====================================================
-       MEDIA FULL
-    ====================================================== */
-
-    .media-full-message {
-        padding: 15px;
-
-        border-radius: 11px;
-
-        background: #f3f4f5;
-
-        color: #666b73;
-
-        font-size: 12px;
-
-        line-height: 1.6;
-    }
-
-
-    /* =====================================================
-       UNSAVED STORY MEDIA MESSAGE
-    ====================================================== */
-
-    .media-save-first {
-        display: flex;
-
-        align-items: flex-start;
-
-        gap: 13px;
-
-        padding: 17px;
-
-        border:
-            1px solid
-            #dedfe2;
-
-        border-radius: 13px;
-
-        background: #f7f8f9;
-    }
-
-
-    .media-save-first-icon {
-        width: 36px;
-        height: 36px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        flex:
-            0
-            0
-            auto;
-
-        border-radius: 50%;
-
-        background: #111318;
-        color: white;
-
-        font-size: 15px;
-        font-weight: 900;
-    }
-
-
-    .media-save-first-copy {
-        min-width: 0;
-    }
-
-
-    .media-save-first-copy strong {
-        display: block;
-
-        margin-bottom: 4px;
-
-        color: #17191d;
-
-        font-size: 13px;
-    }
-
-
-    .media-save-first-copy p {
-        margin: 0;
-
-        color: #777c84;
-
-        font-size: 11px;
-
-        line-height: 1.55;
-    }
-
-
-    /* =====================================================
-       LEGACY COVER
-    ====================================================== */
-
-    .legacy-cover-notice {
-        margin-bottom: 18px;
-
-        padding: 14px;
-
-        border-radius: 12px;
-
-        background: #fff8e5;
-    }
-
-
-    .legacy-cover-notice p {
-        margin:
-            5px
-            0
-            12px;
-
-        color: #766635;
-
-        font-size: 11px;
-
-        line-height: 1.5;
-    }
-
-
-    .legacy-cover-notice img {
-        display: block;
-
-        width: 180px;
-
-        max-width: 100%;
-
-        border-radius: 9px;
-    }
-
-
-    /* =====================================================
-       RESPONSIVE
-    ====================================================== */
-
-    @media (
-        max-width: 950px
-    ) {
-
-        .editor-layout {
-            grid-template-columns:
-                1fr;
-        }
-
-
-        .side-panel {
-            position: static;
-        }
-
-    }
-
-
-    @media (
-        max-width: 650px
-    ) {
-
-        .story-media-grid {
-            grid-template-columns:
-                repeat(
-                    2,
-                    minmax(0, 1fr)
-                );
-        }
-
-
-        .restaurant-search-row {
-            grid-template-columns:
-                1fr;
-        }
-
-
-        .media-section-header {
-            align-items: center;
-        }
-
-
-        .image-upload-actions {
-            align-items: stretch;
-
-            flex-direction: column;
-        }
-
-
-        .image-upload-button {
-            width: 100%;
-        }
-
-    }
+}
 
 </style>
 
@@ -1100,32 +823,25 @@ Edit Story
 
 {% block content %}
 
-
-<!-- =========================================================
+<!-- ============================================================
      PAGE HEADER
-========================================================== -->
+============================================================ -->
 
 <div class="page-header">
 
     <div>
 
         <h1>
-
             {% if page_mode == "new" %}
-
                 New Story
-
             {% else %}
-
                 Edit Story
-
             {% endif %}
-
         </h1>
 
-
         <p>
-            Restaurant editorial and sponsored content.
+            Create editorial stories, restaurant features
+            and temporary Trending Now updates.
         </p>
 
     </div>
@@ -1133,2488 +849,2189 @@ Edit Story
 </div>
 
 
-<!-- =========================================================
-     SIDEBAR CONTROL VALUES
-========================================================== -->
+<!-- ============================================================
+     CURRENT FORM VALUES
+============================================================ -->
 
-{% set current_type =
-    request.form.get(
-        'article_type',
-        article.article_type
-        if article
-        else 'restaurant_story'
-    )
-%}
+{% set current_type = request.form.get(
+    "article_type",
+    article.article_type if article else "restaurant_story"
+) %}
+
+{% set current_status = request.form.get(
+    "status",
+    article.status if article else "draft"
+) %}
+
+{% set current_category = request.form.get(
+    "category_id",
+    article.category_id if article and article.category_id else ""
+) | string %}
+
+{% set trending_slug = trending_now_category_slug | default("trending-now") %}
+
+{% set submitted_expiry = request.form.get(
+    "expires_at",
+    expires_at_input | default("")
+) %}
 
 
-{% set current_status =
-    request.form.get(
-        'status',
-        article.status
-        if article
-        else 'draft'
-    )
-%}
-
-
-<!-- =========================================================
+<!-- ============================================================
      EDITOR LAYOUT
-========================================================== -->
+============================================================ -->
 
 <div class="editor-layout">
 
+    <!-- ========================================================
+         MAIN EDITOR
+    ========================================================= -->
 
-<!-- =====================================================
-     MAIN EDITOR
-====================================================== -->
+    <div>
 
-<div>
+        <!-- ====================================================
+             MAIN STORY FORM
+        ===================================================== -->
 
+        <form
+            id="story-form"
+            method="POST"
+        >
 
-    <!-- =================================================
-         MAIN STORY FORM
-    ================================================== -->
+            <!-- =================================================
+                 STORY DETAILS
+            ================================================== -->
 
-    <form
-        id="story-form"
-        method="POST"
-    >
+            <div class="form-section">
 
+                <h2>Story</h2>
 
-        <!-- =============================================
-             STORY
-        ============================================== -->
+                <!-- TITLE -->
 
-        <div class="form-section">
+                <div class="field">
 
-            <h2>
-                Story
-            </h2>
-
-
-            <div class="field">
-
-                <label for="story-title">
-                    Title
-                </label>
-
-                <input
-                    id="story-title"
-                    type="text"
-                    name="title"
-                    value="{{
-                        request.form.get(
-                            'title',
-                            article.title
-                            if article
-                            else ''
-                        )
-                    }}"
-                    required
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="story-slug">
-                    URL Slug
-                </label>
-
-                <input
-                    id="story-slug"
-                    type="text"
-                    name="slug"
-                    placeholder="inside-mnandi-kitchen"
-                    value="{{
-                        request.form.get(
-                            'slug',
-                            article.slug
-                            if article
-                            else ''
-                        )
-                    }}"
-                    required
-                >
-
-                <div class="help">
-                    Example:
-                    inside-mnandi-kitchen
-                </div>
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="story-excerpt">
-                    Excerpt
-                </label>
-
-                <textarea
-                    id="story-excerpt"
-                    name="excerpt"
-                    placeholder="Short introduction shown on story cards."
-                >{{ request.form.get(
-                    'excerpt',
-                    article.excerpt
-                    if article
-                    and article.excerpt
-                    else ''
-                ) }}</textarea>
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="story-body">
-                    Article Body
-                </label>
-
-                <textarea
-                    id="story-body"
-                    class="body-editor"
-                    name="body"
-                    required
-                >{{ request.form.get(
-                    'body',
-                    article.body
-                    if article
-                    else ''
-                ) }}</textarea>
-
-                <div class="help">
-                    HTML is currently supported.
-                    Example:
-                    &lt;p&gt;Story text&lt;/p&gt;
-                    &lt;h2&gt;Heading&lt;/h2&gt;
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             KALXA RESTAURANTS
-        ============================================== -->
-
-        <div class="form-section">
-
-            <h2>
-                Kalxa Restaurants
-            </h2>
-
-
-            <div class="field">
-
-                <label for="restaurant-search">
-                    Search Kalxa Ticketing
-                </label>
-
-
-                <div class="restaurant-search-row">
+                    <label for="story-title">
+                        Title
+                    </label>
 
                     <input
-                        id="restaurant-search"
+                        id="story-title"
                         type="text"
-                        placeholder="Search restaurant name or area"
-                        autocomplete="off"
+                        name="title"
+                        value="{{ request.form.get(
+                            'title',
+                            article.title if article else ''
+                        ) }}"
+                        required
                     >
-
-
-                    <button
-                        id="restaurant-search-button"
-                        class="button"
-                        type="button"
-                    >
-                        Search
-                    </button>
 
                 </div>
 
 
-                <div class="help">
-                    Restaurants come directly from
-                    Kalxa Ticketing.
+                <!-- SLUG -->
+
+                <div class="field">
+
+                    <label for="story-slug">
+                        URL Slug
+                    </label>
+
+                    <input
+                        id="story-slug"
+                        type="text"
+                        name="slug"
+                        placeholder="kwamhlanga-weekend-events"
+                        value="{{ request.form.get(
+                            'slug',
+                            article.slug if article else ''
+                        ) }}"
+                        required
+                    >
+
+                    <div class="help">
+                        Example: kwamhlanga-weekend-events
+                    </div>
+
+                </div>
+
+
+                <!-- EXCERPT -->
+
+                <div class="field">
+
+                    <label for="story-excerpt">
+                        Excerpt
+                    </label>
+
+                    <textarea
+                        id="story-excerpt"
+                        name="excerpt"
+                        placeholder="Short introduction shown on story cards."
+                    >{{ request.form.get(
+                        'excerpt',
+                        article.excerpt if article and article.excerpt else ''
+                    ) }}</textarea>
+
+                </div>
+
+
+                <!-- BODY -->
+
+                <div class="field">
+
+                    <label for="story-body">
+                        Article Body
+                    </label>
+
+                    <textarea
+                        id="story-body"
+                        class="body-editor"
+                        name="body"
+                        required
+                    >{{ request.form.get(
+                        'body',
+                        article.body if article else ''
+                    ) }}</textarea>
+
+                    <div class="help">
+                        HTML is currently supported.
+                        Example:
+                        &lt;p&gt;Story text&lt;/p&gt;
+                        &lt;h2&gt;Heading&lt;/h2&gt;
+                    </div>
+
                 </div>
 
             </div>
 
 
-            <div
-                id="restaurant-search-status"
-                class="restaurant-search-status"
-            ></div>
+            <!-- =================================================
+                 KALXA RESTAURANTS
+            ================================================== -->
 
+            <div class="form-section">
 
-            <div
-                id="restaurant-search-results"
-                class="restaurant-search-results"
-            ></div>
+                <h2>Kalxa Restaurants</h2>
 
+                <div class="field">
 
-            <div class="selected-restaurants-heading">
-                Selected Restaurants
+                    <label for="restaurant-search">
+                        Search Kalxa Ticketing
+                    </label>
+
+                    <div class="restaurant-search-row">
+
+                        <input
+                            id="restaurant-search"
+                            type="text"
+                            placeholder="Search restaurant name or area"
+                            autocomplete="off"
+                        >
+
+                        <button
+                            id="restaurant-search-button"
+                            class="button"
+                            type="button"
+                        >
+                            Search
+                        </button>
+
+                    </div>
+
+                    <div class="help">
+                        Restaurants come directly from Kalxa Ticketing.
+                    </div>
+
+                </div>
+
+                <div
+                    id="restaurant-search-status"
+                    class="restaurant-search-status"
+                ></div>
+
+                <div
+                    id="restaurant-search-results"
+                    class="restaurant-search-results"
+                ></div>
+
+                <div class="selected-restaurants-heading">
+                    Selected Restaurants
+                </div>
+
+                <div
+                    id="selected-restaurants"
+                    class="selected-restaurants"
+                ></div>
+
+                <input
+                    id="restaurant_ids"
+                    type="hidden"
+                    name="restaurant_ids"
+                    value="{{ restaurant_ids }}"
+                >
+
             </div>
 
 
-            <div
-                id="selected-restaurants"
-                class="selected-restaurants"
-            ></div>
+            <!-- =================================================
+                 STORY CATEGORY
+            ================================================== -->
 
+            <div class="form-section">
+
+                <h2>Story Category</h2>
+
+                <div class="field">
+
+                    <label for="story-category">
+                        Show this story under
+                    </label>
+
+                    <select
+                        id="story-category"
+                        name="category_id"
+                    >
+
+                        <option
+                            value=""
+                            {% if not current_category %}
+                                selected
+                            {% endif %}
+                        >
+                            No category (existing/default publishing)
+                        </option>
+
+                        {% for category in story_categories | default([], true) %}
+
+                            <option
+                                value="{{ category.id }}"
+                                data-category-slug="{{ category.slug }}"
+                                data-requires-expiry="{{
+                                    'true'
+                                    if category.slug == trending_slug
+                                    else 'false'
+                                }}"
+                                {% if current_category == category.id|string %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {% if category.slug == trending_slug %}
+                                    🔥
+                                {% endif %}
+
+                                {{ category.name }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                    <div class="help">
+                        Categories control where stories appear.
+                        They do not change restaurant links,
+                        Premium Restaurant benefits or payments.
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     TRENDING NOW INFORMATION
+                ============================================== -->
+
+                <div
+                    id="trending-category-notice"
+                    class="trending-category-notice"
+                    role="status"
+                    aria-live="polite"
+                >
+
+                    <span class="trending-category-badge">
+                        🔥 ADMIN EDITORIAL
+                    </span>
+
+                    <strong>
+                        Trending Now — Temporary Stories
+                    </strong>
+
+                    <p>
+                        Use this category for time-sensitive
+                        stories, local announcements, events,
+                        urgent updates and trending community news.
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            The story is intended for the
+                            homepage Trending Stories section.
+                        </li>
+
+                        <li>
+                            You must set an expiry date and time.
+                        </li>
+
+                        <li>
+                            Published Trending Now stories must
+                            have a future expiry date.
+                        </li>
+
+                        <li>
+                            Once expired, the story is removed
+                            from active public discovery feeds.
+                        </li>
+
+                        <li>
+                            The original story URL remains
+                            available for previously shared links.
+                        </li>
+
+                        <li>
+                            Permanent paid stories cannot be
+                            assigned to this category.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SEO SETTINGS
+            ================================================== -->
+
+            <div class="form-section">
+
+                <h2>Search</h2>
+
+                <div class="field">
+
+                    <label for="meta-title">
+                        SEO Title
+                    </label>
+
+                    <input
+                        id="meta-title"
+                        type="text"
+                        name="meta_title"
+                        value="{{ request.form.get(
+                            'meta_title',
+                            article.meta_title if article and article.meta_title else ''
+                        ) }}"
+                    >
+
+                    <div class="help">
+                        Optional. If empty, Kalxa will use
+                        the story title.
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="meta-description">
+                        SEO Description
+                    </label>
+
+                    <textarea
+                        id="meta-description"
+                        name="meta_description"
+                        maxlength="320"
+                    >{{ request.form.get(
+                        'meta_description',
+                        article.meta_description if article and article.meta_description else ''
+                    ) }}</textarea>
+
+                    <div class="help">
+                        Describe what this story is about for
+                        search engines and social sharing.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 HIDDEN SIDEBAR VALUES
+            ================================================== -->
 
             <input
-                id="restaurant_ids"
+                id="story-type-value"
                 type="hidden"
-                name="restaurant_ids"
-                value="{{ restaurant_ids }}"
+                name="article_type"
+                value="{{ current_type }}"
             >
+
+            <input
+                id="story-status-value"
+                type="hidden"
+                name="status"
+                value="{{ current_status }}"
+            >
+
+            <input
+                id="story-sponsored-value"
+                type="hidden"
+                name="is_sponsored"
+                value="{%
+                    if request.form.get('is_sponsored')
+                    or (
+                        not request.form
+                        and article
+                        and article.is_sponsored
+                    )
+                %}on{% endif %}"
+            >
+
+        </form>
+
+
+        <!-- ====================================================
+             STORY MEDIA
+        ===================================================== -->
+
+        <div class="form-section">
+
+            {% set image_count = article.images | length if article else 0 %}
+
+            <div class="media-section-header">
+
+                <div>
+
+                    <h2>Story Images</h2>
+
+                    <p class="media-section-copy">
+                        Add up to three images.
+                        Image 1 becomes the main story cover.
+                    </p>
+
+                </div>
+
+                <span class="media-limit">
+                    {{ image_count }}/3
+                </span>
+
+            </div>
+
+
+            {% if not article or not article.id %}
+
+                <!-- =========================================
+                     SAVE FIRST
+                ========================================== -->
+
+                <div class="media-save-first">
+
+                    <div class="media-save-first-icon">
+                        1
+                    </div>
+
+                    <div class="media-save-first-copy">
+
+                        <strong>
+                            Create the story before adding images
+                        </strong>
+
+                        <p>
+                            Save the story first so Kalxa can give
+                            it a permanent ID. You will then be
+                            redirected back here where you can
+                            upload up to three images separately.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <!-- =========================================
+                     EXISTING IMAGES
+                ========================================== -->
+
+                {% if article.images %}
+
+                    <div class="story-media-grid">
+
+                        {% for image in article.images %}
+
+                            <div class="story-media-item">
+
+                                <div class="story-media-preview">
+
+                                    <img
+                                        src="{{ image.image_url }}"
+                                        alt="{{ article.title }}"
+                                        loading="lazy"
+                                    >
+
+                                    {% if loop.first %}
+
+                                        <span class="cover-badge">
+                                            Cover
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="image-number">
+                                            Image {{ loop.index }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                                <div class="story-media-actions">
+
+                                    <span>
+                                        Image {{ loop.index }}
+                                    </span>
+
+                                    <form
+                                        class="story-media-delete-form"
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'admin.article_image_delete',
+                                            article_id=article.id,
+                                            image_id=image.id
+                                        ) }}"
+                                        onsubmit="return confirm('Remove this image?');"
+                                    >
+
+                                        <button
+                                            class="media-remove-button"
+                                            type="submit"
+                                        >
+                                            Remove
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =========================================
+                     LEGACY COVER
+                ========================================== -->
+
+                {% if article.cover_image_url and not article.images %}
+
+                    <div class="legacy-cover-notice">
+
+                        <strong>
+                            Existing cover image
+                        </strong>
+
+                        <p>
+                            This story uses the previous image system.
+                            It will continue displaying normally.
+                            Uploading a new image will switch the
+                            story to the new gallery system.
+                        </p>
+
+                        <img
+                            src="{{ article.cover_image_url }}"
+                            alt="{{ article.title }}"
+                        >
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =========================================
+                     IMAGE UPLOAD
+                ========================================== -->
+
+                {% if image_count < 3 %}
+
+                    <form
+                        id="story-image-upload-form"
+                        class="story-image-upload-form"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        action="{{ url_for(
+                            'admin.article_images_upload',
+                            article_id=article.id
+                        ) }}"
+                    >
+
+                        <div
+                            id="story-upload-zone"
+                            class="story-upload-zone"
+                        >
+
+                            <div class="upload-icon">
+                                +
+                            </div>
+
+                            <div class="upload-copy">
+
+                                <strong>
+                                    Choose story images
+                                </strong>
+
+                                <span>
+                                    JPG, PNG or WebP ·
+                                    maximum 8 MB each
+                                </span>
+
+                            </div>
+
+                            <input
+                                id="story_images"
+                                type="file"
+                                name="story_images"
+                                accept="image/jpeg,image/png,image/webp"
+                                multiple
+                            >
+
+                        </div>
+
+                        <div
+                            id="selected-file-summary"
+                            class="selected-file-summary"
+                        ></div>
+
+                        <div class="image-upload-actions">
+
+                            <div
+                                id="image-upload-status"
+                                class="image-upload-status"
+                            >
+                                You can add
+                                {{ 3 - image_count }}
+                                more
+                                {% if 3 - image_count == 1 %}
+                                    image.
+                                {% else %}
+                                    images.
+                                {% endif %}
+                            </div>
+
+                            <button
+                                id="upload-story-images-button"
+                                class="button image-upload-button"
+                                type="submit"
+                                disabled
+                            >
+                                Upload Images
+                            </button>
+
+                        </div>
+
+                        <div class="help">
+                            Choose the images and upload them
+                            immediately. Images are uploaded
+                            separately from the article.
+                        </div>
+
+                    </form>
+
+                {% else %}
+
+                    <div class="media-full-message">
+                        This story already has the maximum
+                        of three images. Remove an image
+                        before uploading another one.
+                    </div>
+
+                {% endif %}
+
+            {% endif %}
 
         </div>
 
 
-        <!-- =============================================
-             EDITORIAL CATEGORY
-             INDEPENDENT OF PREMIUM RESTAURANTS
-        ============================================== -->
+        <!-- ====================================================
+             COMMENT MODERATION
+        ===================================================== -->
+
+        {% if article and article.id %}
+
+            <div
+                id="story-comments"
+                class="form-section"
+            >
+
+                <div class="media-section-header">
+
+                    <div>
+
+                        <h2>Story Comments</h2>
+
+                        <p class="media-section-copy">
+                            Review comments submitted by readers
+                            before they appear publicly.
+                        </p>
+
+                    </div>
+
+                    <span class="media-limit">
+                        {{ article_comments | default([], true) | length }}
+                    </span>
+
+                </div>
+
+
+                {% if article.is_expired %}
+
+                    <div class="expiry-status expired">
+                        This story has expired.
+                        Public comments are hidden and
+                        new comments can no longer be submitted.
+                    </div>
+
+                {% endif %}
+
+
+                {% if article_comments | default([], true) %}
+
+                    <div class="comment-moderation-list">
+
+                        {% for comment in article_comments %}
+
+                            <div class="comment-moderation-card">
+
+                                <div class="comment-moderation-top">
+
+                                    <div class="comment-author">
+                                        {{ comment.display_name }}
+                                    </div>
+
+                                    {% if not comment.active %}
+
+                                        <span class="comment-status inactive">
+                                            Removed
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="comment-status {{ comment.moderation_status }}">
+                                            {{ comment.moderation_status }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                                <p class="comment-body">{{ comment.comment_text }}</p>
+
+                                <div class="comment-date">
+
+                                    Submitted
+
+                                    {% if comment.created_at %}
+
+                                        {{ comment.created_at.strftime(
+                                            "%d %b %Y at %H:%M"
+                                        ) }}
+
+                                        UTC
+
+                                    {% endif %}
+
+                                </div>
+
+                                <div class="comment-actions">
+
+                                    {% if comment.moderation_status != "approved" %}
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'admin.article_comment_approve',
+                                                comment_id=comment.id
+                                            ) }}"
+                                        >
+
+                                            <button
+                                                class="comment-action-button approve"
+                                                type="submit"
+                                            >
+                                                Approve
+                                            </button>
+
+                                        </form>
+
+                                    {% endif %}
+
+
+                                    {% if comment.moderation_status != "rejected" %}
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'admin.article_comment_reject',
+                                                comment_id=comment.id
+                                            ) }}"
+                                        >
+
+                                            <button
+                                                class="comment-action-button reject"
+                                                type="submit"
+                                            >
+                                                Reject
+                                            </button>
+
+                                        </form>
+
+                                    {% endif %}
+
+
+                                    {% if comment.active %}
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'admin.article_comment_remove',
+                                                comment_id=comment.id
+                                            ) }}"
+                                            onsubmit="return confirm('Remove this comment from public view?');"
+                                        >
+
+                                            <button
+                                                class="comment-action-button remove"
+                                                type="submit"
+                                            >
+                                                Remove
+                                            </button>
+
+                                        </form>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="selected-restaurants-empty">
+                        No comments have been submitted yet.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ========================================================
+         SIDEBAR
+    ========================================================= -->
+
+    <aside class="side-panel">
 
         <div class="form-section">
 
-            <h2>Story Category</h2>
+            <h2>Publish</h2>
+
+
+            <!-- =============================================
+                 STORY TYPE
+            ============================================== -->
 
             <div class="field">
 
-                <label for="story-category">
-                    Show this story under
+                <label for="sidebar-story-type">
+                    Story Type
                 </label>
 
-                {% set current_category =
-                    request.form.get(
-                        'category_id',
-                        article.category_id
-                        if article and article.category_id
-                        else ''
-                    ) | string
-                %}
+                <select id="sidebar-story-type">
 
-                <select
-                    id="story-category"
-                    name="category_id"
-                >
+                    {% for value, label in [
+                        ("restaurant_story", "Restaurant Story"),
+                        ("food_guide", "Food Guide"),
+                        ("sponsored", "Sponsored Story"),
+                        ("new_restaurant", "New Restaurant"),
+                        ("experience", "Experience")
+                    ] %}
 
-                    <option
-                        value=""
-                        {% if not current_category %}
-                            selected
-                        {% endif %}
-                    >
-                        No category (existing/default publishing)
-                    </option>
-
-                    {% for category in
-                        story_categories | default([], true)
-                    %}
-
-                    <option
-                        value="{{ category.id }}"
-                        {% if
-                            current_category == category.id|string
-                        %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ category.name }}
-                    </option>
+                        <option
+                            value="{{ value }}"
+                            {% if current_type == value %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ label }}
+                        </option>
 
                     {% endfor %}
 
                 </select>
 
-                <div class="help">
-                    Categories control where stories appear.
-                    They do not change restaurant links,
-                    Premium Restaurant benefits or payments.
+            </div>
+
+
+            <!-- =============================================
+                 STATUS
+            ============================================== -->
+
+            <div class="field">
+
+                <label for="sidebar-story-status">
+                    Status
+                </label>
+
+                <select id="sidebar-story-status">
+
+                    <option
+                        value="draft"
+                        {% if current_status == "draft" %}
+                            selected
+                        {% endif %}
+                    >
+                        Draft
+                    </option>
+
+                    <option
+                        value="published"
+                        {% if current_status == "published" %}
+                            selected
+                        {% endif %}
+                    >
+                        Published
+                    </option>
+
+                    <option
+                        value="archived"
+                        {% if current_status == "archived" %}
+                            selected
+                        {% endif %}
+                    >
+                        Archived
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =============================================
+                 SPONSORED STORY
+            ============================================== -->
+
+            <div class="field">
+
+                <div class="checkbox-row">
+
+                    <input
+                        id="sidebar-is-sponsored"
+                        type="checkbox"
+                        {% if
+                            request.form.get("is_sponsored")
+                            or (
+                                not request.form
+                                and article
+                                and article.is_sponsored
+                            )
+                        %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <label for="sidebar-is-sponsored">
+                        Sponsored story
+                    </label>
+
                 </div>
 
             </div>
 
-        </div>
 
-
-        <!-- =============================================
-             SEO
-        ============================================== -->
-
-        <div class="form-section">
-
-            <h2>
-                Search
-            </h2>
-
+            <!-- =============================================
+                 STORY EXPIRY
+            ============================================== -->
 
             <div class="field">
 
-                <label for="meta-title">
-                    SEO Title
+                <label for="story-expires-at">
+
+                    Story Expires
+
+                    <span
+                        id="trending-expiry-indicator"
+                        class="trending-expiry-indicator"
+                        aria-hidden="true"
+                    >
+                        *
+                    </span>
+
                 </label>
 
                 <input
-                    id="meta-title"
-                    type="text"
-                    name="meta_title"
-                    value="{{
-                        request.form.get(
-                            'meta_title',
-                            article.meta_title
-                            if article
-                            and article.meta_title
-                            else ''
-                        )
-                    }}"
+                    id="story-expires-at"
+                    type="datetime-local"
+                    name="expires_at"
+                    form="story-form"
+                    value="{{ submitted_expiry }}"
+                    aria-describedby="story-expiry-help trending-expiry-required"
                 >
 
-                <div class="help">
-                    Optional. If empty, Kalxa will use
-                    the story title.
-                </div>
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="meta-description">
-                    SEO Description
-                </label>
-
-                <textarea
-                    id="meta-description"
-                    name="meta_description"
-                    maxlength="320"
-                >{{ request.form.get(
-                    'meta_description',
-                    article.meta_description
-                    if article
-                    and article.meta_description
-                    else ''
-                ) }}</textarea>
-
-                <div class="help">
-                    Describe what this story is about for
-                    search engines and social sharing.
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             HIDDEN SIDEBAR VALUES
-        ============================================== -->
-
-        <input
-            id="story-type-value"
-            type="hidden"
-            name="article_type"
-            value="{{ current_type }}"
-        >
-
-
-        <input
-            id="story-status-value"
-            type="hidden"
-            name="status"
-            value="{{ current_status }}"
-        >
-
-
-        <input
-            id="story-sponsored-value"
-            type="hidden"
-            name="is_sponsored"
-            value="{%
-                if
-                    request.form.get(
-                        'is_sponsored'
-                    )
-                    or
-                    (
-                        not request.form
-                        and
-                        article
-                        and
-                        article.is_sponsored
-                    )
-                %}on{% endif %}"
-        >
-
-
-    </form>
-
-
-    <!-- =================================================
-         STORY MEDIA
-    ================================================== -->
-
-    <div class="form-section">
-
-
-        {% set image_count =
-            article.images | length
-            if article
-            else 0
-        %}
-
-
-        <div class="media-section-header">
-
-            <div>
-
-                <h2>
-                    Story Images
-                </h2>
-
-                <p class="media-section-copy">
-                    Add up to three images.
-                    Image 1 becomes the main story cover.
-                </p>
-
-            </div>
-
-
-            <span class="media-limit">
-                {{ image_count }}/3
-            </span>
-
-        </div>
-
-
-        <!-- =============================================
-             NEW STORY - SAVE FIRST
-        ============================================== -->
-
-        {% if not article %}
-
-        <div class="media-save-first">
-
-            <div class="media-save-first-icon">
-                1
-            </div>
-
-
-            <div class="media-save-first-copy">
-
-                <strong>
-                    Create the story before adding images
-                </strong>
-
-                <p>
-                    Save the story first so Kalxa can give
-                    it a permanent ID. You will then be
-                    redirected back here where you can
-                    upload up to three images separately.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        {% else %}
-
-
-            <!-- =========================================
-                 EXISTING GALLERY IMAGES
-            ========================================== -->
-
-            {% if article.images %}
-
-            <div class="story-media-grid">
-
-
-                {% for image in article.images %}
-
-                <div class="story-media-item">
-
-
-                    <div class="story-media-preview">
-
-                        <img
-                            src="{{ image.image_url }}"
-                            alt="{{ article.title }}"
-                            loading="lazy"
-                        >
-
-
-                        {% if loop.first %}
-
-                        <span class="cover-badge">
-                            Cover
-                        </span>
-
-                        {% else %}
-
-                        <span class="image-number">
-                            Image {{ loop.index }}
-                        </span>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="story-media-actions">
-
-                        <span>
-                            Image {{ loop.index }}
-                        </span>
-
-
-                        <form
-                            class="story-media-delete-form"
-                            method="POST"
-                            action="{{ url_for(
-                                'admin.article_image_delete',
-                                article_id=article.id,
-                                image_id=image.id
-                            ) }}"
-                            onsubmit="
-                                return confirm(
-                                    'Remove this image?'
-                                );
-                            "
-                        >
-
-                            <button
-                                class="media-remove-button"
-                                type="submit"
-                            >
-                                Remove
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-
-            </div>
-
-            {% endif %}
-
-
-            <!-- =========================================
-                 LEGACY COVER
-            ========================================== -->
-
-            {% if
-                article.cover_image_url
-                and
-                not article.images
-            %}
-
-            <div class="legacy-cover-notice">
-
-                <strong>
-                    Existing cover image
-                </strong>
-
-                <p>
-                    This story uses the previous image
-                    system. It will continue displaying
-                    normally. Uploading a new image will
-                    switch the story to the new gallery
-                    system.
-                </p>
-
-
-                <img
-                    src="{{ article.cover_image_url }}"
-                    alt="{{ article.title }}"
-                >
-
-            </div>
-
-            {% endif %}
-
-
-            <!-- =========================================
-                 SEPARATE IMAGE UPLOAD FORM
-            ========================================== -->
-
-            {% if image_count < 3 %}
-
-            <form
-                id="story-image-upload-form"
-                class="story-image-upload-form"
-                method="POST"
-                enctype="multipart/form-data"
-                action="{{ url_for(
-                    'admin.article_images_upload',
-                    article_id=article.id
-                ) }}"
-            >
-
+                <span class="expiry-timezone-label">
+                    South African Standard Time — SAST (UTC+02:00)
+                </span>
 
                 <div
-                    id="story-upload-zone"
-                    class="story-upload-zone"
+                    id="story-expiry-help"
+                    class="help"
                 >
-
-                    <div class="upload-icon">
-                        +
-                    </div>
-
-
-                    <div class="upload-copy">
-
-                        <strong>
-                            Choose story images
-                        </strong>
-
-                        <span>
-                            JPG, PNG or WebP ·
-                            maximum 8 MB each
-                        </span>
-
-                    </div>
-
-
-                    <input
-                        id="story_images"
-                        type="file"
-                        name="story_images"
-                        accept="image/jpeg,image/png,image/webp"
-                        multiple
-                    >
-
+                    Optional for ordinary editorial stories.
+                    Required for Trending Now stories.
+                    The time you enter is interpreted as
+                    South African time and saved as UTC.
                 </div>
-
 
                 <div
-                    id="selected-file-summary"
-                    class="selected-file-summary"
-                ></div>
-
-
-                <div class="image-upload-actions">
-
-                    <div
-                        id="image-upload-status"
-                        class="image-upload-status"
-                    >
-                        You can add
-                        {{ 3 - image_count }}
-                        more
-                        {% if 3 - image_count == 1 %}
-                            image.
-                        {% else %}
-                            images.
-                        {% endif %}
-                    </div>
-
-
-                    <button
-                        id="upload-story-images-button"
-                        class="button image-upload-button"
-                        type="submit"
-                        disabled
-                    >
-                        Upload Images
-                    </button>
-
+                    id="trending-expiry-required"
+                    class="trending-expiry-required"
+                    role="status"
+                    aria-live="polite"
+                >
+                    Trending Now requires an expiry date and time.
                 </div>
 
 
-                <div class="help">
-                    Choose the images and upload them
-                    immediately. Images are uploaded
-                    separately from the article.
-                </div>
+                <!-- =========================================
+                     CURRENT SAVED EXPIRY STATUS
+                ========================================== -->
 
+                {% if article and article.expires_at %}
 
-            </form>
+                    {% if article.is_expired %}
 
+                        <div class="expiry-status expired">
 
-            {% else %}
+                            <strong>
+                                Expired
+                            </strong>
 
-            <div class="media-full-message">
+                            <br>
 
-                This story already has the maximum
-                of three images.
+                            This story has passed its expiry date.
+                            It is removed from active feeds,
+                            while its original link remains available.
 
-                Remove an image before uploading
-                another one.
-
-            </div>
-
-            {% endif %}
-
-
-        {% endif %}
-
-
-    </div>
-
-
-    <!-- =================================================
-         COMMENT MODERATION
-    ================================================== -->
-
-    {% if article %}
-
-    <div
-        id="story-comments"
-        class="form-section"
-    >
-
-        <div class="media-section-header">
-
-            <div>
-
-                <h2>
-                    Story Comments
-                </h2>
-
-                <p class="media-section-copy">
-                    Review comments submitted by readers
-                    before they appear publicly.
-                </p>
-
-            </div>
-
-
-            <span class="media-limit">
-                {{ article_comments | default([], true) | length }}
-            </span>
-
-        </div>
-
-
-        {% if article.is_expired %}
-
-        <div class="expiry-status expired">
-            This story has expired.
-            Public comments are hidden and new comments
-            can no longer be submitted.
-        </div>
-
-        {% endif %}
-
-
-        {% if article_comments | default([], true) %}
-
-        <div class="comment-moderation-list">
-
-
-            {% for comment in article_comments %}
-
-            <div class="comment-moderation-card">
-
-
-                <div class="comment-moderation-top">
-
-                    <div class="comment-author">
-                        {{ comment.display_name }}
-                    </div>
-
-
-                    {% if not comment.active %}
-
-                    <span
-                        class="
-                            comment-status
-                            inactive
-                        "
-                    >
-                        Removed
-                    </span>
+                        </div>
 
                     {% else %}
 
-                    <span
-                        class="
-                            comment-status
-                            {{ comment.moderation_status }}
-                        "
-                    >
-                        {{ comment.moderation_status }}
-                    </span>
+                        <div class="expiry-status active">
+
+                            <strong>
+                                Expiry scheduled
+                            </strong>
+
+                            <br>
+
+                            {% if expires_at_input is defined and expires_at_input %}
+
+                                {{ expires_at_input.replace("T", " at ") }}
+
+                                SAST
+
+                            {% else %}
+
+                                An expiry date has been saved.
+
+                            {% endif %}
+
+                        </div>
 
                     {% endif %}
-
-                </div>
-
-
-                <p class="comment-body">{{ comment.comment_text }}</p>
-
-
-                <div class="comment-date">
-
-                    Submitted
-
-                    {% if comment.created_at %}
-
-                        {{ comment.created_at.strftime(
-                            "%d %b %Y at %H:%M"
-                        ) }}
-
-                        UTC
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="comment-actions">
-
-
-                    {% if
-                        comment.moderation_status
-                        != "approved"
-                    %}
-
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'admin.article_comment_approve',
-                            comment_id=comment.id
-                        ) }}"
-                    >
-
-                        <button
-                            class="
-                                comment-action-button
-                                approve
-                            "
-                            type="submit"
-                        >
-                            Approve
-                        </button>
-
-                    </form>
-
-                    {% endif %}
-
-
-                    {% if
-                        comment.moderation_status
-                        != "rejected"
-                    %}
-
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'admin.article_comment_reject',
-                            comment_id=comment.id
-                        ) }}"
-                    >
-
-                        <button
-                            class="
-                                comment-action-button
-                                reject
-                            "
-                            type="submit"
-                        >
-                            Reject
-                        </button>
-
-                    </form>
-
-                    {% endif %}
-
-
-                    {% if comment.active %}
-
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'admin.article_comment_remove',
-                            comment_id=comment.id
-                        ) }}"
-                        onsubmit="
-                            return confirm(
-                                'Remove this comment from public view?'
-                            );
-                        "
-                    >
-
-                        <button
-                            class="
-                                comment-action-button
-                                remove
-                            "
-                            type="submit"
-                        >
-                            Remove
-                        </button>
-
-                    </form>
-
-                    {% endif %}
-
-
-                </div>
-
-            </div>
-
-            {% endfor %}
-
-
-        </div>
-
-
-        {% else %}
-
-        <div class="selected-restaurants-empty">
-            No comments have been submitted yet.
-        </div>
-
-        {% endif %}
-
-
-    </div>
-
-    {% endif %}
-
-
-</div>
-
-
-<!-- =====================================================
-     SIDEBAR
-====================================================== -->
-
-<aside class="side-panel">
-
-
-    <div class="form-section">
-
-        <h2>
-            Publish
-        </h2>
-
-
-        <!-- =============================================
-             STORY TYPE
-        ============================================== -->
-
-        <div class="field">
-
-            <label for="sidebar-story-type">
-                Story Type
-            </label>
-
-
-            <select
-                id="sidebar-story-type"
-            >
-
-                {% for value, label in [
-                    (
-                        "restaurant_story",
-                        "Restaurant Story"
-                    ),
-                    (
-                        "food_guide",
-                        "Food Guide"
-                    ),
-                    (
-                        "sponsored",
-                        "Sponsored Story"
-                    ),
-                    (
-                        "new_restaurant",
-                        "New Restaurant"
-                    ),
-                    (
-                        "experience",
-                        "Experience"
-                    )
-                ] %}
-
-                <option
-                    value="{{ value }}"
-                    {% if current_type == value %}
-                        selected
-                    {% endif %}
-                >
-                    {{ label }}
-                </option>
-
-                {% endfor %}
-
-            </select>
-
-        </div>
-
-
-        <!-- =============================================
-             STATUS
-        ============================================== -->
-
-        <div class="field">
-
-            <label for="sidebar-story-status">
-                Status
-            </label>
-
-
-            <select
-                id="sidebar-story-status"
-            >
-
-                <option
-                    value="draft"
-                    {% if current_status == "draft" %}
-                        selected
-                    {% endif %}
-                >
-                    Draft
-                </option>
-
-
-                <option
-                    value="published"
-                    {% if current_status == "published" %}
-                        selected
-                    {% endif %}
-                >
-                    Published
-                </option>
-
-
-                <option
-                    value="archived"
-                    {% if current_status == "archived" %}
-                        selected
-                    {% endif %}
-                >
-                    Archived
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <!-- =============================================
-             SPONSORED
-        ============================================== -->
-
-        <div class="field">
-
-            <div class="checkbox-row">
-
-                <input
-                    id="sidebar-is-sponsored"
-                    type="checkbox"
-
-                    {% if
-                        request.form.get(
-                            'is_sponsored'
-                        )
-                        or
-                        (
-                            not request.form
-                            and
-                            article
-                            and
-                            article.is_sponsored
-                        )
-                    %}
-                        checked
-                    {% endif %}
-                >
-
-
-                <label
-                    for="sidebar-is-sponsored"
-                >
-                    Sponsored story
-                </label>
-
-            </div>
-
-        </div>
-
-
-        <!-- =============================================
-             STORY EXPIRATION
-        ============================================== -->
-
-        <div class="field">
-
-            <label for="story-expires-at">
-                Story Expires
-            </label>
-
-
-            <input
-                id="story-expires-at"
-                type="datetime-local"
-                name="expires_at"
-                form="story-form"
-                value="{{
-                    request.form.get(
-                        'expires_at',
-                        article.expires_at.strftime(
-                            '%Y-%m-%dT%H:%M'
-                        )
-                        if
-                            article
-                            and
-                            article.expires_at
-                        else
-                            ''
-                    )
-                }}"
-            >
-
-
-            <div class="help">
-                Optional. Leave empty for a permanent story.
-                When this time passes, the story disappears
-                from active feeds and its comments close.
-                The published story URL remains available.
-                Time is currently stored as UTC.
-            </div>
-
-
-            {% if
-                article
-                and
-                article.expires_at
-            %}
-
-
-                {% if article.is_expired %}
-
-                <div class="expiry-status expired">
-                    This story has expired.
-                    It remains available as a published
-                    archive, but comments are closed.
-                </div>
-
-
-                {% else %}
-
-                <div class="expiry-status">
-                    Scheduled to expire on
-                    {{ article.expires_at.strftime(
-                        "%d %b %Y at %H:%M"
-                    ) }}
-                    UTC.
-                </div>
 
                 {% endif %}
 
 
-            {% endif %}
+                <!-- =========================================
+                     DYNAMIC TRENDING STATUS
+                ========================================== -->
 
-        </div>
+                <div
+                    id="trending-live-status"
+                    class="trending-live-status"
+                    role="status"
+                    aria-live="polite"
+                ></div>
 
-
-        <!-- =============================================
-             ACTIONS
-        ============================================== -->
-
-        <div class="side-actions">
-
-            <button
-                id="story-save-button"
-                class="button"
-                type="submit"
-                form="story-form"
-            >
-
-                {% if page_mode == "new" %}
-
-                    Create Story
-
-                {% else %}
-
-                    Save Changes
-
-                {% endif %}
-
-            </button>
+            </div>
 
 
-            {% if
-                article
-                and
-                article.status == "published"
-            %}
+            <!-- =============================================
+                 SAVE ACTIONS
+            ============================================== -->
 
-            <a
-                class="button secondary"
-                target="_blank"
-                rel="noopener"
-                href="{{ url_for(
-                    'public.article_detail',
-                    slug=article.slug
-                ) }}"
-            >
-                View Story
-            </a>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- =============================================
-             DANGER ZONE
-        ============================================== -->
-
-        {% if article %}
-
-        <div class="danger-zone">
-
-            <form
-                method="POST"
-                action="{{ url_for(
-                    'admin.article_delete',
-                    article_id=article.id
-                ) }}"
-                onsubmit="
-                    return confirm(
-                        'Delete this story permanently?'
-                    );
-                "
-            >
+            <div class="side-actions">
 
                 <button
-                    class="button danger"
+                    id="story-save-button"
+                    class="button"
                     type="submit"
-                    style="width: 100%;"
+                    form="story-form"
                 >
-                    Delete Story
+
+                    {% if page_mode == "new" %}
+                        Create Story
+                    {% else %}
+                        Save Changes
+                    {% endif %}
+
                 </button>
 
-            </form>
+
+                {% if article and article.status == "published" %}
+
+                    <a
+                        class="button secondary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}"
+                    >
+                        View Story
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =============================================
+                 DANGER ZONE
+            ============================================== -->
+
+            {% if article and article.id %}
+
+                <div class="danger-zone">
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'admin.article_delete',
+                            article_id=article.id
+                        ) }}"
+                        onsubmit="return confirm('Delete this story permanently?');"
+                    >
+
+                        <button
+                            class="button danger"
+                            type="submit"
+                            style="width:100%;"
+                        >
+                            Delete Story
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% endif %}
 
         </div>
 
-        {% endif %}
-
-
-    </div>
-
-
-</aside>
-
+    </aside>
 
 </div>
 
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
+    /* ========================================================
+       EDITOR ELEMENTS
+    ======================================================== */
 
-        // ====================================================
-        // STORY SIDEBAR → MAIN FORM
-        // ====================================================
+    const storyForm =
+        document.getElementById("story-form");
 
-        const sidebarStoryType =
-            document.getElementById(
-                "sidebar-story-type"
+    const sidebarStoryType =
+        document.getElementById("sidebar-story-type");
+
+    const sidebarStoryStatus =
+        document.getElementById("sidebar-story-status");
+
+    const sidebarSponsored =
+        document.getElementById("sidebar-is-sponsored");
+
+    const storyTypeValue =
+        document.getElementById("story-type-value");
+
+    const storyStatusValue =
+        document.getElementById("story-status-value");
+
+    const storySponsoredValue =
+        document.getElementById("story-sponsored-value");
+
+    const storyCategory =
+        document.getElementById("story-category");
+
+    const storyExpiry =
+        document.getElementById("story-expires-at");
+
+    const trendingNotice =
+        document.getElementById("trending-category-notice");
+
+    const expiryIndicator =
+        document.getElementById("trending-expiry-indicator");
+
+    const expiryRequiredMessage =
+        document.getElementById("trending-expiry-required");
+
+    const trendingLiveStatus =
+        document.getElementById("trending-live-status");
+
+    /* ========================================================
+       SIDEBAR → MAIN FORM
+    ======================================================== */
+
+    function syncSidebarFields() {
+
+        if (sidebarStoryType && storyTypeValue) {
+            storyTypeValue.value = sidebarStoryType.value;
+        }
+
+        if (sidebarStoryStatus && storyStatusValue) {
+            storyStatusValue.value = sidebarStoryStatus.value;
+        }
+
+        if (sidebarSponsored && storySponsoredValue) {
+            storySponsoredValue.value =
+                sidebarSponsored.checked ? "on" : "";
+        }
+    }
+
+    if (sidebarStoryType) {
+        sidebarStoryType.addEventListener(
+            "change",
+            syncSidebarFields
+        );
+    }
+
+    if (sidebarStoryStatus) {
+        sidebarStoryStatus.addEventListener(
+            "change",
+            function () {
+                syncSidebarFields();
+                updateTrendingInterface();
+            }
+        );
+    }
+
+    if (sidebarSponsored) {
+        sidebarSponsored.addEventListener(
+            "change",
+            syncSidebarFields
+        );
+    }
+
+    syncSidebarFields();
+
+    /* ========================================================
+       TRENDING NOW CATEGORY DETECTION
+    ======================================================== */
+
+    function isTrendingNowSelected() {
+
+        if (!storyCategory) {
+            return false;
+        }
+
+        const selectedOption =
+            storyCategory.options[storyCategory.selectedIndex];
+
+        if (!selectedOption) {
+            return false;
+        }
+
+        return (
+            selectedOption.dataset.categorySlug === "trending-now"
+            ||
+            selectedOption.dataset.requiresExpiry === "true"
+        );
+    }
+
+    /* ========================================================
+       DYNAMIC TRENDING NOW CONTROLS
+    ======================================================== */
+
+    function updateTrendingInterface() {
+
+        const isTrending = isTrendingNowSelected();
+
+        const selectedStatus =
+            sidebarStoryStatus
+                ? sidebarStoryStatus.value
+                : "draft";
+
+        if (trendingNotice) {
+            trendingNotice.classList.toggle(
+                "visible",
+                isTrending
             );
+        }
 
-        const sidebarStoryStatus =
-            document.getElementById(
-                "sidebar-story-status"
+        if (expiryIndicator) {
+            expiryIndicator.classList.toggle(
+                "visible",
+                isTrending
             );
+        }
 
-        const sidebarSponsored =
-            document.getElementById(
-                "sidebar-is-sponsored"
+        if (expiryRequiredMessage) {
+            expiryRequiredMessage.classList.toggle(
+                "visible",
+                isTrending && !storyExpiry?.value
             );
+        }
 
-        const storyTypeValue =
-            document.getElementById(
-                "story-type-value"
-            );
+        if (storyExpiry) {
+            storyExpiry.required = isTrending;
+        }
 
-        const storyStatusValue =
-            document.getElementById(
-                "story-status-value"
-            );
+        if (!trendingLiveStatus) {
+            return;
+        }
 
-        const storySponsoredValue =
-            document.getElementById(
-                "story-sponsored-value"
-            );
+        trendingLiveStatus.className = "trending-live-status";
+        trendingLiveStatus.textContent = "";
 
+        if (!isTrending) {
+            return;
+        }
 
-        function syncSidebarFields() {
+        trendingLiveStatus.classList.add("visible");
 
-            if (
-                sidebarStoryType
-                &&
-                storyTypeValue
-            ) {
+        if (!storyExpiry || !storyExpiry.value) {
 
-                storyTypeValue.value =
-                    sidebarStoryType.value;
+            trendingLiveStatus.classList.add("warning");
+
+            trendingLiveStatus.textContent =
+                "Select an expiry date and time for this Trending Now story.";
+
+            return;
+        }
+
+        const selectedDate = new Date(
+            storyExpiry.value + ":00+02:00"
+        );
+
+        if (Number.isNaN(selectedDate.getTime())) {
+
+            trendingLiveStatus.classList.add("error");
+
+            trendingLiveStatus.textContent =
+                "The selected expiry date is invalid.";
+
+            return;
+        }
+
+        if (selectedDate.getTime() <= Date.now()) {
+
+            trendingLiveStatus.classList.add("error");
+
+            if (selectedStatus === "published") {
+
+                trendingLiveStatus.textContent =
+                    "This expiry date has passed. Select a future " +
+                    "date before publishing.";
+
+            } else {
+
+                trendingLiveStatus.textContent =
+                    "This expiry date has passed. You may keep " +
+                    "it in a draft, but publishing requires " +
+                    "a future expiry date.";
 
             }
 
-
-            if (
-                sidebarStoryStatus
-                &&
-                storyStatusValue
-            ) {
-
-                storyStatusValue.value =
-                    sidebarStoryStatus.value;
-
-            }
-
-
-            if (
-                sidebarSponsored
-                &&
-                storySponsoredValue
-            ) {
-
-                storySponsoredValue.value =
-                    sidebarSponsored.checked
-                        ? "on"
-                        : "";
-
-            }
-
+            return;
         }
 
+        if (selectedStatus === "published") {
 
-        if (sidebarStoryType) {
+            trendingLiveStatus.textContent =
+                "Ready for publication. This story will qualify " +
+                "for Trending Stories until its expiry date, " +
+                "once public trending selection is enabled.";
 
-            sidebarStoryType.addEventListener(
-                "change",
-                syncSidebarFields
-            );
+        } else {
 
-        }
-
-
-        if (sidebarStoryStatus) {
-
-            sidebarStoryStatus.addEventListener(
-                "change",
-                syncSidebarFields
-            );
+            trendingLiveStatus.textContent =
+                "Expiry date set. The story will become eligible " +
+                "for Trending Stories when published.";
 
         }
+    }
 
+    if (storyCategory) {
 
-        if (sidebarSponsored) {
+        storyCategory.addEventListener(
+            "change",
+            updateTrendingInterface
+        );
+    }
 
-            sidebarSponsored.addEventListener(
-                "change",
-                syncSidebarFields
-            );
+    if (storyExpiry) {
 
-        }
+        storyExpiry.addEventListener(
+            "change",
+            updateTrendingInterface
+        );
 
+        storyExpiry.addEventListener(
+            "input",
+            updateTrendingInterface
+        );
+    }
 
-        const storyForm =
-            document.getElementById(
-                "story-form"
-            );
+    updateTrendingInterface();
 
+    /* ========================================================
+       MAIN FORM SUBMISSION
+    ======================================================== */
 
-        if (storyForm) {
+    if (storyForm) {
 
-            storyForm.addEventListener(
-                "submit",
-                syncSidebarFields
-            );
+        storyForm.addEventListener(
+            "submit",
+            function (event) {
 
-        }
+                syncSidebarFields();
 
+                const isTrending = isTrendingNowSelected();
 
-        syncSidebarFields();
-
-
-        // ====================================================
-        // RESTAURANT ELEMENTS
-        // ====================================================
-
-        const searchInput =
-            document.getElementById(
-                "restaurant-search"
-            );
-
-        const searchButton =
-            document.getElementById(
-                "restaurant-search-button"
-            );
-
-        const resultsContainer =
-            document.getElementById(
-                "restaurant-search-results"
-            );
-
-        const statusContainer =
-            document.getElementById(
-                "restaurant-search-status"
-            );
-
-        const selectedContainer =
-            document.getElementById(
-                "selected-restaurants"
-            );
-
-        const hiddenInput =
-            document.getElementById(
-                "restaurant_ids"
-            );
-
-
-        // ====================================================
-        // SELECTED RESTAURANTS
-        // ====================================================
-
-        const selectedRestaurants =
-            new Map();
-
-
-        const initialIds =
-            hiddenInput
-                ? hiddenInput.value
-                    .split(",")
-                    .map(
-                        value =>
-                            value.trim()
-                    )
-                    .filter(Boolean)
-                : [];
-
-
-        for (
-            const id
-            of initialIds
-        ) {
-
-            selectedRestaurants.set(
-                String(id),
-                {
-                    id:
-                        Number(id),
-
-                    business_name:
-                        "Restaurant #" + id,
-
-                    area:
-                        "Loading..."
+                if (!isTrending) {
+                    return;
                 }
-            );
 
-        }
+                if (!storyExpiry || !storyExpiry.value) {
 
+                    event.preventDefault();
 
-        if (
-            selectedContainer
-            &&
-            hiddenInput
-        ) {
+                    alert(
+                        "Trending Now stories require an expiry date and time."
+                    );
 
-            renderSelected();
+                    storyExpiry?.focus();
 
-            hydrateExistingRestaurants();
+                    return;
+                }
 
-        }
+                const selectedDate = new Date(
+                    storyExpiry.value + ":00+02:00"
+                );
 
+                const selectedStatus =
+                    sidebarStoryStatus
+                        ? sidebarStoryStatus.value
+                        : "draft";
 
-        // ====================================================
-        // UPDATE HIDDEN INPUT
-        // ====================================================
+                if (
+                    selectedStatus === "published"
+                    &&
+                    (
+                        Number.isNaN(selectedDate.getTime())
+                        ||
+                        selectedDate.getTime() <= Date.now()
+                    )
+                ) {
 
-        function updateHiddenInput() {
+                    event.preventDefault();
 
-            if (!hiddenInput) {
+                    alert(
+                        "Trending Now stories must have a future expiry date."
+                    );
 
-                return;
+                    storyExpiry.focus();
+
+                }
 
             }
+        );
+    }
 
+    /* ========================================================
+       RESTAURANT ELEMENTS
+    ======================================================== */
 
-            hiddenInput.value =
-                Array.from(
-                    selectedRestaurants.keys()
-                )
-                .join(",");
+    const searchInput =
+        document.getElementById("restaurant-search");
 
+    const searchButton =
+        document.getElementById("restaurant-search-button");
+
+    const resultsContainer =
+        document.getElementById("restaurant-search-results");
+
+    const statusContainer =
+        document.getElementById("restaurant-search-status");
+
+    const selectedContainer =
+        document.getElementById("selected-restaurants");
+
+    const hiddenInput =
+        document.getElementById("restaurant_ids");
+
+    /* ========================================================
+       SELECTED RESTAURANTS
+    ======================================================== */
+
+    const selectedRestaurants = new Map();
+
+    const initialIds = hiddenInput
+        ? hiddenInput.value
+            .split(",")
+            .map(value => value.trim())
+            .filter(Boolean)
+        : [];
+
+    for (const id of initialIds) {
+
+        selectedRestaurants.set(String(id), {
+            id: Number(id),
+            business_name: "Restaurant #" + id,
+            area: "Loading..."
+        });
+
+    }
+
+    if (selectedContainer && hiddenInput) {
+
+        renderSelected();
+        hydrateExistingRestaurants();
+
+    }
+
+    /* ========================================================
+       UPDATE HIDDEN RESTAURANT IDS
+    ======================================================== */
+
+    function updateHiddenInput() {
+
+        if (!hiddenInput) {
+            return;
         }
 
+        hiddenInput.value = Array.from(
+            selectedRestaurants.keys()
+        ).join(",");
 
-        // ====================================================
-        // RESTAURANT NAME
-        // ====================================================
+    }
 
-        function getRestaurantName(
-            restaurant
-        ) {
+    /* ========================================================
+       RESTAURANT INFORMATION
+    ======================================================== */
 
-            return (
-                restaurant.business_name
-                ||
-                restaurant.name
-                ||
-                (
-                    "Restaurant #"
-                    +
-                    restaurant.id
-                )
-            );
+    function getRestaurantName(restaurant) {
 
+        return (
+            restaurant.business_name
+            ||
+            restaurant.name
+            ||
+            "Restaurant #" + restaurant.id
+        );
+
+    }
+
+    function getRestaurantArea(restaurant) {
+
+        return (
+            restaurant.area
+            ||
+            restaurant.address
+            ||
+            ""
+        );
+
+    }
+
+    /* ========================================================
+       RENDER SELECTED RESTAURANTS
+    ======================================================== */
+
+    function renderSelected() {
+
+        if (!selectedContainer) {
+            return;
         }
 
+        selectedContainer.innerHTML = "";
 
-        // ====================================================
-        // RESTAURANT AREA
-        // ====================================================
+        if (selectedRestaurants.size === 0) {
 
-        function getRestaurantArea(
-            restaurant
-        ) {
+            const empty = document.createElement("div");
 
-            return (
-                restaurant.area
-                ||
-                restaurant.address
-                ||
-                ""
-            );
+            empty.className = "selected-restaurants-empty";
 
-        }
+            empty.textContent = "No restaurants selected yet.";
 
-
-        // ====================================================
-        // RENDER SELECTED
-        // ====================================================
-
-        function renderSelected() {
-
-            if (!selectedContainer) {
-
-                return;
-
-            }
-
-
-            selectedContainer.innerHTML =
-                "";
-
-
-            if (
-                selectedRestaurants.size === 0
-            ) {
-
-                const empty =
-                    document.createElement(
-                        "div"
-                    );
-
-                empty.className =
-                    "selected-restaurants-empty";
-
-                empty.textContent =
-                    "No restaurants selected yet.";
-
-                selectedContainer.appendChild(
-                    empty
-                );
-
-                updateHiddenInput();
-
-                return;
-
-            }
-
-
-            for (
-                const [
-                    id,
-                    restaurant
-                ]
-                of selectedRestaurants
-            ) {
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-                card.className =
-                    "selected-restaurant";
-
-
-                const info =
-                    document.createElement(
-                        "div"
-                    );
-
-                info.className =
-                    "selected-restaurant-info";
-
-
-                const name =
-                    document.createElement(
-                        "div"
-                    );
-
-                name.className =
-                    "selected-restaurant-name";
-
-                name.textContent =
-                    getRestaurantName(
-                        restaurant
-                    );
-
-
-                const area =
-                    document.createElement(
-                        "div"
-                    );
-
-                area.className =
-                    "selected-restaurant-area";
-
-                area.textContent =
-                    getRestaurantArea(
-                        restaurant
-                    );
-
-
-                info.appendChild(
-                    name
-                );
-
-                info.appendChild(
-                    area
-                );
-
-
-                const removeButton =
-                    document.createElement(
-                        "button"
-                    );
-
-                removeButton.type =
-                    "button";
-
-                removeButton.className =
-                    "selected-restaurant-remove";
-
-                removeButton.textContent =
-                    "Remove";
-
-
-                removeButton.addEventListener(
-                    "click",
-                    function () {
-
-                        selectedRestaurants.delete(
-                            String(id)
-                        );
-
-                        renderSelected();
-
-                    }
-                );
-
-
-                card.appendChild(
-                    info
-                );
-
-                card.appendChild(
-                    removeButton
-                );
-
-
-                selectedContainer.appendChild(
-                    card
-                );
-
-            }
-
+            selectedContainer.appendChild(empty);
 
             updateHiddenInput();
 
+            return;
         }
 
+        for (const [id, restaurant] of selectedRestaurants) {
 
-        // ====================================================
-        // ADD RESTAURANT
-        // ====================================================
+            const card = document.createElement("div");
 
-        function addRestaurant(
-            restaurant
-        ) {
+            card.className = "selected-restaurant";
 
-            if (
-                !restaurant
-                ||
-                !restaurant.id
-            ) {
+            const info = document.createElement("div");
 
-                return;
+            info.className = "selected-restaurant-info";
 
-            }
+            const name = document.createElement("div");
 
+            name.className = "selected-restaurant-name";
 
-            selectedRestaurants.set(
-                String(
-                    restaurant.id
-                ),
-                restaurant
-            );
+            name.textContent = getRestaurantName(restaurant);
 
+            const area = document.createElement("div");
 
-            renderSelected();
+            area.className = "selected-restaurant-area";
 
-        }
+            area.textContent = getRestaurantArea(restaurant);
 
+            info.appendChild(name);
+            info.appendChild(area);
 
-        // ====================================================
-        // SEARCH RESTAURANTS
-        // ====================================================
+            const removeButton = document.createElement("button");
 
-        async function searchRestaurants() {
+            removeButton.type = "button";
 
-            if (
-                !searchInput
-                ||
-                !statusContainer
-                ||
-                !resultsContainer
-            ) {
+            removeButton.className = "selected-restaurant-remove";
 
-                return;
+            removeButton.textContent = "Remove";
 
-            }
-
-
-            const query =
-                searchInput.value.trim();
-
-
-            statusContainer.textContent =
-                "Searching Kalxa Ticketing...";
-
-
-            resultsContainer.innerHTML =
-                "";
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        "{{ url_for('admin.restaurant_search') }}"
-                        +
-                        "?q="
-                        +
-                        encodeURIComponent(
-                            query
-                        )
-                    );
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Restaurant search failed."
-                    );
-
-                }
-
-
-                const data =
-                    await response.json();
-
-
-                const restaurants =
-                    data.restaurants
-                    ||
-                    [];
-
-
-                statusContainer.textContent =
-                    restaurants.length
-                        ? (
-                            restaurants.length
-                            +
-                            " restaurant(s) found."
-                        )
-                        : (
-                            "No restaurants found."
-                        );
-
-
-                renderResults(
-                    restaurants
-                );
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                statusContainer.textContent =
-                    "Unable to connect to Kalxa Ticketing.";
-
-            }
-
-        }
-
-
-        // ====================================================
-        // RENDER SEARCH RESULTS
-        // ====================================================
-
-        function renderResults(
-            restaurants
-        ) {
-
-            if (!resultsContainer) {
-
-                return;
-
-            }
-
-
-            resultsContainer.innerHTML =
-                "";
-
-
-            for (
-                const restaurant
-                of restaurants
-            ) {
-
-                if (
-                    !restaurant
-                    ||
-                    !restaurant.id
-                ) {
-
-                    continue;
-
-                }
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-                card.className =
-                    "restaurant-result";
-
-
-                const info =
-                    document.createElement(
-                        "div"
-                    );
-
-                info.className =
-                    "restaurant-result-info";
-
-
-                const name =
-                    document.createElement(
-                        "div"
-                    );
-
-                name.className =
-                    "restaurant-result-name";
-
-                name.textContent =
-                    getRestaurantName(
-                        restaurant
-                    );
-
-
-                const area =
-                    document.createElement(
-                        "div"
-                    );
-
-                area.className =
-                    "restaurant-result-area";
-
-                area.textContent =
-                    getRestaurantArea(
-                        restaurant
-                    );
-
-
-                info.appendChild(
-                    name
-                );
-
-                info.appendChild(
-                    area
-                );
-
-
-                const button =
-                    document.createElement(
-                        "button"
-                    );
-
-                button.type =
-                    "button";
-
-                button.className =
-                    "restaurant-result-button";
-
-
-                if (
-                    selectedRestaurants.has(
-                        String(
-                            restaurant.id
-                        )
-                    )
-                ) {
-
-                    button.textContent =
-                        "Selected";
-
-                    button.disabled =
-                        true;
-
-                }
-
-                else {
-
-                    button.textContent =
-                        "Add";
-
-
-                    button.addEventListener(
-                        "click",
-                        function () {
-
-                            addRestaurant(
-                                restaurant
-                            );
-
-                            button.textContent =
-                                "Selected";
-
-                            button.disabled =
-                                true;
-
-                        }
-                    );
-
-                }
-
-
-                card.appendChild(
-                    info
-                );
-
-                card.appendChild(
-                    button
-                );
-
-
-                resultsContainer.appendChild(
-                    card
-                );
-
-            }
-
-        }
-
-
-        // ====================================================
-        // HYDRATE EXISTING RESTAURANTS
-        // ====================================================
-
-        async function hydrateExistingRestaurants() {
-
-            if (
-                initialIds.length === 0
-            ) {
-
-                return;
-
-            }
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        "{{ url_for('admin.restaurant_search') }}"
-                        +
-                        "?q="
-                    );
-
-
-                if (!response.ok) {
-
-                    return;
-
-                }
-
-
-                const data =
-                    await response.json();
-
-
-                const restaurants =
-                    data.restaurants
-                    ||
-                    [];
-
-
-                for (
-                    const restaurant
-                    of restaurants
-                ) {
-
-                    if (
-                        !restaurant
-                        ||
-                        !restaurant.id
-                    ) {
-
-                        continue;
-
-                    }
-
-
-                    const id =
-                        String(
-                            restaurant.id
-                        );
-
-
-                    if (
-                        selectedRestaurants.has(
-                            id
-                        )
-                    ) {
-
-                        selectedRestaurants.set(
-                            id,
-                            restaurant
-                        );
-
-                    }
-
-                }
-
-
-                renderSelected();
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    error
-                );
-
-            }
-
-        }
-
-
-        // ====================================================
-        // RESTAURANT EVENTS
-        // ====================================================
-
-        if (searchButton) {
-
-            searchButton.addEventListener(
+            removeButton.addEventListener(
                 "click",
-                searchRestaurants
-            );
-
-        }
-
-
-        if (searchInput) {
-
-            searchInput.addEventListener(
-                "keydown",
-                function (event) {
-
-                    if (
-                        event.key === "Enter"
-                    ) {
-
-                        event.preventDefault();
-
-                        searchRestaurants();
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        // ====================================================
-        // STORY IMAGE UPLOAD
-        // ====================================================
-
-        const storyImageInput =
-            document.getElementById(
-                "story_images"
-            );
-
-
-        const storyUploadZone =
-            document.getElementById(
-                "story-upload-zone"
-            );
-
-
-        const uploadButton =
-            document.getElementById(
-                "upload-story-images-button"
-            );
-
-
-        const uploadStatus =
-            document.getElementById(
-                "image-upload-status"
-            );
-
-
-        const selectedFileSummary =
-            document.getElementById(
-                "selected-file-summary"
-            );
-
-
-        const imageUploadForm =
-            document.getElementById(
-                "story-image-upload-form"
-            );
-
-
-        if (storyImageInput) {
-
-            storyImageInput.addEventListener(
-                "change",
                 function () {
 
-                    const files =
-                        storyImageInput.files;
+                    selectedRestaurants.delete(String(id));
 
-
-                    const existingCount =
-                        Number(
-                            "{{ article.images|length if article else 0 }}"
-                        );
-
-
-                    const availableSlots =
-                        Math.max(
-                            0,
-                            3 - existingCount
-                        );
-
-
-                    // =========================================
-                    // NO FILES
-                    // =========================================
-
-                    if (
-                        !files
-                        ||
-                        files.length === 0
-                    ) {
-
-                        if (uploadButton) {
-
-                            uploadButton.disabled =
-                                true;
-
-                        }
-
-
-                        if (storyUploadZone) {
-
-                            storyUploadZone
-                                .classList
-                                .remove(
-                                    "has-files"
-                                );
-
-                        }
-
-
-                        if (selectedFileSummary) {
-
-                            selectedFileSummary
-                                .classList
-                                .remove(
-                                    "visible"
-                                );
-
-                            selectedFileSummary.textContent =
-                                "";
-
-                        }
-
-
-                        if (uploadStatus) {
-
-                            uploadStatus.textContent =
-                                (
-                                    "You can add "
-                                    +
-                                    availableSlots
-                                    +
-                                    (
-                                        availableSlots === 1
-                                            ? " more image."
-                                            : " more images."
-                                    )
-                                );
-
-                        }
-
-
-                        return;
-
-                    }
-
-
-                    // =========================================
-                    // MAXIMUM IMAGE COUNT
-                    // =========================================
-
-                    if (
-                        files.length
-                        >
-                        availableSlots
-                    ) {
-
-                        alert(
-                            (
-                                "You can only add "
-                                +
-                                availableSlots
-                                +
-                                " more image(s)."
-                            )
-                        );
-
-
-                        storyImageInput.value =
-                            "";
-
-
-                        if (uploadButton) {
-
-                            uploadButton.disabled =
-                                true;
-
-                        }
-
-
-                        if (storyUploadZone) {
-
-                            storyUploadZone
-                                .classList
-                                .remove(
-                                    "has-files"
-                                );
-
-                        }
-
-
-                        if (selectedFileSummary) {
-
-                            selectedFileSummary
-                                .classList
-                                .remove(
-                                    "visible"
-                                );
-
-                            selectedFileSummary.textContent =
-                                "";
-
-                        }
-
-
-                        return;
-
-                    }
-
-
-                    // =========================================
-                    // FILES SELECTED
-                    // =========================================
-
-                    if (storyUploadZone) {
-
-                        storyUploadZone
-                            .classList
-                            .add(
-                                "has-files"
-                            );
-
-                    }
-
-
-                    if (uploadButton) {
-
-                        uploadButton.disabled =
-                            false;
-
-                    }
-
-
-                    if (uploadStatus) {
-
-                        uploadStatus.textContent =
-                            (
-                                files.length
-                                +
-                                (
-                                    files.length === 1
-                                        ? " image selected. "
-                                        : " images selected. "
-                                )
-                                +
-                                "Upload immediately."
-                            );
-
-                    }
-
-
-                    if (selectedFileSummary) {
-
-                        const names =
-                            Array.from(files)
-                                .map(
-                                    function (file) {
-
-                                        return file.name;
-
-                                    }
-                                )
-                                .join(", ");
-
-
-                        selectedFileSummary.textContent =
-                            (
-                                "Selected: "
-                                +
-                                names
-                            );
-
-
-                        selectedFileSummary
-                            .classList
-                            .add(
-                                "visible"
-                            );
-
-                    }
+                    renderSelected();
 
                 }
             );
 
+            card.appendChild(info);
+            card.appendChild(removeButton);
+
+            selectedContainer.appendChild(card);
         }
 
+        updateHiddenInput();
+    }
 
-        // ====================================================
-        // IMAGE UPLOAD SUBMISSION
-        // ====================================================
+    /* ========================================================
+       ADD RESTAURANT
+    ======================================================== */
+
+    function addRestaurant(restaurant) {
+
+        if (!restaurant || !restaurant.id) {
+            return;
+        }
+
+        selectedRestaurants.set(
+            String(restaurant.id),
+            restaurant
+        );
+
+        renderSelected();
+    }
+
+    /* ========================================================
+       SEARCH RESTAURANTS
+    ======================================================== */
+
+    async function searchRestaurants() {
 
         if (
-            imageUploadForm
-            &&
-            uploadButton
+            !searchInput
+            ||
+            !statusContainer
+            ||
+            !resultsContainer
         ) {
+            return;
+        }
 
-            imageUploadForm.addEventListener(
-                "submit",
-                function (event) {
+        const query = searchInput.value.trim();
 
-                    if (
-                        !storyImageInput
-                        ||
-                        !storyImageInput.files
-                        ||
-                        storyImageInput.files.length === 0
-                    ) {
+        statusContainer.textContent =
+            "Searching Kalxa Ticketing...";
 
-                        event.preventDefault();
+        resultsContainer.innerHTML = "";
 
+        try {
 
-                        alert(
-                            "Choose at least one image first."
-                        );
-
-
-                        return;
-
-                    }
-
-
-                    uploadButton.disabled =
-                        true;
-
-
-                    uploadButton.textContent =
-                        "Uploading...";
-
-
-                    if (uploadStatus) {
-
-                        uploadStatus.textContent =
-                            (
-                                "Uploading directly to "
-                                +
-                                "Kalxa Stories..."
-                            );
-
-                    }
-
-                }
+            const response = await fetch(
+                "{{ url_for('admin.restaurant_search') }}"
+                +
+                "?q="
+                +
+                encodeURIComponent(query)
             );
 
+            if (!response.ok) {
+                throw new Error("Restaurant search failed.");
+            }
+
+            const data = await response.json();
+
+            const restaurants = data.restaurants || [];
+
+            statusContainer.textContent = restaurants.length
+                ? restaurants.length + " restaurant(s) found."
+                : "No restaurants found.";
+
+            renderResults(restaurants);
+
+        } catch (error) {
+
+            console.error(error);
+
+            statusContainer.textContent =
+                "Unable to connect to Kalxa Ticketing.";
         }
 
     }
-);
+
+    /* ========================================================
+       RENDER RESTAURANT SEARCH RESULTS
+    ======================================================== */
+
+    function renderResults(restaurants) {
+
+        if (!resultsContainer) {
+            return;
+        }
+
+        resultsContainer.innerHTML = "";
+
+        for (const restaurant of restaurants) {
+
+            if (!restaurant || !restaurant.id) {
+                continue;
+            }
+
+            const card = document.createElement("div");
+
+            card.className = "restaurant-result";
+
+            const info = document.createElement("div");
+
+            info.className = "restaurant-result-info";
+
+            const name = document.createElement("div");
+
+            name.className = "restaurant-result-name";
+
+            name.textContent = getRestaurantName(restaurant);
+
+            const area = document.createElement("div");
+
+            area.className = "restaurant-result-area";
+
+            area.textContent = getRestaurantArea(restaurant);
+
+            info.appendChild(name);
+            info.appendChild(area);
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+
+            button.className = "restaurant-result-button";
+
+            if (
+                selectedRestaurants.has(
+                    String(restaurant.id)
+                )
+            ) {
+
+                button.textContent = "Selected";
+                button.disabled = true;
+
+            } else {
+
+                button.textContent = "Add";
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        addRestaurant(restaurant);
+
+                        button.textContent = "Selected";
+
+                        button.disabled = true;
+
+                    }
+                );
+            }
+
+            card.appendChild(info);
+            card.appendChild(button);
+
+            resultsContainer.appendChild(card);
+        }
+    }
+
+    /* ========================================================
+       HYDRATE EXISTING RESTAURANTS
+    ======================================================== */
+
+    async function hydrateExistingRestaurants() {
+
+        if (initialIds.length === 0) {
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                "{{ url_for('admin.restaurant_search') }}?q="
+            );
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+
+            const restaurants = data.restaurants || [];
+
+            for (const restaurant of restaurants) {
+
+                if (!restaurant || !restaurant.id) {
+                    continue;
+                }
+
+                const id = String(restaurant.id);
+
+                if (selectedRestaurants.has(id)) {
+
+                    selectedRestaurants.set(
+                        id,
+                        restaurant
+                    );
+                }
+            }
+
+            renderSelected();
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+    }
+
+    /* ========================================================
+       RESTAURANT SEARCH EVENTS
+    ======================================================== */
+
+    if (searchButton) {
+
+        searchButton.addEventListener(
+            "click",
+            searchRestaurants
+        );
+    }
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    searchRestaurants();
+
+                }
+            }
+        );
+    }
+
+    /* ========================================================
+       STORY IMAGE UPLOAD
+    ======================================================== */
+
+    const storyImageInput =
+        document.getElementById("story_images");
+
+    const storyUploadZone =
+        document.getElementById("story-upload-zone");
+
+    const uploadButton =
+        document.getElementById("upload-story-images-button");
+
+    const uploadStatus =
+        document.getElementById("image-upload-status");
+
+    const selectedFileSummary =
+        document.getElementById("selected-file-summary");
+
+    const imageUploadForm =
+        document.getElementById("story-image-upload-form");
+
+    if (storyImageInput) {
+
+        storyImageInput.addEventListener(
+            "change",
+            function () {
+
+                const files = storyImageInput.files;
+
+                const existingCount = Number(
+                    "{{ article.images|length if article else 0 }}"
+                );
+
+                const availableSlots = Math.max(
+                    0,
+                    3 - existingCount
+                );
+
+                /* ============================================
+                   NO FILES
+                ============================================ */
+
+                if (!files || files.length === 0) {
+
+                    if (uploadButton) {
+                        uploadButton.disabled = true;
+                    }
+
+                    storyUploadZone?.classList.remove(
+                        "has-files"
+                    );
+
+                    if (selectedFileSummary) {
+
+                        selectedFileSummary.classList.remove(
+                            "visible"
+                        );
+
+                        selectedFileSummary.textContent = "";
+                    }
+
+                    if (uploadStatus) {
+
+                        uploadStatus.textContent =
+                            "You can add "
+                            +
+                            availableSlots
+                            +
+                            (
+                                availableSlots === 1
+                                    ? " more image."
+                                    : " more images."
+                            );
+                    }
+
+                    return;
+                }
+
+                /* ============================================
+                   MAXIMUM IMAGE COUNT
+                ============================================ */
+
+                if (files.length > availableSlots) {
+
+                    alert(
+                        "You can only add "
+                        +
+                        availableSlots
+                        +
+                        " more image(s)."
+                    );
+
+                    storyImageInput.value = "";
+
+                    if (uploadButton) {
+                        uploadButton.disabled = true;
+                    }
+
+                    storyUploadZone?.classList.remove(
+                        "has-files"
+                    );
+
+                    if (selectedFileSummary) {
+
+                        selectedFileSummary.classList.remove(
+                            "visible"
+                        );
+
+                        selectedFileSummary.textContent = "";
+                    }
+
+                    return;
+                }
+
+                /* ============================================
+                   VALIDATE SIZE AND TYPE
+                ============================================ */
+
+                const allowedTypes = new Set([
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp"
+                ]);
+
+                for (const file of files) {
+
+                    if (!allowedTypes.has(file.type)) {
+
+                        alert(
+                            "Images must be JPG, PNG or WebP."
+                        );
+
+                        storyImageInput.value = "";
+
+                        if (uploadButton) {
+                            uploadButton.disabled = true;
+                        }
+
+                        return;
+                    }
+
+                    if (file.size > 8 * 1024 * 1024) {
+
+                        alert(
+                            "Each image must be 8 MB or smaller."
+                        );
+
+                        storyImageInput.value = "";
+
+                        if (uploadButton) {
+                            uploadButton.disabled = true;
+                        }
+
+                        return;
+                    }
+                }
+
+                /* ============================================
+                   FILES SELECTED
+                ============================================ */
+
+                storyUploadZone?.classList.add(
+                    "has-files"
+                );
+
+                if (uploadButton) {
+                    uploadButton.disabled = false;
+                }
+
+                if (uploadStatus) {
+
+                    uploadStatus.textContent =
+                        files.length
+                        +
+                        (
+                            files.length === 1
+                                ? " image selected. "
+                                : " images selected. "
+                        )
+                        +
+                        "Upload immediately.";
+                }
+
+                if (selectedFileSummary) {
+
+                    const names = Array.from(files)
+                        .map(file => file.name)
+                        .join(", ");
+
+                    selectedFileSummary.textContent =
+                        "Selected: " + names;
+
+                    selectedFileSummary.classList.add(
+                        "visible"
+                    );
+                }
+            }
+        );
+    }
+
+    /* ========================================================
+       IMAGE UPLOAD SUBMISSION
+    ======================================================== */
+
+    if (imageUploadForm && uploadButton) {
+
+        imageUploadForm.addEventListener(
+            "submit",
+            function (event) {
+
+                if (
+                    !storyImageInput
+                    ||
+                    !storyImageInput.files
+                    ||
+                    storyImageInput.files.length === 0
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Choose at least one image first."
+                    );
+
+                    return;
+                }
+
+                uploadButton.disabled = true;
+
+                uploadButton.textContent = "Uploading...";
+
+                if (uploadStatus) {
+
+                    uploadStatus.textContent =
+                        "Uploading directly to Kalxa Stories...";
+                }
+            }
+        );
+    }
+
+});
 
 </script>
-
 
 {% endblock %}
