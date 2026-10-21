@@ -1120,52 +1120,41 @@
         ====================================================== */
 
         .sidebar-toggle {
+         position: absolute;
+         z-index: 10;
+         left: 0;
+         top: 50%;
+         transform: translateY(-50%);
 
-            position: absolute;
+         width: 43px;
+         height: 43px;
 
-            left: 0;
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
 
-            top: 50%;
+         border: 1px solid rgba(255, 255, 255, .7);
+         border-radius: 8px;
 
-            transform:
-                translateY(-50%);
+         background: rgba(15, 19, 24, .35);
+         color: #ffffff;
 
-            width: 43px;
+         cursor: pointer;
+         font-size: 22px;
+         line-height: 1;
 
-            height: 43px;
+         pointer-events: auto;
+         touch-action: manipulation;
+      }
 
-            display: inline-flex;
+      .sidebar-toggle:hover {
+       background: rgba(15, 19, 24, .55);
+      }
 
-            align-items: center;
-
-            justify-content: center;
-
-            border:
-                1px solid rgba(255, 255, 255, .7);
-
-            border-radius: 8px;
-
-            background:
-                rgba(15, 19, 24, .25);
-
-            color: #ffffff;
-
-            cursor: pointer;
-
-            font-size: 22px;
-
-            line-height: 1;
-
-        }
-
-
-        .sidebar-toggle:hover {
-
-            background:
-                rgba(15, 19, 24, .45);
-
-        }
-
+      .sidebar-toggle:focus-visible {
+       outline: 3px solid #ffffff;
+       outline-offset: 3px;
+      }
 
         .sidebar-overlay {
 
@@ -2974,8 +2963,58 @@
 
 
     {% block scripts %}
-    {% endblock %}
+{% endblock %}
+
+<!-- =====================================================
+     SIDEBAR OPEN / CLOSE FUNCTIONALITY
+====================================================== -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggle = document.getElementById("sidebar-toggle");
+    const sidebar = document.getElementById("site-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    const closeButton = document.getElementById("sidebar-close");
+
+    if (!toggle || !sidebar || !overlay || !closeButton) {
+        return;
+    }
+
+    function openSidebar() {
+        sidebar.classList.add("is-open");
+        overlay.classList.add("is-open");
+        document.body.classList.add("sidebar-open");
+
+        toggle.setAttribute("aria-expanded", "true");
+        sidebar.setAttribute("aria-hidden", "false");
+        overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove("is-open");
+        overlay.classList.remove("is-open");
+        document.body.classList.remove("sidebar-open");
+
+        toggle.setAttribute("aria-expanded", "false");
+        sidebar.setAttribute("aria-hidden", "true");
+        overlay.setAttribute("aria-hidden", "true");
+    }
+
+    toggle.addEventListener("click", openSidebar);
+    closeButton.addEventListener("click", closeSidebar);
+    overlay.addEventListener("click", closeSidebar);
+
+    document.addEventListener("keydown", function (event) {
+        if (
+            event.key === "Escape" &&
+            sidebar.classList.contains("is-open")
+        ) {
+            closeSidebar();
+            toggle.focus();
+        }
+    });
+});
+</script>
 
 </body>
-
 </html>
