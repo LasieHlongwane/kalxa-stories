@@ -50,6 +50,10 @@ DONATION_AMOUNTS = {
     "5": 500,
     "10": 1000,
     "20": 2000,
+    "50": 5000,
+    "100": 10000,
+    "200": 20000,
+    
 }
 
 
@@ -158,7 +162,7 @@ def create_checkout():
     if amount_in_cents is None:
 
         flash(
-            "Please select R5, R10 or R20.",
+            "Please select R5, R10, R20, R50, R100, or R200.",
             "error",
         )
 
