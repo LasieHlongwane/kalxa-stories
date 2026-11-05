@@ -135,7 +135,7 @@ select:focus {
 }
 
 /* ============================================================
-   TRENDING NOW — NEW
+   TRENDING NOW
 ============================================================ */
 
 .trending-category-notice {
@@ -793,8 +793,7 @@ select:focus {
     }
 
     .story-media-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .restaurant-search-row {
@@ -851,6 +850,9 @@ select:focus {
 
 <!-- ============================================================
      CURRENT FORM VALUES
+
+     Prefer submitted values after validation errors.
+     Otherwise use the saved article values.
 ============================================================ -->
 
 {% set current_type = request.form.get(
@@ -873,6 +875,12 @@ select:focus {
 {% set submitted_expiry = request.form.get(
     "expires_at",
     expires_at_input | default("")
+) %}
+
+{% set current_sponsored = (
+    request.form.get("is_sponsored")
+    if request.form
+    else ("on" if article and article.is_sponsored else "")
 ) %}
 
 
@@ -905,8 +913,6 @@ select:focus {
 
                 <h2>Story</h2>
 
-                <!-- TITLE -->
-
                 <div class="field">
 
                     <label for="story-title">
@@ -926,8 +932,6 @@ select:focus {
 
                 </div>
 
-
-                <!-- SLUG -->
 
                 <div class="field">
 
@@ -954,8 +958,6 @@ select:focus {
                 </div>
 
 
-                <!-- EXCERPT -->
-
                 <div class="field">
 
                     <label for="story-excerpt">
@@ -973,8 +975,6 @@ select:focus {
 
                 </div>
 
-
-                <!-- BODY -->
 
                 <div class="field">
 
@@ -1046,6 +1046,7 @@ select:focus {
                 <div
                     id="restaurant-search-status"
                     class="restaurant-search-status"
+                    aria-live="polite"
                 ></div>
 
                 <div
@@ -1278,14 +1279,7 @@ select:focus {
                 id="story-sponsored-value"
                 type="hidden"
                 name="is_sponsored"
-                value="{%
-                    if request.form.get('is_sponsored')
-                    or (
-                        not request.form
-                        and article
-                        and article.is_sponsored
-                    )
-                %}on{% endif %}"
+                value="{{ current_sponsored }}"
             >
 
         </form>
@@ -1321,10 +1315,6 @@ select:focus {
 
             {% if not article or not article.id %}
 
-                <!-- =========================================
-                     SAVE FIRST
-                ========================================== -->
-
                 <div class="media-save-first">
 
                     <div class="media-save-first-icon">
@@ -1349,10 +1339,6 @@ select:focus {
                 </div>
 
             {% else %}
-
-                <!-- =========================================
-                     EXISTING IMAGES
-                ========================================== -->
 
                 {% if article.images %}
 
@@ -1423,10 +1409,6 @@ select:focus {
                 {% endif %}
 
 
-                <!-- =========================================
-                     LEGACY COVER
-                ========================================== -->
-
                 {% if article.cover_image_url and not article.images %}
 
                     <div class="legacy-cover-notice">
@@ -1451,10 +1433,6 @@ select:focus {
 
                 {% endif %}
 
-
-                <!-- =========================================
-                     IMAGE UPLOAD
-                ========================================== -->
 
                 {% if image_count < 3 %}
 
@@ -1839,14 +1817,7 @@ select:focus {
                     <input
                         id="sidebar-is-sponsored"
                         type="checkbox"
-                        {% if
-                            request.form.get("is_sponsored")
-                            or (
-                                not request.form
-                                and article
-                                and article.is_sponsored
-                            )
-                        %}
+                        {% if current_sponsored %}
                             checked
                         {% endif %}
                     >
@@ -1924,12 +1895,12 @@ select:focus {
                         <div class="expiry-status expired">
 
                             <strong>
-                                Expired
+                                Previously saved expiry: Expired
                             </strong>
 
                             <br>
 
-                            This story has passed its expiry date.
+                            This story has passed its saved expiry date.
                             It is removed from active feeds,
                             while its original link remains available.
 
@@ -1940,7 +1911,7 @@ select:focus {
                         <div class="expiry-status active">
 
                             <strong>
-                                Expiry scheduled
+                                Previously saved expiry
                             </strong>
 
                             <br>
@@ -1956,6 +1927,11 @@ select:focus {
                                 An expiry date has been saved.
 
                             {% endif %}
+
+                            <br>
+
+                            The date above is the currently saved value.
+                            The input field contains the value being edited.
 
                         </div>
 
@@ -2108,6 +2084,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const trendingLiveStatus =
         document.getElementById("trending-live-status");
 
+
     /* ========================================================
        SIDEBAR → MAIN FORM
     ======================================================== */
@@ -2126,36 +2103,53 @@ document.addEventListener("DOMContentLoaded", function () {
             storySponsoredValue.value =
                 sidebarSponsored.checked ? "on" : "";
         }
+
     }
 
+
     if (sidebarStoryType) {
+
         sidebarStoryType.addEventListener(
             "change",
             syncSidebarFields
         );
+
     }
 
+
     if (sidebarStoryStatus) {
+
         sidebarStoryStatus.addEventListener(
             "change",
             function () {
+
                 syncSidebarFields();
                 updateTrendingInterface();
+
             }
         );
+
     }
 
+
     if (sidebarSponsored) {
+
         sidebarSponsored.addEventListener(
             "change",
             syncSidebarFields
         );
+
     }
+
 
     syncSidebarFields();
 
+
     /* ========================================================
        TRENDING NOW CATEGORY DETECTION
+
+       Use the category option's data attributes instead of
+       relying only on a hardcoded category name.
     ======================================================== */
 
     function isTrendingNowSelected() {
@@ -2172,11 +2166,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return (
-            selectedOption.dataset.categorySlug === "trending-now"
-            ||
             selectedOption.dataset.requiresExpiry === "true"
+            ||
+            selectedOption.dataset.categorySlug === "trending-now"
         );
+
     }
+
+
+    /* ========================================================
+       PARSE SAST DATETIME
+
+       datetime-local has no timezone information.
+       The admin route interprets this value as SAST (UTC+02:00).
+
+       This function uses the same timezone interpretation
+       for the browser-side validation.
+    ======================================================== */
+
+    function getExpiryDate() {
+
+        if (!storyExpiry || !storyExpiry.value) {
+            return null;
+        }
+
+        const selectedDate = new Date(
+            storyExpiry.value + ":00+02:00"
+        );
+
+        if (Number.isNaN(selectedDate.getTime())) {
+            return null;
+        }
+
+        return selectedDate;
+
+    }
+
 
     /* ========================================================
        DYNAMIC TRENDING NOW CONTROLS
@@ -2191,43 +2216,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 ? sidebarStoryStatus.value
                 : "draft";
 
+
         if (trendingNotice) {
+
             trendingNotice.classList.toggle(
                 "visible",
                 isTrending
             );
+
         }
 
+
         if (expiryIndicator) {
+
             expiryIndicator.classList.toggle(
                 "visible",
                 isTrending
             );
+
         }
 
-        if (expiryRequiredMessage) {
-            expiryRequiredMessage.classList.toggle(
-                "visible",
-                isTrending && !storyExpiry?.value
-            );
-        }
 
         if (storyExpiry) {
             storyExpiry.required = isTrending;
         }
 
+
+        if (expiryRequiredMessage) {
+
+            expiryRequiredMessage.classList.toggle(
+                "visible",
+                isTrending && !storyExpiry?.value
+            );
+
+        }
+
+
         if (!trendingLiveStatus) {
             return;
         }
 
-        trendingLiveStatus.className = "trending-live-status";
+
+        trendingLiveStatus.className =
+            "trending-live-status";
+
         trendingLiveStatus.textContent = "";
+
 
         if (!isTrending) {
             return;
         }
 
+
         trendingLiveStatus.classList.add("visible");
+
 
         if (!storyExpiry || !storyExpiry.value) {
 
@@ -2237,13 +2279,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Select an expiry date and time for this Trending Now story.";
 
             return;
+
         }
 
-        const selectedDate = new Date(
-            storyExpiry.value + ":00+02:00"
-        );
 
-        if (Number.isNaN(selectedDate.getTime())) {
+        const selectedDate = getExpiryDate();
+
+
+        if (!selectedDate) {
 
             trendingLiveStatus.classList.add("error");
 
@@ -2251,7 +2294,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 "The selected expiry date is invalid.";
 
             return;
+
         }
+
 
         if (selectedDate.getTime() <= Date.now()) {
 
@@ -2273,14 +2318,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             return;
+
         }
+
 
         if (selectedStatus === "published") {
 
             trendingLiveStatus.textContent =
-                "Ready for publication. This story will qualify " +
-                "for Trending Stories until its expiry date, " +
-                "once public trending selection is enabled.";
+                "Expiry date is valid. The story can be published " +
+                "with this future expiry date.";
 
         } else {
 
@@ -2289,7 +2335,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 "for Trending Stories when published.";
 
         }
+
     }
+
 
     if (storyCategory) {
 
@@ -2297,7 +2345,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "change",
             updateTrendingInterface
         );
+
     }
+
 
     if (storyExpiry) {
 
@@ -2310,9 +2360,22 @@ document.addEventListener("DOMContentLoaded", function () {
             "input",
             updateTrendingInterface
         );
+
     }
 
+
+    if (sidebarStoryStatus) {
+
+        sidebarStoryStatus.addEventListener(
+            "change",
+            updateTrendingInterface
+        );
+
+    }
+
+
     updateTrendingInterface();
+
 
     /* ========================================================
        MAIN FORM SUBMISSION
@@ -2332,6 +2395,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
+
                 if (!storyExpiry || !storyExpiry.value) {
 
                     event.preventDefault();
@@ -2343,25 +2407,37 @@ document.addEventListener("DOMContentLoaded", function () {
                     storyExpiry?.focus();
 
                     return;
+
                 }
 
-                const selectedDate = new Date(
-                    storyExpiry.value + ":00+02:00"
-                );
+
+                const selectedDate = getExpiryDate();
 
                 const selectedStatus =
                     sidebarStoryStatus
                         ? sidebarStoryStatus.value
                         : "draft";
 
+
+                if (!selectedDate) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Enter a valid Trending Now expiry date and time."
+                    );
+
+                    storyExpiry.focus();
+
+                    return;
+
+                }
+
+
                 if (
                     selectedStatus === "published"
                     &&
-                    (
-                        Number.isNaN(selectedDate.getTime())
-                        ||
-                        selectedDate.getTime() <= Date.now()
-                    )
+                    selectedDate.getTime() <= Date.now()
                 ) {
 
                     event.preventDefault();
@@ -2372,11 +2448,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     storyExpiry.focus();
 
+                    return;
+
                 }
 
             }
         );
+
     }
+
 
     /* ========================================================
        RESTAURANT ELEMENTS
@@ -2400,6 +2480,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const hiddenInput =
         document.getElementById("restaurant_ids");
 
+
     /* ========================================================
        SELECTED RESTAURANTS
     ======================================================== */
@@ -2413,6 +2494,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .filter(Boolean)
         : [];
 
+
     for (const id of initialIds) {
 
         selectedRestaurants.set(String(id), {
@@ -2423,12 +2505,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
     if (selectedContainer && hiddenInput) {
 
         renderSelected();
         hydrateExistingRestaurants();
 
     }
+
 
     /* ========================================================
        UPDATE HIDDEN RESTAURANT IDS
@@ -2446,6 +2530,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
     /* ========================================================
        RESTAURANT INFORMATION
     ======================================================== */
@@ -2462,6 +2547,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
     function getRestaurantArea(restaurant) {
 
         return (
@@ -2474,6 +2560,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
     /* ========================================================
        RENDER SELECTED RESTAURANTS
     ======================================================== */
@@ -2485,6 +2572,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         selectedContainer.innerHTML = "";
+
 
         if (selectedRestaurants.size === 0) {
 
@@ -2499,7 +2587,9 @@ document.addEventListener("DOMContentLoaded", function () {
             updateHiddenInput();
 
             return;
+
         }
+
 
         for (const [id, restaurant] of selectedRestaurants) {
 
@@ -2507,9 +2597,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             card.className = "selected-restaurant";
 
+
             const info = document.createElement("div");
 
             info.className = "selected-restaurant-info";
+
 
             const name = document.createElement("div");
 
@@ -2517,14 +2609,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             name.textContent = getRestaurantName(restaurant);
 
+
             const area = document.createElement("div");
 
             area.className = "selected-restaurant-area";
 
             area.textContent = getRestaurantArea(restaurant);
 
+
             info.appendChild(name);
             info.appendChild(area);
+
 
             const removeButton = document.createElement("button");
 
@@ -2533,6 +2628,7 @@ document.addEventListener("DOMContentLoaded", function () {
             removeButton.className = "selected-restaurant-remove";
 
             removeButton.textContent = "Remove";
+
 
             removeButton.addEventListener(
                 "click",
@@ -2545,14 +2641,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             );
 
+
             card.appendChild(info);
             card.appendChild(removeButton);
 
             selectedContainer.appendChild(card);
+
         }
 
+
         updateHiddenInput();
+
     }
+
 
     /* ========================================================
        ADD RESTAURANT
@@ -2570,7 +2671,9 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         renderSelected();
+
     }
+
 
     /* ========================================================
        SEARCH RESTAURANTS
@@ -2588,12 +2691,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+
         const query = searchInput.value.trim();
 
         statusContainer.textContent =
             "Searching Kalxa Ticketing...";
 
         resultsContainer.innerHTML = "";
+
 
         try {
 
@@ -2605,19 +2710,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 encodeURIComponent(query)
             );
 
+
             if (!response.ok) {
                 throw new Error("Restaurant search failed.");
             }
+
 
             const data = await response.json();
 
             const restaurants = data.restaurants || [];
 
+
             statusContainer.textContent = restaurants.length
                 ? restaurants.length + " restaurant(s) found."
                 : "No restaurants found.";
 
+
             renderResults(restaurants);
+
 
         } catch (error) {
 
@@ -2625,9 +2735,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             statusContainer.textContent =
                 "Unable to connect to Kalxa Ticketing.";
+
         }
 
     }
+
 
     /* ========================================================
        RENDER RESTAURANT SEARCH RESULTS
@@ -2641,19 +2753,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         resultsContainer.innerHTML = "";
 
+
         for (const restaurant of restaurants) {
 
             if (!restaurant || !restaurant.id) {
                 continue;
             }
 
+
             const card = document.createElement("div");
 
             card.className = "restaurant-result";
 
+
             const info = document.createElement("div");
 
             info.className = "restaurant-result-info";
+
 
             const name = document.createElement("div");
 
@@ -2661,20 +2777,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
             name.textContent = getRestaurantName(restaurant);
 
+
             const area = document.createElement("div");
 
             area.className = "restaurant-result-area";
 
             area.textContent = getRestaurantArea(restaurant);
 
+
             info.appendChild(name);
             info.appendChild(area);
+
 
             const button = document.createElement("button");
 
             button.type = "button";
 
             button.className = "restaurant-result-button";
+
 
             if (
                 selectedRestaurants.has(
@@ -2701,14 +2821,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     }
                 );
+
             }
+
 
             card.appendChild(info);
             card.appendChild(button);
 
             resultsContainer.appendChild(card);
+
         }
+
     }
+
 
     /* ========================================================
        HYDRATE EXISTING RESTAURANTS
@@ -2720,19 +2845,23 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+
         try {
 
             const response = await fetch(
                 "{{ url_for('admin.restaurant_search') }}?q="
             );
 
+
             if (!response.ok) {
                 return;
             }
 
+
             const data = await response.json();
 
             const restaurants = data.restaurants || [];
+
 
             for (const restaurant of restaurants) {
 
@@ -2740,7 +2869,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     continue;
                 }
 
+
                 const id = String(restaurant.id);
+
 
                 if (selectedRestaurants.has(id)) {
 
@@ -2748,17 +2879,23 @@ document.addEventListener("DOMContentLoaded", function () {
                         id,
                         restaurant
                     );
+
                 }
+
             }
 
+
             renderSelected();
+
 
         } catch (error) {
 
             console.error(error);
 
         }
+
     }
+
 
     /* ========================================================
        RESTAURANT SEARCH EVENTS
@@ -2770,7 +2907,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             searchRestaurants
         );
+
     }
+
 
     if (searchInput) {
 
@@ -2785,9 +2924,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     searchRestaurants();
 
                 }
+
             }
         );
+
     }
+
 
     /* ========================================================
        STORY IMAGE UPLOAD
@@ -2811,6 +2953,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const imageUploadForm =
         document.getElementById("story-image-upload-form");
 
+
     if (storyImageInput) {
 
         storyImageInput.addEventListener(
@@ -2828,6 +2971,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     3 - existingCount
                 );
 
+
                 /* ============================================
                    NO FILES
                 ============================================ */
@@ -2842,6 +2986,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         "has-files"
                     );
 
+
                     if (selectedFileSummary) {
 
                         selectedFileSummary.classList.remove(
@@ -2849,7 +2994,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
                         selectedFileSummary.textContent = "";
+
                     }
+
 
                     if (uploadStatus) {
 
@@ -2863,10 +3010,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                     ? " more image."
                                     : " more images."
                             );
+
                     }
 
                     return;
+
                 }
+
 
                 /* ============================================
                    MAXIMUM IMAGE COUNT
@@ -2882,15 +3032,19 @@ document.addEventListener("DOMContentLoaded", function () {
                         " more image(s)."
                     );
 
+
                     storyImageInput.value = "";
+
 
                     if (uploadButton) {
                         uploadButton.disabled = true;
                     }
 
+
                     storyUploadZone?.classList.remove(
                         "has-files"
                     );
+
 
                     if (selectedFileSummary) {
 
@@ -2899,10 +3053,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
                         selectedFileSummary.textContent = "";
+
                     }
 
                     return;
+
                 }
+
 
                 /* ============================================
                    VALIDATE SIZE AND TYPE
@@ -2914,6 +3071,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "image/webp"
                 ]);
 
+
                 for (const file of files) {
 
                     if (!allowedTypes.has(file.type)) {
@@ -2922,14 +3080,22 @@ document.addEventListener("DOMContentLoaded", function () {
                             "Images must be JPG, PNG or WebP."
                         );
 
+
                         storyImageInput.value = "";
+
 
                         if (uploadButton) {
                             uploadButton.disabled = true;
                         }
 
+                        storyUploadZone?.classList.remove(
+                            "has-files"
+                        );
+
                         return;
+
                     }
+
 
                     if (file.size > 8 * 1024 * 1024) {
 
@@ -2937,15 +3103,24 @@ document.addEventListener("DOMContentLoaded", function () {
                             "Each image must be 8 MB or smaller."
                         );
 
+
                         storyImageInput.value = "";
+
 
                         if (uploadButton) {
                             uploadButton.disabled = true;
                         }
 
+                        storyUploadZone?.classList.remove(
+                            "has-files"
+                        );
+
                         return;
+
                     }
+
                 }
+
 
                 /* ============================================
                    FILES SELECTED
@@ -2955,9 +3130,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     "has-files"
                 );
 
+
                 if (uploadButton) {
                     uploadButton.disabled = false;
                 }
+
 
                 if (uploadStatus) {
 
@@ -2971,7 +3148,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         )
                         +
                         "Upload immediately.";
+
                 }
+
 
                 if (selectedFileSummary) {
 
@@ -2979,16 +3158,22 @@ document.addEventListener("DOMContentLoaded", function () {
                         .map(file => file.name)
                         .join(", ");
 
+
                     selectedFileSummary.textContent =
                         "Selected: " + names;
+
 
                     selectedFileSummary.classList.add(
                         "visible"
                     );
+
                 }
+
             }
         );
+
     }
+
 
     /* ========================================================
        IMAGE UPLOAD SUBMISSION
@@ -3015,19 +3200,25 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
                     return;
+
                 }
+
 
                 uploadButton.disabled = true;
 
                 uploadButton.textContent = "Uploading...";
 
+
                 if (uploadStatus) {
 
                     uploadStatus.textContent =
                         "Uploading directly to Kalxa Stories...";
+
                 }
+
             }
         );
+
     }
 
 });
