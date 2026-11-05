@@ -1077,64 +1077,149 @@ select:focus {
                  STORY CATEGORY
             ================================================== -->
 
-            <div class="form-section">
+<!-- =================================================
+     STORY CATEGORY
+================================================== -->
 
-                <h2>Story Category</h2>
+<div class="form-section">
 
-                <div class="field">
+    <h2>Story Category</h2>
 
-                    <label for="story-category">
-                        Show this story under
-                    </label>
+    <div class="field">
 
-                    <select
-                        id="story-category"
-                        name="category_id"
-                    >
+        <label for="story-category">
+            Show this story under
+        </label>
+
+        <select
+            id="story-category"
+            name="category_id"
+        >
+
+            <option
+                value=""
+                {% if not current_category %}
+                    selected
+                {% endif %}
+            >
+                No category (existing/default publishing)
+            </option>
+
+            {% set homepage_category_slugs = [
+                "trending-now",
+                "local",
+                "experiences",
+                "food",
+                "creators",
+                "news-kwandebele"
+            ] %}
+
+            {% for category_slug in homepage_category_slugs %}
+
+                {% for category in story_categories | default([], true) %}
+
+                    {% if category.slug == category_slug %}
 
                         <option
-                            value=""
-                            {% if not current_category %}
+                            value="{{ category.id }}"
+                            data-category-slug="{{ category.slug }}"
+                            data-requires-expiry="{{
+                                'true'
+                                if category.slug == trending_slug
+                                else 'false'
+                            }}"
+                            {% if current_category == category.id|string %}
                                 selected
                             {% endif %}
                         >
-                            No category (existing/default publishing)
+
+                            {% if category.slug == trending_slug %}
+                                🔥
+                            {% endif %}
+
+                            {{ category.name }}
+
                         </option>
 
-                        {% for category in story_categories | default([], true) %}
+                    {% endif %}
 
-                            <option
-                                value="{{ category.id }}"
-                                data-category-slug="{{ category.slug }}"
-                                data-requires-expiry="{{
-                                    'true'
-                                    if category.slug == trending_slug
-                                    else 'false'
-                                }}"
-                                {% if current_category == category.id|string %}
-                                    selected
-                                {% endif %}
-                            >
+                {% endfor %}
 
-                                {% if category.slug == trending_slug %}
-                                    🔥
-                                {% endif %}
+            {% endfor %}
 
-                                {{ category.name }}
+        </select>
 
-                            </option>
+        <div class="help">
+            Choose one of the six categories displayed on the
+            Kalxa Stories homepage. Categories control where
+            stories appear. They do not change restaurant links,
+            Premium Restaurant benefits or payments.
+        </div>
 
-                        {% endfor %}
+    </div>
 
-                    </select>
 
-                    <div class="help">
-                        Categories control where stories appear.
-                        They do not change restaurant links,
-                        Premium Restaurant benefits or payments.
-                    </div>
+    <!-- =============================================
+         TRENDING NOW INFORMATION
+    ============================================== -->
 
-                </div>
+    <div
+        id="trending-category-notice"
+        class="trending-category-notice"
+        role="status"
+        aria-live="polite"
+    >
+
+        <span class="trending-category-badge">
+            🔥 ADMIN EDITORIAL
+        </span>
+
+        <strong>
+            Trending Now — Temporary Stories
+        </strong>
+
+        <p>
+            Use this category for time-sensitive
+            stories, local announcements, events,
+            urgent updates and trending community news.
+        </p>
+
+        <ul>
+
+            <li>
+                The story is intended for the
+                homepage Trending Stories section.
+            </li>
+
+            <li>
+                You must set an expiry date and time.
+            </li>
+
+            <li>
+                Published Trending Now stories must
+                have a future expiry date.
+            </li>
+
+            <li>
+                Once expired, the story is removed
+                from active public discovery feeds.
+            </li>
+
+            <li>
+                The original story URL remains
+                available for previously shared links.
+            </li>
+
+            <li>
+                Permanent paid stories cannot be
+                assigned to this category.
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
 
 
                 <!-- =============================================
