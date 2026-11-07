@@ -10,8 +10,8 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 
 <style>
 .home-masthead {
-    padding: 38px 0 30px;
-    background: linear-gradient(135deg, #f8fafc, #fff 65%, #f8f5ed);
+    padding: 42px 0 34px;
+    background: linear-gradient(135deg, #f8fafc, #fff 65%, #f1f5f9);
     border-bottom: 1px solid var(--kalxa-border);
 }
 
@@ -24,16 +24,16 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 .kalxa-paid-eyebrow {
     display: block;
     color: var(--kalxa-gold-dark);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
 }
 
 .home-masthead h1 {
-    margin: 12px 0;
+    margin: 14px 0;
     font-family: var(--kalxa-serif);
-    font-size: clamp(36px, 5vw, 57px);
+    font-size: clamp(38px, 5.2vw, 58px);
     font-weight: 600;
     line-height: 1.12;
     color: var(--kalxa-ink);
@@ -44,18 +44,18 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 }
 
 .home-masthead p {
-    max-width: 610px;
+    max-width: 620px;
     margin: 0 auto;
-    color: #4d5866;
-    font-size: 13px;
+    color: #475569;
+    font-size: 14px;
     line-height: 1.85;
 }
 
 .home-masthead-tagline {
-    margin-top: 17px !important;
+    margin-top: 18px !important;
     color: #0753bd !important;
     font-family: var(--kalxa-serif);
-    font-size: 17px !important;
+    font-size: 18px !important;
     font-style: italic;
 }
 
@@ -63,8 +63,8 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 28px;
-    margin: 26px 0 0;
+    gap: 32px;
+    margin: 30px 0 0;
     padding: 0;
     list-style: none;
 }
@@ -73,12 +73,12 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
 }
 
 .community-stats strong {
     font-family: var(--kalxa-serif);
-    font-size: 26px;
+    font-size: 28px;
     color: var(--kalxa-ink);
 }
 
@@ -86,6 +86,7 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     color: var(--kalxa-muted);
     font-size: 10px;
     font-weight: 700;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
@@ -93,8 +94,8 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 11px;
-    margin-top: 24px;
+    gap: 12px;
+    margin-top: 28px;
 }
 
 .cta-prayer,
@@ -102,28 +103,36 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 11px 20px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 800;
     text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.cta-prayer:hover,
+.cta-share:hover {
+    transform: translateY(-2px);
 }
 
 .cta-prayer {
     background: #0753bd;
     color: #fff;
+    box-shadow: 0 4px 14px rgba(7,83,189,.22);
 }
 
 .cta-share {
     background: #fff;
     color: var(--kalxa-ink);
-    border: 1px solid #dbe4ee;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 8px rgba(15,23,42,.04);
 }
 
 .daily-verse {
-    padding: 34px 0;
-    background: linear-gradient(135deg, #0a3d7a, #0753bd);
-    color: #fff;
+    padding: 38px 0;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .verse-card {
@@ -134,30 +143,32 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 }
 
 .verse-eyebrow {
-    color: #f4c430;
-    font-size: 10px;
+    color: #0753bd;
+    font-size: 11px;
     font-weight: 800;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
 }
 
 .verse-text {
     margin: 14px 0 10px;
     font-family: var(--kalxa-serif);
-    font-size: clamp(19px, 2.2vw, 25px);
+    font-size: clamp(20px, 2.4vw, 26px);
     font-style: italic;
-    line-height: 1.55;
+    line-height: 1.6;
+    color: #1e293b;
 }
 
 .verse-ref {
-    color: rgba(255,255,255,.78);
-    font-size: 12px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .story-categories {
-    padding: 32px 0 35px;
+    padding: 36px 0 40px;
     overflow: hidden;
-    background: linear-gradient(135deg, #f8fbff, #fff 55%, #fbf9f4);
+    background: linear-gradient(135deg, #f8fbff, #fff 55%, #f8fafc);
     border-bottom: 1px solid var(--kalxa-border-soft);
 }
 
@@ -166,35 +177,35 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     align-items: center;
     justify-content: space-between;
     gap: 15px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .category-topline strong {
     display: block;
     color: var(--kalxa-ink);
     font-family: var(--kalxa-serif);
-    font-size: 25px;
+    font-size: 26px;
 }
 
 .category-subtitle {
     display: block;
     margin-top: 5px;
     color: var(--kalxa-text-soft);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .category-hint {
     flex-shrink: 0;
     color: #0753bd;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
 }
 
 .story-categories-scroll {
     display: flex;
-    gap: 14px;
+    gap: 16px;
     overflow-x: auto;
-    padding: 4px 2px 17px;
+    padding: 6px 2px 18px;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
 }
@@ -202,35 +213,35 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 .story-category-pill {
     position: relative;
     display: flex;
-    flex: 0 0 235px;
+    flex: 0 0 240px;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 158px;
-    padding: 19px;
+    min-height: 164px;
+    padding: 20px;
     overflow: hidden;
     scroll-snap-align: start;
-    border: 1px solid #e3e9f1;
-    border-radius: 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
     background: #fff;
     color: var(--kalxa-ink);
     text-decoration: none;
-    box-shadow: 0 3px 12px rgba(30,50,80,.035);
+    box-shadow: 0 4px 14px rgba(15,23,42,.04);
     transition: transform .22s ease, box-shadow .22s ease;
 }
 
 .story-category-pill:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(20,45,80,.09);
+    box-shadow: 0 12px 28px rgba(15,23,42,.09);
 }
 
 .story-category-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 49px;
-    height: 49px;
-    border-radius: 13px;
-    background: #edf4ff;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: #eff6ff;
     color: #0753bd;
 }
 
@@ -242,13 +253,13 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 
 .story-category-text {
     display: block;
-    margin-top: 17px;
+    margin-top: 18px;
 }
 
 .story-category-text strong {
     display: block;
     color: var(--kalxa-ink);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 800;
     line-height: 1.4;
 }
@@ -257,20 +268,20 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     display: block;
     margin-top: 5px;
     color: var(--kalxa-muted);
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.5;
 }
 
 .story-category-arrow {
     position: absolute;
-    right: 17px;
-    bottom: 17px;
+    right: 18px;
+    bottom: 18px;
     color: #0753bd;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .newsroom-section {
-    padding: 29px 0 36px;
+    padding: 34px 0 40px;
 }
 
 .newsroom-section + .newsroom-section {
@@ -282,41 +293,42 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     align-items: center;
     justify-content: space-between;
     gap: 15px;
-    margin-bottom: 19px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #273c57;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #1e293b;
 }
 
 .newsroom-heading h2 {
     margin: 0;
     font-family: var(--kalxa-serif);
-    font-size: clamp(24px, 2.8vw, 33px);
+    font-size: clamp(26px, 3vw, 34px);
     color: var(--kalxa-ink);
 }
 
 .newsroom-heading a {
     color: #0753bd;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
 }
 
 .home-lead {
     display: grid;
     grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
-    gap: 23px;
+    gap: 26px;
     align-items: center;
-    padding: 15px;
-    border: 1px solid #e3e5e8;
-    border-radius: 13px;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
     background: #fff;
+    box-shadow: 0 4px 20px rgba(15,23,42,.03);
 }
 
 .home-lead-media {
     display: block;
     overflow: hidden;
     aspect-ratio: 16 / 10;
-    background: #dededb;
-    border-radius: 8px;
+    background: #f1f5f9;
+    border-radius: 10px;
 }
 
 .home-lead-media img,
@@ -325,6 +337,12 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform .3s ease;
+}
+
+.home-lead-media:hover img,
+.home-news-thumb:hover img {
+    transform: scale(1.03);
 }
 
 .home-lead-body,
@@ -336,68 +354,69 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 7px;
-    color: #69747d;
-    font-size: 10px;
+    gap: 8px;
+    color: #64748b;
+    font-size: 11px;
     font-weight: 700;
 }
 
 .home-story-date {
-    color: #66717d;
-    font-size: 10px;
+    color: #64748b;
+    font-size: 11px;
 }
 
 .home-lead h3 {
-    margin: 12px 0 11px;
+    margin: 12px 0 12px;
     font-family: var(--kalxa-serif);
-    font-size: clamp(26px, 3vw, 38px);
-    line-height: 1.15;
+    font-size: clamp(26px, 3.2vw, 38px);
+    line-height: 1.18;
     color: var(--kalxa-ink);
 }
 
 .home-lead p {
     color: var(--kalxa-text-soft);
-    font-size: 12px;
-    line-height: 1.7;
+    font-size: 13px;
+    line-height: 1.75;
 }
 
 .read-link {
     display: inline-flex;
     gap: 6px;
     color: #0753bd;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
+    margin-top: 6px;
 }
 
 .home-news-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 26px;
+    gap: 0 28px;
 }
 
 .home-news-item {
     display: grid;
-    grid-template-columns: 116px minmax(0, 1fr);
-    gap: 15px;
+    grid-template-columns: 124px minmax(0, 1fr);
+    gap: 16px;
     align-items: start;
-    padding: 17px 8px;
-    border-bottom: 1px solid #e2e3e5;
+    padding: 18px 8px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .home-news-thumb {
     display: block;
-    width: 116px;
-    height: 86px;
+    width: 124px;
+    height: 92px;
     overflow: hidden;
-    background: #e9e8e3;
-    border-radius: 6px;
+    background: #f1f5f9;
+    border-radius: 8px;
 }
 
 .home-news-title {
     margin: 6px 0 8px;
     font-family: var(--kalxa-serif);
-    font-size: clamp(17px, 1.7vw, 21px);
-    line-height: 1.27;
+    font-size: clamp(17px, 1.8vw, 22px);
+    line-height: 1.3;
 }
 
 .home-news-excerpt {
@@ -407,14 +426,14 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     overflow: hidden;
     margin: 0;
     color: var(--kalxa-text-soft);
-    font-size: 11px;
-    line-height: 1.55;
+    font-size: 12px;
+    line-height: 1.6;
 }
 
 .story-actions {
     display: flex;
-    gap: 9px;
-    margin-top: 9px;
+    gap: 10px;
+    margin-top: 10px;
     flex-wrap: wrap;
 }
 
@@ -422,83 +441,104 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 .story-actions button {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 9px;
-    border: 1px solid #e1e6ee;
+    gap: 6px;
+    padding: 5px 11px;
+    border: 1px solid #cbd5e1;
     border-radius: 20px;
     background: #fff;
-    color: #5a6571;
-    font-size: 10px;
+    color: #475569;
+    font-size: 11px;
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+.story-actions a:hover,
+.story-actions button:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
 }
 
 .kalxa-newsletter {
-    padding: 50px 0;
-    background: linear-gradient(130deg, #f3f5f7, #fff);
+    padding: 54px 0;
+    background: linear-gradient(130deg, #f1f5f9, #fff);
 }
 
 .kalxa-newsletter-inner {
     max-width: 780px;
     margin: 0 auto;
-    padding: 34px 26px;
-    border: 1px solid #e1e7ef;
-    border-radius: 14px;
+    padding: 38px 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
     background: #fff;
     text-align: center;
+    box-shadow: 0 4px 24px rgba(15,23,42,.04);
 }
 
 .kalxa-newsletter-title {
-    margin: 9px 0 14px;
+    margin: 10px 0 14px;
     font-family: var(--kalxa-serif);
     font-size: clamp(28px, 4vw, 40px);
+    color: var(--kalxa-ink);
 }
 
 .kalxa-newsletter-copy {
-    max-width: 520px;
-    margin: 0 auto 20px;
+    max-width: 530px;
+    margin: 0 auto 22px;
     color: var(--kalxa-text-soft);
-    font-size: 12px;
-    line-height: 1.7;
+    font-size: 13px;
+    line-height: 1.75;
 }
 
 .newsletter-form {
     display: flex;
-    gap: 8px;
-    max-width: 460px;
-    margin: 0 auto 10px;
+    gap: 10px;
+    max-width: 480px;
+    margin: 0 auto 12px;
     flex-wrap: wrap;
 }
 
 .newsletter-form input[type="email"] {
-    flex: 1 1 240px;
+    flex: 1 1 250px;
     min-width: 0;
-    padding: 11px 14px;
-    border: 1px solid #cfdae8;
-    border-radius: 6px;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
     font-size: 13px;
+    background: #fff;
+}
+
+.newsletter-form input[type="email"]:focus {
+    outline: none;
+    border-color: #0753bd;
+    box-shadow: 0 0 0 3px rgba(7,83,189,.12);
 }
 
 .newsletter-form button {
-    padding: 11px 20px;
+    padding: 12px 22px;
     border: 0;
-    border-radius: 6px;
+    border-radius: 8px;
     background: #0753bd;
     color: #fff;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 800;
     cursor: pointer;
+    transition: background .18s ease;
+}
+
+.newsletter-form button:hover {
+    background: #06439b;
 }
 
 .newsletter-privacy {
-    color: #8892a0;
-    font-size: 10px;
+    color: #64748b;
+    font-size: 11px;
 }
 
 .kalxa-paid-stories-cta {
     position: relative;
-    padding: 54px 0;
+    padding: 58px 0;
     background: var(--kalxa-publish-gradient);
     text-align: center;
 }
@@ -521,6 +561,7 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     margin: 12px 0;
     font-family: var(--kalxa-serif);
     font-size: clamp(28px, 4vw, 43px);
+    color: var(--kalxa-ink);
 }
 
 .kalxa-paid-copy,
@@ -528,23 +569,31 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     max-width: 580px;
     margin: 10px auto;
     color: var(--kalxa-text-soft);
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.75;
 }
 
 .kalxa-paid-note {
-    margin-bottom: 22px;
-    font-size: 10px;
+    margin-bottom: 24px;
+    font-size: 11px;
 }
 
 .kalxa-paid-button {
     display: inline-block;
-    padding: 13px 23px;
-    border-radius: 5px;
+    padding: 13px 25px;
+    border-radius: 6px;
     background: #f4c430;
     color: #181511;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(244,196,48,.3);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.kalxa-paid-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(244,196,48,.4);
 }
 
 .sr-only {
@@ -567,40 +616,40 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 
 @media (max-width: 650px) {
     .home-masthead {
-        padding: 29px 0 24px;
+        padding: 30px 0 26px;
     }
 
     .home-masthead h1 {
-        font-size: 37px;
+        font-size: 38px;
     }
 
     .community-stats {
-        gap: 20px;
-        margin-top: 20px;
+        gap: 22px;
+        margin-top: 22px;
     }
 
     .daily-verse {
-        padding: 26px 0;
+        padding: 28px 0;
     }
 
     .story-categories {
-        padding: 25px 0 24px;
+        padding: 28px 0 26px;
     }
 
     .story-category-pill {
-        flex-basis: 205px;
-        min-height: 145px;
+        flex-basis: 210px;
+        min-height: 150px;
         padding: 16px;
     }
 
     .newsroom-section {
-        padding: 22px 0 25px;
+        padding: 24px 0 28px;
     }
 
     .home-lead {
         grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 11px;
+        gap: 14px;
+        padding: 12px;
     }
 
     .home-lead-media {
@@ -608,14 +657,14 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     }
 
     .home-news-item {
-        grid-template-columns: 100px minmax(0, 1fr);
+        grid-template-columns: 104px minmax(0, 1fr);
         gap: 12px;
-        padding: 13px 8px;
+        padding: 14px 6px;
     }
 
     .home-news-thumb {
-        width: 100px;
-        height: 76px;
+        width: 104px;
+        height: 78px;
     }
 
     .home-news-excerpt {
@@ -624,7 +673,7 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 
     .kalxa-newsletter,
     .kalxa-paid-stories-cta {
-        padding: 42px 0;
+        padding: 44px 0;
     }
 
     .newsletter-form {
@@ -638,7 +687,10 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .story-category-pill {
+    .story-category-pill,
+    .cta-prayer,
+    .cta-share,
+    .kalxa-paid-button {
         transition: none;
     }
 }
@@ -999,8 +1051,8 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
                     <img
                         src="{{ article.display_cover_image_url }}"
                         alt="{{ article.title }}"
-                        width="232"
-                        height="172"
+                        width="248"
+                        height="184"
                         loading="lazy"
                         decoding="async"
                     >
@@ -1092,8 +1144,8 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
                     <img
                         src="{{ article.display_cover_image_url }}"
                         alt="{{ article.title }}"
-                        width="232"
-                        height="172"
+                        width="248"
+                        height="184"
                         loading="lazy"
                         decoding="async"
                     >
