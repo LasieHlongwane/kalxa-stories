@@ -703,35 +703,8 @@ Welcome to Kalxa Stories — a Christian community sharing prayers, God's Word, 
     <div class="page-container home-masthead-inner">
 
         <span class="home-eyebrow">
-            Welcome to Kalxa Stories
+            In Whatever That You're Doing, Try To Inspire
         </span>
-
-
-        <ul class="community-stats" aria-label="Community statistics">
-            <li>
-                <strong>{{ total_stories if total_stories is defined and total_stories is not none else '—' }}</strong>
-                <span>Stories</span>
-            </li>
-            <li>
-                <strong>{{ total_prayers if total_prayers is defined and total_prayers is not none else '—' }}</strong>
-                <span>Prayers</span>
-            </li>
-            <li>
-                <strong>7</strong>
-                <span>Categories</span>
-            </li>
-        </ul>
-
-        <div class="masthead-actions">
-            <a
-                class="cta-prayer"
-                href="{{ url_for('public.story_category', category_slug='prayers') }}"
-            >
-                <span aria-hidden="true">🙏</span>
-                Submit a Prayer Request
-            </a>
-
-        </div>
 
     </div>
 </section>
