@@ -2,336 +2,297 @@ from datetime import datetime, timezone
 
 from app.extensions import db
 
-
 class Article(db.Model):
 
-    __tablename__ = "articles"
+__tablename__ = "articles"
 
-    # ==========================================
-    # PRIMARY KEY
-    # ==========================================
+# ==========================================
+# PRIMARY KEY
+# ==========================================
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-    )
+id = db.Column(
+    db.Integer,
+    primary_key=True,
+)
 
-    # ==========================================
-    # ARTICLE CONTENT
-    # ==========================================
+# ==========================================
+# ARTICLE CONTENT
+# ==========================================
 
-    title = db.Column(
-        db.String(250),
-        nullable=False,
-    )
+title = db.Column(
+    db.String(250),
+    nullable=False,
+)
 
-    slug = db.Column(
-        db.String(300),
-        unique=True,
-        nullable=False,
-        index=True,
-    )
+slug = db.Column(
+    db.String(300),
+    unique=True,
+    nullable=False,
+    index=True,
+)
 
-    excerpt = db.Column(
-        db.Text,
-        nullable=True,
-    )
+excerpt = db.Column(
+    db.Text,
+    nullable=True,
+)
 
-    body = db.Column(
-        db.Text,
-        nullable=False,
-    )
+body = db.Column(
+    db.Text,
+    nullable=False,
+)
 
-    # =========================================================
-    # LEGACY COVER IMAGE
-    # =========================================================
+# ==========================================
+# LEGACY COVER IMAGE
+# ==========================================
 
-    cover_image_url = db.Column(
-        db.Text,
-        nullable=True,
-    )
+cover_image_url = db.Column(
+    db.Text,
+    nullable=True,
+)
 
-    # ==========================================
-    # ARTICLE TYPE
-    # ==========================================
+# ==========================================
+# ARTICLE TYPE
+# ==========================================
 
-    article_type = db.Column(
-        db.String(50),
-        nullable=False,
-        default="restaurant_story",
-        index=True,
-    )
+article_type = db.Column(
+    db.String(50),
+    nullable=False,
+    default="restaurant_story",
+    index=True,
+)
 
-    # restaurant_story
-    # food_guide
-    # sponsored
-    # new_restaurant
-    # experience
+# restaurant_story
+# food_guide
+# sponsored
+# new_restaurant
+# experience
 
-    # ==========================================
-    # PUBLISHING
-    # ==========================================
+# ==========================================
+# PUBLISHING
+# ==========================================
 
-    status = db.Column(
-        db.String(30),
-        nullable=False,
-        default="draft",
-        index=True,
-    )
+status = db.Column(
+    db.String(30),
+    nullable=False,
+    default="draft",
+    index=True,
+)
 
-    # draft
-    # published
-    # archived
+# draft
+# published
+# archived
 
-    is_sponsored = db.Column(
-        db.Boolean,
-        nullable=False,
-        default=False,
-    )
+is_sponsored = db.Column(
+    db.Boolean,
+    nullable=False,
+    default=False,
+)
 
-    # ==========================================
-    # FUTURE ADVERTISING
-    # ==========================================
+# ==========================================
+# FUTURE ADVERTISING
+# ==========================================
 
-    campaign_id = db.Column(
-        db.Integer,
-        nullable=True,
-        index=True,
-    )
+campaign_id = db.Column(
+    db.Integer,
+    nullable=True,
+    index=True,
+)
 
-    # ==========================================
-    # SEO
-    # ==========================================
+# ==========================================
+# SEO
+# ==========================================
 
-    meta_title = db.Column(
-        db.String(250),
-        nullable=True,
-    )
+meta_title = db.Column(
+    db.String(250),
+    nullable=True,
+)
 
-    meta_description = db.Column(
-        db.String(320),
-        nullable=True,
-    )
+meta_description = db.Column(
+    db.String(320),
+    nullable=True,
+)
 
-    # ==========================================
-    # TIMESTAMPS
-    # ==========================================
+# ==========================================
+# PUBLISHING TIMESTAMP
+# ==========================================
 
-    published_at = db.Column(
-        db.DateTime(timezone=True),
-        nullable=True,
-    )
+published_at = db.Column(
+    db.DateTime(timezone=True),
+    nullable=True,
+)
 
-    # ==========================================
-    # STORY / COMMENT EXPIRY
-    # ==========================================
+# ==========================================
+# STORY / COMMENT EXPIRY
+# ==========================================
 
-    expires_at = db.Column(
-        db.DateTime(timezone=True),
-        nullable=True,
-        index=True,
-    )
+expires_at = db.Column(
+    db.DateTime(timezone=True),
+    nullable=True,
+    index=True,
+)
 
-    # ============================================================
+# ==========================================
 # STORY CATEGORY
-# ============================================================
+# ==========================================
 
-    category_id = db.Column(
-        db.Integer,
-        db.ForeignKey(
-         "story_categories.id"
-        ),
-        nullable=True,
-        index=True,
-    )
+category_id = db.Column(
+    db.Integer,
+    db.ForeignKey(
+        "story_categories.id",
+        ondelete="SET NULL",
+    ),
+    nullable=True,
+    index=True,
+)
 
-    category = db.relationship(
-        "StoryCategory",
-        backref=db.backref(
-         "articles",
-         lazy=True,
-        ),
-    )
+category = db.relationship(
+    "StoryCategory",
+    back_populates="articles",
+)
 
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        nullable=False,
-        default=lambda: datetime.now(
-            timezone.utc
-        ),
-    )
+# ==========================================
+# TIMESTAMPS
+# ==========================================
 
-    updated_at = db.Column(
-        db.DateTime(timezone=True),
-        nullable=False,
-        default=lambda: datetime.now(
-            timezone.utc
-        ),
-        onupdate=lambda: datetime.now(
-            timezone.utc
-        ),
-    )
+created_at = db.Column(
+    db.DateTime(timezone=True),
+    nullable=False,
+    default=lambda: datetime.now(
+        timezone.utc
+    ),
+)
 
-    # ============================================================
-# STORY CATEGORY
-# ============================================================
-#
-# Separate from article_type.
-#
-# Existing Premium Restaurant articles can continue using
-# article_type="restaurant_story".
-#
-# Nullable to preserve existing articles.
-# ============================================================
+updated_at = db.Column(
+    db.DateTime(timezone=True),
+    nullable=False,
+    default=lambda: datetime.now(
+        timezone.utc
+    ),
+    onupdate=lambda: datetime.now(
+        timezone.utc
+    ),
+)
 
-    category_id = db.Column(
-        db.Integer,
-        db.ForeignKey(
-         "story_categories.id",
-         ondelete="SET NULL",
-        ),
-        nullable=True,
-        index=True,
-    )
+# ==========================================
+# RESTAURANTS
+# ==========================================
 
-    category = db.relationship(
-        "StoryCategory",
-        back_populates="articles",
-    )
+restaurants = db.relationship(
+    "ArticleRestaurant",
+    back_populates="article",
+    cascade="all, delete-orphan",
+    lazy=True,
+)
 
-    # ==========================================
-    # RESTAURANTS
-    # ==========================================
+# ==========================================
+# STORY IMAGES
+# ==========================================
 
-    restaurants = db.relationship(
-        "ArticleRestaurant",
-        back_populates="article",
-        cascade="all, delete-orphan",
-        lazy=True,
-    )
+images = db.relationship(
+    "ArticleImage",
+    back_populates="article",
+    cascade="all, delete-orphan",
+    lazy=True,
+    order_by="ArticleImage.display_order",
+)
 
-    # ==========================================
-    # STORY IMAGES
-    # ==========================================
+# ==========================================
+# COMMENTS
+# ==========================================
 
-    images = db.relationship(
-        "ArticleImage",
-        back_populates="article",
-        cascade="all, delete-orphan",
-        lazy=True,
-        order_by="ArticleImage.display_order",
-    )
+comments = db.relationship(
+    "ArticleComment",
+    back_populates="article",
+    cascade="all, delete-orphan",
+    lazy=True,
+    order_by="ArticleComment.created_at.desc()",
+)
 
-    # ==========================================
-    # COMMENTS
-    # ==========================================
+# ==========================================
+# DISPLAY COVER
+# ==========================================
 
-    comments = db.relationship(
-        "ArticleComment",
-        back_populates="article",
-        cascade="all, delete-orphan",
-        lazy=True,
-        order_by="ArticleComment.created_at.desc()",
-    )
+@property
+def display_cover_image_url(self):
 
-    # ==========================================
-    # DISPLAY COVER
-    # ==========================================
+    if self.images:
 
-    @property
-    def display_cover_image_url(self):
-
-        if self.images:
-
-            first_image = min(
-                self.images,
-                key=lambda image:
-                    image.display_order,
-            )
-
-            return first_image.image_url
-
-        return self.cover_image_url
-
-    # ==========================================
-    # ARTICLE LIFECYCLE
-    # ==========================================
-
-    @property
-    def is_expired(self):
-
-        if not self.expires_at:
-
-            return False
-
-        now = datetime.now(
-            timezone.utc
+        first_image = min(
+            self.images,
+            key=lambda image:
+                image.display_order,
         )
 
-        expires_at = (
-            self.expires_at
+        return first_image.image_url
+
+    return self.cover_image_url
+
+# ==========================================
+# ARTICLE LIFECYCLE
+# ==========================================
+
+@property
+def is_expired(self):
+
+    if not self.expires_at:
+        return False
+
+    now = datetime.now(
+        timezone.utc
+    )
+
+    expires_at = self.expires_at
+
+    if expires_at.tzinfo is None:
+
+        expires_at = expires_at.replace(
+            tzinfo=timezone.utc
         )
 
-        if expires_at.tzinfo is None:
+    return now >= expires_at
 
-            expires_at = (
-                expires_at.replace(
-                    tzinfo=timezone.utc
-                )
-            )
+@property
+def comments_open(self):
 
-        return (
-            now
-            >=
-            expires_at
-        )
+    return (
+        self.status == "published"
+        and not self.is_expired
+    )
 
-    @property
-    def comments_open(self):
+# ==========================================
+# SEO HELPERS
+# ==========================================
 
-        return (
-            self.status == "published"
-            and
-            not self.is_expired
-        )
+@property
+def seo_title(self):
 
-    # ==========================================
-    # SEO HELPERS
-    # ==========================================
+    return (
+        self.meta_title
+        or f"{self.title} | Kalxa Stories"
+    )
 
-    @property
-    def seo_title(self):
+@property
+def seo_description(self):
 
-        return (
-            self.meta_title
-            or
-            f"{self.title} | Kalxa Stories"
-        )
+    if self.meta_description:
+        return self.meta_description
 
-    @property
-    def seo_description(self):
+    if self.excerpt:
+        return self.excerpt[:320]
 
-        if self.meta_description:
+    return (
+        "Discover local stories, restaurants "
+        "and experiences on Kalxa."
+    )
 
-            return (
-                self.meta_description
-            )
+# ==========================================
+# REPRESENTATION
+# ==========================================
 
-        if self.excerpt:
+def __repr__(self):
 
-            return (
-                self.excerpt[:320]
-            )
-
-        return (
-            "Discover local stories, restaurants "
-            "and experiences on Kalxa."
-        )
-
-    def __repr__(self):
-
-        return (
-            f"<Article "
-            f"id={self.id} "
-            f"title={self.title!r}>"
-        )
+    return (
+        f"<Article "
+        f"id={self.id} "
+        f"title={self.title!r}>"
+    )
