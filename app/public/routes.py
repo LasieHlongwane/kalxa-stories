@@ -33,6 +33,7 @@ from app.extensions import db
 from app.models import (
     Article,
     StoryAnalyticsEvent,
+    ScriptureContent,
 )
 
 from app.models.article_comment import (
@@ -1010,6 +1011,10 @@ def stories():
 # STORY CATEGORY PAGE
 # ============================================================
 
+# ============================================================
+# STORY CATEGORY PAGE
+# ============================================================
+
 @public_bp.route(
     "/stories/category/<string:category_slug>"
 )
@@ -1024,6 +1029,10 @@ def story_category(category_slug):
         .first_or_404()
     )
 
+    # ========================================================
+    # EXISTING PUBLISHED ARTICLES
+    # ========================================================
+
     articles = (
         active_published_article_query()
         .filter(
@@ -1036,9 +1045,9 @@ def story_category(category_slug):
         .all()
     )
 
-    # Trending Now must never show permanent articles.
-    # The admin form enforces expiry when publishing,
-    # and this adds protection for old/manual records.
+    # ========================================================
+    # TRENDING NOW EXPIRY PROTECTION
+    # ========================================================
 
     if category.slug == TRENDING_NOW_CATEGORY_SLUG:
 
@@ -1048,10 +1057,35 @@ def story_category(category_slug):
             if article.expires_at is not None
         ]
 
+    # ========================================================
+    # SCRIPTURE CONTENT
+    # ========================================================
+
+    scripture_content = (
+        ScriptureContent.query
+        .filter_by(
+            category_id=category.id,
+            is_active=True,
+        )
+        .order_by(
+            ScriptureContent.display_order.asc(),
+            ScriptureContent.id.asc(),
+        )
+        .all()
+    )
+
+    # ========================================================
+    # RENDER CATEGORY
+    # ========================================================
+
     return render_template(
         "category.html",
+
         category=category,
+
         articles=articles,
+
+        scripture_content=scripture_content,
     )
 
 
@@ -2106,6 +2140,74 @@ def robots_txt():
         robots,
         content_type="text/plain; charset=utf-8",
     )
+
+
+# ============================================================
+# SCRIPTURE CONTENT SYNCHRONISATION
+# ============================================================
+
+@public_bp.post(
+    "/internal/scripture/sync"
+)
+def sync_scripture():
+
+    expected_token = (
+        current_app.config.get(
+            "SCRIPTURE_SYNC_TOKEN"
+        )
+        or ""
+    )
+
+    expected_token = str(
+        expected_token
+    ).strip()
+
+    submitted_token = (
+        request.headers.get(
+            "X-SCRIPTURE-SYNC-TOKEN",
+            "",
+        )
+    )
+
+    if not expected_token:
+
+        current_app.logger.error(
+            "SCRIPTURE_SYNC_TOKEN is not configured."
+        )
+
+        abort(503)
+
+    if not secrets.compare_digest(
+        submitted_token,
+        expected_token,
+    ):
+
+        abort(403)
+
+    from app.services.bible_api import (
+        sync_scripture_content,
+    )
+
+    try:
+
+        result = sync_scripture_content()
+
+        return jsonify({
+            "ok": True,
+            "message": "Scripture synchronisation completed.",
+            **result,
+        }), 200
+
+    except Exception:
+
+        current_app.logger.exception(
+            "Scripture synchronisation failed."
+        )
+
+        return jsonify({
+            "ok": False,
+            "message": "Scripture synchronisation failed.",
+        }), 500
 
 
 # ============================================================
