@@ -94,6 +94,35 @@
 }
 
 /* ============================================================
+   SHARED SECTION HEADING
+============================================================ */
+
+.category-section-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:23px;
+    padding-bottom:13px;
+    border-bottom:2px solid #273c57;
+}
+
+.category-section-heading h2{
+    margin:0;
+    font-family:var(--kalxa-serif);
+    font-size:clamp(23px,3vw,30px);
+    font-weight:600;
+    color:var(--kalxa-ink);
+}
+
+.category-article-count{
+    color:var(--kalxa-muted);
+    font-size:10px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+/* ============================================================
    SCRIPTURE SECTION
 ============================================================ */
 
@@ -190,36 +219,11 @@
 }
 
 /* ============================================================
-   ARTICLE SECTION
+   PUBLISHED ARTICLES SECTION
 ============================================================ */
 
 .category-articles{
     padding:55px 0 85px;
-}
-
-.category-section-heading{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:15px;
-    margin-bottom:23px;
-    padding-bottom:13px;
-    border-bottom:2px solid #273c57;
-}
-
-.category-section-heading h2{
-    margin:0;
-    font-family:var(--kalxa-serif);
-    font-size:clamp(23px,3vw,30px);
-    font-weight:600;
-    color:var(--kalxa-ink);
-}
-
-.category-article-count{
-    color:var(--kalxa-muted);
-    font-size:10px;
-    font-weight:700;
-    white-space:nowrap;
 }
 
 /* ============================================================
@@ -472,327 +476,378 @@
     }
 
 }
-</style>{% endblock %}
+</style>
+
+{% endblock %}
+
 
 {% block content %}
 
 <!-- ========================================================
      CATEGORY INTRODUCTION
-======================================================== --><section class="category-hero"><div class="page-container category-hero-inner">
+======================================================== -->
 
-    <div class="category-label">
-        KALXA STORIES / FAITH & COMMUNITY
-    </div>
+<section class="category-hero">
 
-    <h1 class="category-title">
-        {{ category.name }}
-    </h1>
+    <div class="page-container category-hero-inner">
 
-    {% if category.description %}
-
-    <p class="category-description">
-        {{ category.description }}
-    </p>
-
-    {% else %}
-
-    <p class="category-description">
-        Explore stories, reflections and messages shared
-        with our Christian community. A place to grow in faith,
-        find encouragement and celebrate God's goodness.
-    </p>
-
-    {% endif %}
-
-    <div class="category-tagline">
-        Growing together in faith, one story at a time.
-    </div>
-
-    <a
-        class="category-back"
-        href="{{ url_for('public.home') }}"
-    >
-        <span aria-hidden="true">←</span>
-        Back to Kalxa Stories
-    </a>
-
-</div>
-
-</section><!-- ========================================================
-     SCRIPTURE CONTENT
-======================================================== -->{% if scripture_content %}
-
-<section class="scripture-section"><div class="page-container">
-
-    <div class="category-section-heading">
-
-        <h2>
-            {% if category.slug == 'prayers' %}
-                Scripture for Prayer
-
-            {% elif category.slug == 'words-of-encouragement' %}
-                Words from Scripture
-
-            {% elif category.slug == 'quotes' %}
-                Bible Verses & Quotes
-
-            {% else %}
-                Scripture & Reflection
-            {% endif %}
-        </h2>
-
-        <span class="category-article-count">
-            {{ scripture_content | length }}
-            {{ 'Verse' if scripture_content | length == 1 else 'Verses' }}
-        </span>
-
-    </div>
-
-    {% if category.slug == 'prayers' %}
-
-    <p class="scripture-intro">
-        Take a moment to reflect on these passages and
-        bring your thoughts and prayers before God.
-    </p>
-
-    {% elif category.slug == 'words-of-encouragement' %}
-
-    <p class="scripture-intro">
-        Find encouragement in God's Word. These passages
-        offer reminders of faith, hope and strength.
-    </p>
-
-    {% elif category.slug == 'quotes' %}
-
-    <p class="scripture-intro">
-        Explore selected Bible verses and reflect on
-        their meaning in your everyday life.
-    </p>
-
-    {% endif %}
-
-    <div class="scripture-grid">
-
-        {% for scripture in scripture_content %}
-
-        <article class="scripture-card">
-
-            <h3 class="scripture-card-title">
-                {{ scripture.title }}
-            </h3>
-
-            <blockquote class="scripture-card-content">
-                {{ scripture.content }}
-            </blockquote>
-
-            <div class="scripture-card-reference">
-
-                <span>
-                    {{ scripture.verse_reference }}
-                </span>
-
-                <span aria-hidden="true">·</span>
-
-                <span class="scripture-translation">
-                    {{ scripture.translation }}
-                </span>
-
-            </div>
-
-            {% if scripture.source_url %}
-
-            <div class="scripture-source">
-
-                Source:
-                <a
-                    href="{{ scripture.source_url }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {{ scripture.source or 'Bible API' }}
-                </a>
-
-            </div>
-
-            {% else %}
-
-            <div class="scripture-source">
-                {{ scripture.source or 'Bible API' }}
-            </div>
-
-            {% endif %}
-
-        </article>
-
-        {% endfor %}
-
-    </div>
-
-</div>
-
-</section>{% endif %}
-
-<!-- ========================================================
-     PUBLISHED ARTICLES
-======================================================== --><section class="category-articles"><div class="page-container">
-
-    {% if articles %}
-
-    <div class="category-section-heading">
-
-        <h2>
-            Stories & Community Posts
-        </h2>
-
-        <span class="category-article-count">
-
-            {{ articles | length }}
-
-            {{ 'Article' if articles | length == 1 else 'Articles' }}
-
-        </span>
-
-    </div>
-
-    <div class="story-grid">
-
-        {% for article in articles %}
-
-        <article class="story-card">
-
-            <a
-                class="story-image-link"
-                href="{{ url_for(
-                    'public.article_detail',
-                    slug=article.slug
-                ) }}"
-                aria-label="Read {{ article.title }}"
-            >
-
-                <div class="story-image">
-
-                    {% if article.display_cover_image_url %}
-
-                    <img
-                        src="{{ article.display_cover_image_url }}"
-                        alt="{{ article.title }}"
-                        loading="lazy"
-                    >
-
-                    {% else %}
-
-                    <div class="image-placeholder small">
-                        <span>K</span>
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-            </a>
-
-
-            <div class="story-card-content">
-
-                <div class="story-meta">
-
-                    {% if article.is_sponsored %}
-
-                    <span class="sponsored-label">
-                        Sponsored
-                    </span>
-
-                    {% endif %}
-
-                    <span>
-                        {{ category.name }}
-                    </span>
-
-                    {% if article.published_at or article.created_at %}
-
-                    <span aria-hidden="true">·</span>
-
-                    <time
-                        datetime="{{ (article.published_at or article.created_at).date().isoformat() }}"
-                    >
-                        {{ (article.published_at or article.created_at).strftime('%d %b %Y') }}
-                    </time>
-
-                    {% endif %}
-
-                </div>
-
-
-                <h3>
-
-                    <a href="{{ url_for(
-                        'public.article_detail',
-                        slug=article.slug
-                    ) }}">
-                        {{ article.title }}
-                    </a>
-
-                </h3>
-
-
-                {% if article.excerpt %}
-
-                <p>
-                    {{ article.excerpt }}
-                </p>
-
-                {% endif %}
-
-
-                <a
-                    class="read-link"
-                    href="{{ url_for(
-                        'public.article_detail',
-                        slug=article.slug
-                    ) }}"
-                >
-                    Read Story →
-                </a>
-
-            </div>
-
-        </article>
-
-        {% endfor %}
-
-    </div>
-
-
-    {% elif not scripture_content %}
-
-    <div class="category-empty">
-
-        <div class="category-empty-icon">
-            ✨
+        <div class="category-label">
+            KALXA STORIES / FAITH & COMMUNITY
         </div>
 
-        <h2>
-            Stories are coming.
-        </h2>
+        <h1 class="category-title">
+            {{ category.name }}
+        </h1>
 
-        <p>
-            There are no published stories or Scripture
-            passages in this category yet. Check back soon
-            for prayers, reflections, testimonies and
-            messages shared with our community.
+        {% if category.description %}
+
+        <p class="category-description">
+            {{ category.description }}
         </p>
+
+        {% else %}
+
+        <p class="category-description">
+            Explore stories, reflections and messages shared
+            with our Christian community. A place to grow in faith,
+            find encouragement and celebrate God's goodness.
+        </p>
+
+        {% endif %}
+
+        <div class="category-tagline">
+            Growing together in faith, one story at a time.
+        </div>
 
         <a
             class="category-back"
             href="{{ url_for('public.home') }}"
         >
-            Explore other categories →
+            <span aria-hidden="true">←</span>
+            Back to Kalxa Stories
         </a>
 
     </div>
 
-    {% endif %}
+</section>
 
-</div>
 
-</section>{% endblock %}
+<!-- ========================================================
+     SCRIPTURE CONTENT
+======================================================== -->
+
+{% if scripture_content %}
+
+<section class="scripture-section">
+
+    <div class="page-container">
+
+        <div class="category-section-heading">
+
+            <h2>
+
+                {% if category.slug == 'prayers' %}
+                    Scripture for Prayer
+
+                {% elif category.slug == 'words-of-encouragement' %}
+                    Words from Scripture
+
+                {% elif category.slug == 'quotes' %}
+                    Bible Verses & Quotes
+
+                {% else %}
+                    Scripture & Reflection
+                {% endif %}
+
+            </h2>
+
+            <span class="category-article-count">
+
+                {{ scripture_content | length }}
+
+                {{ 'Verse' if scripture_content | length == 1 else 'Verses' }}
+
+            </span>
+
+        </div>
+
+
+        {% if category.slug == 'prayers' %}
+
+        <p class="scripture-intro">
+            Take a moment to reflect on these passages and
+            bring your thoughts and prayers before God.
+        </p>
+
+        {% elif category.slug == 'words-of-encouragement' %}
+
+        <p class="scripture-intro">
+            Find encouragement in God's Word. These passages
+            offer reminders of faith, hope and strength.
+        </p>
+
+        {% elif category.slug == 'quotes' %}
+
+        <p class="scripture-intro">
+            Explore selected Bible verses and reflect on
+            their meaning in your everyday life.
+        </p>
+
+        {% endif %}
+
+
+        <div class="scripture-grid">
+
+            {% for scripture in scripture_content %}
+
+            <article class="scripture-card">
+
+                <h3 class="scripture-card-title">
+                    {{ scripture.title }}
+                </h3>
+
+                <blockquote class="scripture-card-content">
+                    {{ scripture.content }}
+                </blockquote>
+
+                <div class="scripture-card-reference">
+
+                    <span>
+                        {{ scripture.verse_reference }}
+                    </span>
+
+                    <span aria-hidden="true">·</span>
+
+                    <span class="scripture-translation">
+                        {{ scripture.translation }}
+                    </span>
+
+                </div>
+
+
+                {% if scripture.source_url %}
+
+                <div class="scripture-source">
+
+                    Source:
+
+                    <a
+                        href="{{ scripture.source_url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {{ scripture.source or 'Bible API' }}
+                    </a>
+
+                </div>
+
+                {% else %}
+
+                <div class="scripture-source">
+                    {{ scripture.source or 'Bible API' }}
+                </div>
+
+                {% endif %}
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- ========================================================
+     PUBLISHED ARTICLES
+======================================================== -->
+
+{% if articles %}
+
+<section class="category-articles">
+
+    <div class="page-container">
+
+        <div class="category-section-heading">
+
+            <h2>
+                Stories & Community Posts
+            </h2>
+
+            <span class="category-article-count">
+
+                {{ articles | length }}
+
+                {{ 'Article' if articles | length == 1 else 'Articles' }}
+
+            </span>
+
+        </div>
+
+
+        <div class="story-grid">
+
+            {% for article in articles %}
+
+            <article class="story-card">
+
+                <a
+                    class="story-image-link"
+                    href="{{ url_for(
+                        'public.article_detail',
+                        slug=article.slug
+                    ) }}"
+                    aria-label="Read {{ article.title }}"
+                >
+
+                    <div class="story-image">
+
+                        {% if article.display_cover_image_url %}
+
+                        <img
+                            src="{{ article.display_cover_image_url }}"
+                            alt="{{ article.title }}"
+                            loading="lazy"
+                        >
+
+                        {% else %}
+
+                        <div class="image-placeholder small">
+                            <span>K</span>
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </a>
+
+
+                <div class="story-card-content">
+
+                    <div class="story-meta">
+
+                        {% if article.is_sponsored %}
+
+                        <span class="sponsored-label">
+                            Sponsored
+                        </span>
+
+                        {% endif %}
+
+                        <span>
+                            {{ category.name }}
+                        </span>
+
+
+                        {% if article.published_at or article.created_at %}
+
+                        <span aria-hidden="true">·</span>
+
+                        <time
+                            datetime="{{ (article.published_at or article.created_at).date().isoformat() }}"
+                        >
+                            {{ (article.published_at or article.created_at).strftime('%d %b %Y') }}
+                        </time>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <h3>
+
+                        <a href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}">
+                            {{ article.title }}
+                        </a>
+
+                    </h3>
+
+
+                    {% if article.excerpt %}
+
+                    <p>
+                        {{ article.excerpt }}
+                    </p>
+
+                    {% endif %}
+
+
+                    <a
+                        class="read-link"
+                        href="{{ url_for(
+                            'public.article_detail',
+                            slug=article.slug
+                        ) }}"
+                    >
+                        Read Story →
+                    </a>
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- ========================================================
+     EMPTY STATE
+
+     Only display when BOTH articles and Scripture
+     content are unavailable.
+======================================================== -->
+
+{% if not articles and not scripture_content %}
+
+<section class="category-articles">
+
+    <div class="page-container">
+
+        <div class="category-empty">
+
+            <div class="category-empty-icon">
+                ✨
+            </div>
+
+            <h2>
+                Stories are coming.
+            </h2>
+
+            <p>
+                There are no published stories or Scripture
+                passages in this category yet. Check back soon
+                for prayers, reflections, testimonies and
+                messages shared with our community.
+            </p>
+
+            <a
+                class="category-back"
+                href="{{ url_for('public.home') }}"
+            >
+                Explore other categories →
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+{% endblock %}
