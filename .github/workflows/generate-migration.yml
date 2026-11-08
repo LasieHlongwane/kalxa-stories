@@ -1,5 +1,4 @@
 name: Generate Database Migration
-
 on:
   workflow_dispatch:
 
