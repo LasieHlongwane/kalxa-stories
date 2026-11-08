@@ -1,0 +1,40 @@
+name: Synchronise Kalxa Scripture
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync-scripture:
+    name: Synchronise Scripture Content
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger Scripture Synchronisation
+        env:
+          SCRIPTURE_SYNC_TOKEN: ${{ secrets.SCRIPTURE_SYNC_TOKEN }}
+
+        run: |
+
+          if [ -z "$SCRIPTURE_SYNC_TOKEN" ]; then
+            echo "SCRIPTURE_SYNC_TOKEN is not configured."
+            exit 1
+          fi
+
+          echo "Starting Kalxa Scripture synchronisation..."
+
+          curl \
+            --silent \
+            --show-error \
+            --fail-with-body \
+            --request POST \
+            --header "X-SCRIPTURE-SYNC-TOKEN: ${SCRIPTURE_SYNC_TOKEN}" \
+            "https://news.kalxa.co.za/internal/scripture/sync"
+
+          echo ""
+          echo "Scripture synchronisation request completed."
