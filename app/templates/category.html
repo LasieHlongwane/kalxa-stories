@@ -13,7 +13,6 @@
 <style>
 /* ============================================================
    KALXA STORIES — CHRISTIAN COMMUNITY CATEGORY PAGE
-   Existing backend variables and article relationships retained.
 ============================================================ */
 
 .category-hero{
@@ -94,7 +93,106 @@
     gap:12px;
 }
 
-/* Articles */
+/* ============================================================
+   SCRIPTURE SECTION
+============================================================ */
+
+.scripture-section{
+    padding:45px 0 15px;
+}
+
+.scripture-intro{
+    max-width:650px;
+    margin:0 0 25px;
+    color:var(--kalxa-text-soft);
+    font-size:12px;
+    line-height:1.8;
+}
+
+.scripture-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:20px;
+}
+
+.scripture-card{
+    position:relative;
+    overflow:hidden;
+    padding:27px;
+    border:1px solid #e8e4da;
+    border-radius:7px;
+    background:linear-gradient(145deg,#fffdf8,#fff);
+    box-shadow:0 4px 15px rgba(20,40,70,.035);
+}
+
+.scripture-card::before{
+    content:"“";
+    position:absolute;
+    top:-14px;
+    right:17px;
+    color:rgba(7,83,189,.07);
+    font-family:Georgia,serif;
+    font-size:115px;
+    line-height:1;
+    pointer-events:none;
+}
+
+.scripture-card-title{
+    position:relative;
+    margin:0 0 15px;
+    color:var(--kalxa-ink);
+    font-family:var(--kalxa-serif);
+    font-size:21px;
+    font-weight:600;
+    line-height:1.35;
+}
+
+.scripture-card-content{
+    position:relative;
+    margin:0;
+    color:#34445a;
+    font-family:var(--kalxa-serif);
+    font-size:17px;
+    line-height:1.85;
+}
+
+.scripture-card-reference{
+    position:relative;
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:20px;
+    padding-top:13px;
+    border-top:1px solid #eeeae2;
+    color:#0753bd;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.4px;
+}
+
+.scripture-translation{
+    color:var(--kalxa-muted);
+    font-size:9px;
+    font-weight:600;
+}
+
+.scripture-source{
+    margin-top:17px;
+    color:var(--kalxa-muted);
+    font-size:9px;
+    line-height:1.6;
+}
+
+.scripture-source a{
+    color:#0753bd;
+    text-decoration:underline;
+}
+
+/* ============================================================
+   ARTICLE SECTION
+============================================================ */
+
 .category-articles{
     padding:55px 0 85px;
 }
@@ -124,7 +222,10 @@
     white-space:nowrap;
 }
 
-/* Story grid */
+/* ============================================================
+   STORY GRID
+============================================================ */
+
 .category-articles .story-grid{
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
@@ -222,7 +323,10 @@
     text-decoration:underline;
 }
 
-/* Empty state */
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+
 .category-empty{
     padding:55px 20px;
     text-align:center;
@@ -262,14 +366,20 @@
     margin-top:20px;
 }
 
-/* Responsive */
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
 @media(max-width:900px){
+
     .category-articles .story-grid{
         grid-template-columns:repeat(2,minmax(0,1fr));
     }
+
 }
 
 @media(max-width:650px){
+
     .category-hero{
         padding:49px 0 43px;
     }
@@ -284,6 +394,23 @@
 
     .category-tagline{
         font-size:14px;
+    }
+
+    .scripture-section{
+        padding:35px 0 5px;
+    }
+
+    .scripture-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+    }
+
+    .scripture-card{
+        padding:21px;
+    }
+
+    .scripture-card-content{
+        font-size:16px;
     }
 
     .category-articles{
@@ -327,9 +454,11 @@
     .category-empty{
         padding:40px 17px;
     }
+
 }
 
 @media(max-width:380px){
+
     .category-articles .story-card{
         grid-template-columns:95px minmax(0,1fr);
     }
@@ -341,12 +470,15 @@
     .category-articles .story-card-content h3{
         font-size:16px;
     }
+
 }
 </style>{% endblock %}
 
 {% block content %}
 
-<!-- CATEGORY INTRODUCTION --><section class="category-hero"><div class="page-container category-hero-inner">
+<!-- ========================================================
+     CATEGORY INTRODUCTION
+======================================================== --><section class="category-hero"><div class="page-container category-hero-inner">
 
     <div class="category-label">
         KALXA STORIES / FAITH & COMMUNITY
@@ -386,23 +518,141 @@
 
 </div>
 
-</section><!-- CATEGORY ARTICLES --><section class="category-articles"><div class="page-container">
+</section><!-- ========================================================
+     SCRIPTURE CONTENT
+======================================================== -->{% if scripture_content %}
+
+<section class="scripture-section"><div class="page-container">
 
     <div class="category-section-heading">
 
         <h2>
-            {{ category.name }}
+            {% if category.slug == 'prayers' %}
+                Scripture for Prayer
+
+            {% elif category.slug == 'words-of-encouragement' %}
+                Words from Scripture
+
+            {% elif category.slug == 'quotes' %}
+                Bible Verses & Quotes
+
+            {% else %}
+                Scripture & Reflection
+            {% endif %}
         </h2>
 
         <span class="category-article-count">
-            {{ articles | length }}
-            {{ 'Article' if articles | length == 1 else 'Articles' }}
+            {{ scripture_content | length }}
+            {{ 'Verse' if scripture_content | length == 1 else 'Verses' }}
         </span>
 
     </div>
 
+    {% if category.slug == 'prayers' %}
+
+    <p class="scripture-intro">
+        Take a moment to reflect on these passages and
+        bring your thoughts and prayers before God.
+    </p>
+
+    {% elif category.slug == 'words-of-encouragement' %}
+
+    <p class="scripture-intro">
+        Find encouragement in God's Word. These passages
+        offer reminders of faith, hope and strength.
+    </p>
+
+    {% elif category.slug == 'quotes' %}
+
+    <p class="scripture-intro">
+        Explore selected Bible verses and reflect on
+        their meaning in your everyday life.
+    </p>
+
+    {% endif %}
+
+    <div class="scripture-grid">
+
+        {% for scripture in scripture_content %}
+
+        <article class="scripture-card">
+
+            <h3 class="scripture-card-title">
+                {{ scripture.title }}
+            </h3>
+
+            <blockquote class="scripture-card-content">
+                {{ scripture.content }}
+            </blockquote>
+
+            <div class="scripture-card-reference">
+
+                <span>
+                    {{ scripture.verse_reference }}
+                </span>
+
+                <span aria-hidden="true">·</span>
+
+                <span class="scripture-translation">
+                    {{ scripture.translation }}
+                </span>
+
+            </div>
+
+            {% if scripture.source_url %}
+
+            <div class="scripture-source">
+
+                Source:
+                <a
+                    href="{{ scripture.source_url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {{ scripture.source or 'Bible API' }}
+                </a>
+
+            </div>
+
+            {% else %}
+
+            <div class="scripture-source">
+                {{ scripture.source or 'Bible API' }}
+            </div>
+
+            {% endif %}
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</section>{% endif %}
+
+<!-- ========================================================
+     PUBLISHED ARTICLES
+======================================================== --><section class="category-articles"><div class="page-container">
 
     {% if articles %}
+
+    <div class="category-section-heading">
+
+        <h2>
+            Stories & Community Posts
+        </h2>
+
+        <span class="category-article-count">
+
+            {{ articles | length }}
+
+            {{ 'Article' if articles | length == 1 else 'Articles' }}
+
+        </span>
+
+    </div>
 
     <div class="story-grid">
 
@@ -513,7 +763,7 @@
     </div>
 
 
-    {% else %}
+    {% elif not scripture_content %}
 
     <div class="category-empty">
 
@@ -526,9 +776,10 @@
         </h2>
 
         <p>
-            There are no published stories in this category yet.
-            Check back soon for prayers, reflections, testimonies
-            and messages shared with our community.
+            There are no published stories or Scripture
+            passages in this category yet. Check back soon
+            for prayers, reflections, testimonies and
+            messages shared with our community.
         </p>
 
         <a
