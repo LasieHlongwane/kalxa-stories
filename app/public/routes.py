@@ -1011,14 +1011,14 @@ def stories():
 # STORY CATEGORY PAGE
 # ============================================================
 
-# ============================================================
-# STORY CATEGORY PAGE
-# ============================================================
-
 @public_bp.route(
     "/stories/category/<string:category_slug>"
 )
 def story_category(category_slug):
+
+    # ========================================================
+    # FIND ACTIVE CATEGORY
+    # ========================================================
 
     category = (
         StoryCategory.query
@@ -1080,11 +1080,8 @@ def story_category(category_slug):
 
     return render_template(
         "category.html",
-
         category=category,
-
         articles=articles,
-
         scripture_content=scripture_content,
     )
 
