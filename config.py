@@ -1,126 +1,144 @@
 import os
 from dotenv import load_dotenv
 
+============================================================
 
-# ============================================================
-# LOAD ENVIRONMENT VARIABLES
-# ============================================================
+LOAD ENVIRONMENT VARIABLES
+
+============================================================
 
 load_dotenv()
 
+============================================================
 
-# ============================================================
-# DATABASE URL
-# ============================================================
+DATABASE URL
+
+============================================================
 
 def get_database_url():
 
-    database_url = os.getenv(
-        "DATABASE_URL",
-        "sqlite:///kalxa_stories.db",
+database_url = os.getenv(
+    "DATABASE_URL",
+    "sqlite:///kalxa_stories.db",
+)
+
+# Support older PostgreSQL URL format.
+if database_url.startswith("postgres://"):
+
+    database_url = database_url.replace(
+        "postgres://",
+        "postgresql://",
+        1,
     )
 
-    # Support older PostgreSQL URL format.
-    if database_url.startswith("postgres://"):
+return database_url
 
-        database_url = database_url.replace(
-            "postgres://",
-            "postgresql://",
-            1,
-        )
+============================================================
 
-    return database_url
+CONFIG
 
-
-# ============================================================
-# CONFIG
-# ============================================================
+============================================================
 
 class Config:
 
-    # --------------------------------------------------------
-    # FLASK
-    # --------------------------------------------------------
+# --------------------------------------------------------
+# FLASK
+# --------------------------------------------------------
 
-    SECRET_KEY = os.getenv(
-        "SECRET_KEY",
-        "kalxa-stories-development-key",
-    )
-
-
-    # --------------------------------------------------------
-    # DATABASE
-    # --------------------------------------------------------
-
-    SQLALCHEMY_DATABASE_URI = get_database_url()
-
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "kalxa-stories-development-key",
+)
 
 
-    # --------------------------------------------------------
-    # SQLALCHEMY CONNECTION POOL
-    # --------------------------------------------------------
-    #
-    # pool_pre_ping:
-    # Checks whether a PostgreSQL connection is still alive
-    # before SQLAlchemy gives it to the application.
-    #
-    # pool_recycle:
-    # Prevents very old connections from sitting in the pool.
-    #
-    # pool_size:
-    # Keep the pool small for the Render free instance.
-    #
-    # max_overflow:
-    # Allows a couple of temporary additional connections.
-    # --------------------------------------------------------
+# --------------------------------------------------------
+# DATABASE
+# --------------------------------------------------------
 
-    SQLALCHEMY_ENGINE_OPTIONS = {
+SQLALCHEMY_DATABASE_URI = get_database_url()
 
-        "pool_pre_ping": True,
-
-        "pool_recycle": 300,
-
-        "pool_size": 5,
-
-        "max_overflow": 2,
-
-        "pool_timeout": 30,
-    }
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
-    # --------------------------------------------------------
-    # KALXA STORIES ADMIN
-    # --------------------------------------------------------
+# --------------------------------------------------------
+# SQLALCHEMY CONNECTION POOL
+# --------------------------------------------------------
+#
+# pool_pre_ping:
+# Checks whether a PostgreSQL connection is still alive
+# before SQLAlchemy gives it to the application.
+#
+# pool_recycle:
+# Prevents very old connections from sitting in the pool.
+#
+# pool_size:
+# Keep the pool small for the Render free instance.
+#
+# max_overflow:
+# Allows a couple of temporary additional connections.
+# --------------------------------------------------------
 
-    KALXA_STORIES_ADMIN_USERNAME = os.getenv(
-        "KALXA_STORIES_ADMIN_USERNAME",
-        "admin",
-    )
+SQLALCHEMY_ENGINE_OPTIONS = {
 
-    KALXA_STORIES_ADMIN_PASSWORD = os.getenv(
-        "KALXA_STORIES_ADMIN_PASSWORD",
-        "",
-    )
+    "pool_pre_ping": True,
 
-    KALXA_ATTRIBUTION_SECRET = os.getenv(
-        "KALXA_ATTRIBUTION_SECRET",
-        "",
-    )
+    "pool_recycle": 300,
 
-    KALXA_INTERNAL_API_KEY = os.getenv(
-        "KALXA_INTERNAL_API_KEY",
-        "",
-    )
+    "pool_size": 5,
+
+    "max_overflow": 2,
+
+    "pool_timeout": 30,
+}
 
 
-    # --------------------------------------------------------
-    # KALXA TICKETING
-    # --------------------------------------------------------
+# --------------------------------------------------------
+# KALXA STORIES ADMIN
+# --------------------------------------------------------
 
-    KALXA_TICKETING_URL = (
-        os.getenv(
-            "KALXA_TICKETING_URL",
-            "http://127.0.0.1:5000",
-        ).rstrip("/")
-    )
+KALXA_STORIES_ADMIN_USERNAME = os.getenv(
+    "KALXA_STORIES_ADMIN_USERNAME",
+    "admin",
+)
+
+KALXA_STORIES_ADMIN_PASSWORD = os.getenv(
+    "KALXA_STORIES_ADMIN_PASSWORD",
+    "",
+)
+
+KALXA_ATTRIBUTION_SECRET = os.getenv(
+    "KALXA_ATTRIBUTION_SECRET",
+    "",
+)
+
+KALXA_INTERNAL_API_KEY = os.getenv(
+    "KALXA_INTERNAL_API_KEY",
+    "",
+)
+
+
+# --------------------------------------------------------
+# SCRIPTURE SYNCHRONISATION
+# --------------------------------------------------------
+
+SCRIPTURE_SYNC_TOKEN = os.getenv(
+    "SCRIPTURE_SYNC_TOKEN",
+    "",
+)
+
+BIBLE_API_TRANSLATION = os.getenv(
+    "BIBLE_API_TRANSLATION",
+    "ENGWEBP",
+)
+
+
+# --------------------------------------------------------
+# KALXA TICKETING
+# --------------------------------------------------------
+
+KALXA_TICKETING_URL = (
+    os.getenv(
+        "KALXA_TICKETING_URL",
+        "http://127.0.0.1:5000",
+    ).rstrip("/")
+)
