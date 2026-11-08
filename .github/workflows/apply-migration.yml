@@ -1,0 +1,46 @@
+name: Apply Database Migration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate database connection
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+        run: |
+          python -c "
+          import os
+          url = os.environ.get('DATABASE_URL', '')
+          if not url:
+              raise SystemExit('NEON_DATABASE_URL is missing.')
+          if not url.startswith(('postgresql://', 'postgresql+psycopg://')):
+              raise SystemExit('Invalid PostgreSQL connection URL.')
+          print('Database connection secret is configured.')
+          "
+
+      - name: Apply database migration
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          FLASK_APP: app:create_app
+        run: |
+          flask db upgrade
