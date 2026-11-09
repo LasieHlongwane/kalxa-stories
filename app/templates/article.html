@@ -8,7 +8,6 @@
 {% endif %}
 {% endblock %}
 
-
 {% block meta_description %}
 {% if article.meta_description %}
     {{ article.meta_description }}
@@ -19,46 +18,28 @@
 {% endif %}
 {% endblock %}
 
-
 {% block canonical %}
-<link
-    rel="canonical"
-    href="{{ url_for('public.article_detail', slug=article.slug, _external=True) }}"
->
+<link rel="canonical" href="{{ url_for('public.article_detail', slug=article.slug, _external=True) }}">
 {% endblock %}
 
-
 {% block social_meta %}
-
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Kalxa Stories">
 <meta property="og:title" content="{{ article.seo_title }}">
 <meta property="og:description" content="{{ article.seo_description }}">
 
-<meta
-    property="og:url"
-    content="{{ url_for('public.article_detail', slug=article.slug, _external=True) }}"
->
+<meta property="og:url" content="{{ url_for('public.article_detail', slug=article.slug, _external=True) }}">
 
 {% if article.display_cover_image_url %}
-<meta
-    property="og:image"
-    content="{{ article.display_cover_image_url }}"
->
+<meta property="og:image" content="{{ article.display_cover_image_url }}">
 {% endif %}
 
 {% if article.published_at %}
-<meta
-    property="article:published_time"
-    content="{{ article.published_at.isoformat() }}"
->
+<meta property="article:published_time" content="{{ article.published_at.isoformat() }}">
 {% endif %}
 
 {% if article.updated_at %}
-<meta
-    property="article:modified_time"
-    content="{{ article.updated_at.isoformat() }}"
->
+<meta property="article:modified_time" content="{{ article.updated_at.isoformat() }}">
 {% endif %}
 
 <meta name="twitter:card" content="summary_large_image">
@@ -66,22 +47,12 @@
 <meta name="twitter:description" content="{{ article.seo_description }}">
 
 {% if article.display_cover_image_url %}
-<meta
-    name="twitter:image"
-    content="{{ article.display_cover_image_url }}"
->
+<meta name="twitter:image" content="{{ article.display_cover_image_url }}">
 {% endif %}
-
 {% endblock %}
 
-
 {% block structured_data %}
-
-{% set canonical_url = url_for(
-    'public.article_detail',
-    slug=article.slug,
-    _external=True
-) %}
+{% set canonical_url = url_for('public.article_detail', slug=article.slug, _external=True) %}
 
 <script type="application/ld+json">
 {
@@ -114,603 +85,246 @@
     "isAccessibleForFree": true
 }
 </script>
-
 {% endblock %}
-
 
 {% block content %}
 
-{% set canonical_story_url = url_for(
-    'public.article_detail',
-    slug=article.slug,
-    _external=True
-) %}
+{% set canonical_story_url = url_for('public.article_detail', slug=article.slug, _external=True) %}
 
-
-<!-- =========================================================
-     READING PROGRESS
-========================================================= -->
-
-<div
-    class="reading-progress"
-    id="reading-progress"
-></div>
-
+<div class="reading-progress" id="reading-progress"></div>
 
 <article class="article-page">
 
-
-    <!-- =====================================================
-         ARTICLE HERO
-    ====================================================== -->
-
     <section class="article-hero">
-
         <div class="article-container">
 
             <div class="article-kicker">
-
                 <span class="article-type">
-
-                    {{ article.article_type
-                        .replace("_", " ")
-                        .title()
-                    }}
-
+                    {{ article.article_type.replace("_", " ").title() }}
                 </span>
 
                 {% if article.is_sponsored %}
-
-                <span class="article-sponsored">
-                    Sponsored
-                </span>
-
+                <span class="article-sponsored">Sponsored</span>
                 {% endif %}
-
             </div>
 
-
-            <!-- =============================================
-                 ARTICLE TITLE
-            ============================================== -->
-
-            <h1 class="article-title">
-                {{ article.title }}
-            </h1>
-
+            <h1 class="article-title">{{ article.title }}</h1>
 
             {% if article.excerpt %}
-
-            <p class="article-excerpt">
-                {{ article.excerpt }}
-            </p>
-
+            <p class="article-excerpt">{{ article.excerpt }}</p>
             {% endif %}
 
-
-            <!-- =============================================
-                 AUTHOR INFORMATION
-            ============================================== -->
-
             <div class="article-byline">
-
-                <div class="kalxa-author-mark">
-                    K
-                </div>
+                <div class="kalxa-author-mark">K</div>
 
                 <div>
-
-                    <strong>
-                        Kalxa Stories
-                    </strong>
+                    <strong>Kalxa Stories</strong>
 
                     <div class="article-byline-meta">
-
                         {% if article.published_at %}
-
-                        <span>
-                            {{ article.published_at.strftime("%d %B %Y") }}
-                        </span>
-
+                        <span>{{ article.published_at.strftime("%d %B %Y") }}</span>
                         {% endif %}
-
 
                         {% if reading_minutes %}
-
                         <span>•</span>
-
-                        <span>
-                            {{ reading_minutes }} min read
-                        </span>
-
+                        <span>{{ reading_minutes }} min read</span>
                         {% endif %}
-
 
                         {% if article.is_expired %}
-
                         <span>•</span>
-
-                        <span class="story-conversation-ended">
-                            Conversation closed
-                        </span>
-
+                        <span class="story-conversation-ended">Conversation closed</span>
                         {% endif %}
-
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- =================================================
-                 NEW: STORY VIEWS AND LIKES
-
-                 Views display WITHOUT an eye icon.
-            ================================================== -->
-
-            <div
-                class="story-engagement-summary"
-                aria-label="Story views and likes"
-            >
-
+            <div class="story-engagement-summary" aria-label="Story views and likes">
                 <span class="story-view-stat">
-
-                    <strong id="story-view-count">
-                        {{ story_view_count | default(0) }}
-                    </strong>
-
-                    <span>
-                        Views
-                    </span>
-
+                    <strong id="story-view-count">{{ story_view_count | default(0) }}</strong>
+                    <span>Views</span>
                 </span>
 
-
-                <span
-                    class="story-engagement-separator"
-                    aria-hidden="true"
-                >
-                    ·
-                </span>
-
+                <span class="story-engagement-separator" aria-hidden="true">·</span>
 
                 <span class="story-like-stat">
-
-                    <strong id="story-summary-like-count">
-                        {{ story_like_count | default(0) }}
-                    </strong>
-
-                    <span>
-                        Likes
-                    </span>
-
+                    <strong id="story-summary-like-count">{{ story_like_count | default(0) }}</strong>
+                    <span>Likes</span>
                 </span>
-
             </div>
 
         </div>
-
     </section>
-
-
-    <!-- =====================================================
-         COVER IMAGE
-    ====================================================== -->
 
     {% set hero_image = article.display_cover_image_url %}
 
     {% if hero_image %}
-
     <section class="article-cover">
-
         <div class="article-image-container">
-
-            <button
-                class="article-image-button"
-                type="button"
-                data-story-image="{{ hero_image }}"
-                aria-label="View image"
-            >
-
-                <img
-                    src="{{ hero_image }}"
-                    alt="{{ article.title }}"
-                >
-
+            <button class="article-image-button" type="button" data-story-image="{{ hero_image }}" aria-label="View image">
+                <img src="{{ hero_image }}" alt="{{ article.title }}">
             </button>
 
-
             {% if article.images and article.images[0].caption %}
-
-            <div class="image-caption">
-                {{ article.images[0].caption }}
-            </div>
-
+            <div class="image-caption">{{ article.images[0].caption }}</div>
             {% endif %}
-
         </div>
-
     </section>
-
     {% endif %}
 
-
-    <!-- =====================================================
-         ARTICLE BODY
-    ====================================================== -->
-
     <section class="article-body-section">
-
         <div class="article-container">
 
             <div class="article-body">
-
                 {{ article.body | safe }}
-
             </div>
-
-
-            <!-- =============================================
-                 SUPPORTING IMAGES
-            ============================================== -->
 
             {% if article.images | length > 1 %}
-
             <div class="article-supporting-images">
-
                 {% for image in article.images[1:] %}
-
                 <figure class="article-supporting-image">
-
-                    <button
-                        class="article-image-button"
-                        type="button"
-                        data-story-image="{{ image.image_url }}"
-                        aria-label="View story image"
-                    >
-
-                        <img
-                            src="{{ image.image_url }}"
-                            alt="{{ article.title }}"
-                            loading="lazy"
-                        >
-
+                    <button class="article-image-button" type="button" data-story-image="{{ image.image_url }}" aria-label="View story image">
+                        <img src="{{ image.image_url }}" alt="{{ article.title }}" loading="lazy">
                     </button>
 
-
                     {% if image.caption %}
-
-                    <figcaption>
-                        {{ image.caption }}
-                    </figcaption>
-
+                    <figcaption>{{ image.caption }}</figcaption>
                     {% endif %}
-
                 </figure>
-
                 {% endfor %}
-
             </div>
-
             {% endif %}
 
-
-            <!-- =================================================
-                 RESTAURANTS / CONTINUE ON KALXA
-            ================================================== -->
-
             {% if featured_restaurants %}
-
-            <section
-                class="restaurant-discovery"
-                aria-labelledby="restaurant-discovery-heading"
-            >
+            <section class="restaurant-discovery" aria-labelledby="restaurant-discovery-heading">
 
                 <div class="discovery-heading">
-
-                    <span class="editorial-eyebrow">
-                        Continue on Kalxa
-                    </span>
-
-                    <h2 id="restaurant-discovery-heading">
-                        For more
-                    </h2>
-
-                    <p>
-                        Location, Operational Hours &amp; Reviews
-                    </p>
-
+                    <span class="editorial-eyebrow">Continue on Kalxa</span>
+                    <h2 id="restaurant-discovery-heading">For more</h2>
+                    <p>Location, Operational Hours &amp; Reviews</p>
                 </div>
 
-
                 <div class="featured-restaurant-list">
-
                     {% for restaurant in featured_restaurants %}
-
                     <article class="restaurant-reference">
 
-                        <!-- NUMBER -->
-
-                        <div
-                            class="restaurant-reference-number"
-                            aria-hidden="true"
-                        >
+                        <div class="restaurant-reference-number" aria-hidden="true">
                             {{ "%02d"|format(loop.index) }}
                         </div>
 
-
-                        <!-- RESTAURANT INFORMATION -->
-
                         <div class="restaurant-reference-content">
-
-                            <span class="restaurant-reference-label">
-                                Featured on Kalxa
-                            </span>
-
+                            <span class="restaurant-reference-label">Featured on Kalxa</span>
 
                             <h3>
-
                                 {% if restaurant.business_name %}
-
                                     {{ restaurant.business_name }}
-
                                 {% elif restaurant.name %}
-
                                     {{ restaurant.name }}
-
                                 {% else %}
-
                                     Kalxa Restaurant
-
                                 {% endif %}
-
                             </h3>
 
-
                             {% if restaurant.headline %}
-
-                            <p class="restaurant-reference-headline">
-                                {{ restaurant.headline }}
-                            </p>
-
+                            <p class="restaurant-reference-headline">{{ restaurant.headline }}</p>
                             {% endif %}
 
-
                             {% if restaurant.area or restaurant.address or restaurant.price_text %}
-
                             <div class="restaurant-details">
 
                                 {% if restaurant.area or restaurant.address %}
-
                                 <span class="restaurant-location">
-
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        aria-hidden="true"
-                                    >
-
-                                        <path
-                                            d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
-                                            stroke="currentColor"
-                                            stroke-width="1.7"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        />
-
-                                        <circle
-                                            cx="12"
-                                            cy="10"
-                                            r="2.5"
-                                            stroke="currentColor"
-                                            stroke-width="1.7"
-                                        />
-
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/>
                                     </svg>
 
                                     {% if restaurant.area %}
-
                                         {{ restaurant.area }}
-
                                     {% else %}
-
                                         {{ restaurant.address }}
-
                                     {% endif %}
-
                                 </span>
-
                                 {% endif %}
 
-
                                 {% if restaurant.price_text %}
-
-                                <span class="restaurant-price">
-                                    {{ restaurant.price_text }}
-                                </span>
-
+                                <span class="restaurant-price">{{ restaurant.price_text }}</span>
                                 {% endif %}
 
                             </div>
-
                             {% endif %}
-
                         </div>
 
-
-                        <!-- VIEW RESTAURANT -->
-
                         {% if restaurant.id %}
-
-                        <a
-                            class="restaurant-view-button"
-                            href="{{ url_for(
-                                'public.restaurant_click',
-                                slug=article.slug,
-                                restaurant_id=restaurant.id
-                            ) }}"
-                            aria-label="View {% if restaurant.business_name %}{{ restaurant.business_name }}{% elif restaurant.name %}{{ restaurant.name }}{% else %}restaurant{% endif %} on Kalxa"
-                        >
+                        <a class="restaurant-view-button"
+                           href="{{ url_for('public.restaurant_click', slug=article.slug, restaurant_id=restaurant.id) }}"
+                           aria-label="View {% if restaurant.business_name %}{{ restaurant.business_name }}{% elif restaurant.name %}{{ restaurant.name }}{% else %}restaurant{% endif %} on Kalxa">
 
                             <span class="restaurant-view-copy">
-
-                                <small>
-                                    Explore on Kalxa
-                                </small>
-
-                                <strong>
-                                    View restaurant
-                                </strong>
-
+                                <small>Explore on Kalxa</small>
+                                <strong>View restaurant</strong>
                             </span>
 
-
-                            <span
-                                class="restaurant-arrow"
-                                aria-hidden="true"
-                            >
-                                →
-                            </span>
-
+                            <span class="restaurant-arrow" aria-hidden="true">→</span>
                         </a>
-
                         {% endif %}
 
                     </article>
-
                     {% endfor %}
-
                 </div>
 
             </section>
-
             {% endif %}
 
-
-            <!-- =================================================
-                 NEW: STORY REACTIONS
-
-                 Visitors can like and unlike without an account.
-            ================================================== -->
-
-            <section
-                class="story-reactions"
-                id="story-reactions"
-                aria-labelledby="story-reactions-heading"
-            >
+            <section class="story-reactions" id="story-reactions" aria-labelledby="story-reactions-heading">
 
                 <div class="story-reactions-header">
+                    <span class="editorial-eyebrow">COMMUNITY REACTIONS</span>
+                    <h2 id="story-reactions-heading">Enjoyed this story?</h2>
+                </div>
 
-                    <span class="editorial-eyebrow">
-                        COMMUNITY REACTIONS
+                <button
+                    class="story-like-button{% if story_is_liked | default(false) %} is-liked{% endif %}"
+                    id="story-like-button"
+                    type="button"
+                    data-like-url="{{ url_for('public.toggle_story_like', slug=article.slug) }}"
+                    data-csrf-token="{{ reaction_csrf_token | default('') }}"
+                    aria-pressed="{% if story_is_liked | default(false) %}true{% else %}false{% endif %}"
+                    aria-label="{% if story_is_liked | default(false) %}Remove your like from this story{% else %}Like this story{% endif %}">
+
+                    <span class="story-like-icon" id="story-like-icon" aria-hidden="true">
+                        {% if story_is_liked | default(false) %}♥{% else %}♡{% endif %}
                     </span>
 
-                    <h2 id="story-reactions-heading">
-                        Enjoyed this story?
-                    </h2>
+                    <span id="story-like-label">
+                        {% if story_is_liked | default(false) %}Liked{% else %}Like this story{% endif %}
+                    </span>
 
-                </div>
+                    {% if not story_is_liked | default(false) %}
+                    <span class="story-like-count" id="story-like-count">
+                        {{ story_like_count | default(0) }}
+                    </span>
+                    {% endif %}
+                </button>
 
+                <p class="story-like-feedback" id="story-like-feedback" role="status" aria-live="polite"></p>
 
-                <!-- =========================================
-                     LIKE BUTTON
-                ========================================== -->
-                <button
-    class="story-like-button{% if story_is_liked | default(false) %} is-liked{% endif %}"
-    id="story-like-button"
-    type="button"
-    data-like-url="{{ url_for(
-        'public.toggle_story_like',
-        slug=article.slug
-    ) }}"
-    data-csrf-token="{{ reaction_csrf_token | default('') }}"
-    aria-pressed="{% if story_is_liked | default(false) %}true{% else %}false{% endif %}"
-    aria-label="{% if story_is_liked | default(false) %}Remove your like from this story{% else %}Like this story{% endif %}"
->
+            </section>
 
-    <span
-        class="story-like-icon"
-        id="story-like-icon"
-        aria-hidden="true"
-    >
-        {% if story_is_liked | default(false) %}
-            ♥
-        {% else %}
-            ♡
-        {% endif %}
-    </span>
+            <!-- COMMENTS -->
 
-    <span id="story-like-label">
-        {% if story_is_liked | default(false) %}
-            Liked
-        {% else %}
-            Like this story
-        {% endif %}
-    </span>
-
-    {% if not story_is_liked | default(false) %}
-        <span
-            class="story-like-count"
-            id="story-like-count"
-        >
-            {{ story_like_count | default(0) }}
-        </span>
-    {% endif %}
-
-</button>
-
-<p
-    class="story-like-feedback"
-    id="story-like-feedback"
-    role="status"
-    aria-live="polite"
-></p>
-
-</section>
-
-
-            <!-- =================================================
-                 COMMENTS
-            ================================================== -->
-
-            <section
-                class="story-comments"
-                id="comments"
-            >
+            <section class="story-comments" id="comments">
 
                 <div class="comments-heading">
-
-                    <h2>
-                        Comment
-                    </h2>
-
-                    <p>
-                        Share your thoughts with the community.
-                        No account is required.
-                    </p>
-
+                    <h2>Comment</h2>
+                    <p>Share your thoughts with the community. No account is required.</p>
                 </div>
-
 
                 {% if article.comments_open %}
 
-                <form
-                    class="comment-form"
-                    method="POST"
-                    action="{{ url_for(
-                        'public.article_comment',
-                        slug=article.slug
-                    ) }}"
-                >
+                <form class="comment-form" method="POST" action="{{ url_for('public.article_comment', slug=article.slug) }}">
 
                     <div class="comment-field">
-
-                        <label for="display_name">
-                            Your name
-                        </label>
-
+                        <label for="display_name">Your name</label>
                         <input
                             id="display_name"
                             name="display_name"
@@ -718,153 +332,80 @@
                             maxlength="80"
                             autocomplete="name"
                             placeholder="How should we display your name?"
-                            required
-                        >
-
+                            required>
                     </div>
 
-
                     <div class="comment-field">
-
-                        <label for="comment_text">
-                            Comment
-                        </label>
-
+                        <label for="comment_text">Comment</label>
                         <textarea
                             id="comment_text"
                             name="comment_text"
                             maxlength="1000"
                             rows="5"
                             placeholder="What do you think about this story?"
-                            required
-                        ></textarea>
-
+                            required></textarea>
                     </div>
-
 
                     <div class="comment-form-footer">
-
-                        <button
-                            class="comment-submit"
-                            type="submit"
-                        >
-                            Post comment
-                            <span>→</span>
+                        <button class="comment-submit" type="submit">
+                            Post comment <span>→</span>
                         </button>
 
-                        <span class="comment-counter">
-                            Maximum 1,000 characters
-                        </span>
-
+                        <span class="comment-counter">Maximum 1,000 characters</span>
                     </div>
 
-
-                    <p class="comment-note">
-                        Comments are reviewed before appearing publicly.
-                    </p>
+                    <p class="comment-note">Comments are reviewed before appearing publicly.</p>
 
                 </form>
-
 
                 {% else %}
 
                 <div class="comments-closed">
-
-                    <div class="comments-closed-icon">
-                        K
-                    </div>
-
+                    <div class="comments-closed-icon">K</div>
                     <div>
-
-                        <strong>
-                            This conversation has ended.
-                        </strong>
-
-                        <p>
-                            Comments closed when this story expired.
-                        </p>
-
+                        <strong>This conversation has ended.</strong>
+                        <p>Comments closed when this story expired.</p>
                     </div>
-
                 </div>
 
                 {% endif %}
-
-
-                <!-- =========================================
-                     APPROVED COMMENTS
-                ========================================== -->
 
                 {% if approved_comments %}
 
                 <div class="comment-list">
 
                     <div class="comment-list-heading">
-
-                        <strong>
-                            Community comments
-                        </strong>
-
-                        <span>
-                            {{ approved_comments | length }}
-                        </span>
-
+                        <strong>Community comments</strong>
+                        <span>{{ approved_comments | length }}</span>
                     </div>
-
 
                     {% for comment in approved_comments %}
 
-                    {% set comment_is_upvoted =
-                        comment_upvote_state.get(comment.id, false)
-                    %}
+                    {% set comment_is_upvoted = comment_upvote_state.get(comment.id, false) %}
 
-                    <article
-                        class="story-comment"
-                        id="comment-{{ comment.id }}"
-                    >
+                    <article class="story-comment" id="comment-{{ comment.id }}">
 
                         <div class="comment-avatar">
-
                             {% if comment.display_name %}
-
                                 {{ comment.display_name[0] | upper }}
-
                             {% else %}
-
                                 K
-
                             {% endif %}
-
                         </div>
-
 
                         <div class="comment-content">
 
                             <div class="comment-meta">
-
-                                <strong>
-                                    {{ comment.display_name }}
-                                </strong>
+                                <strong>{{ comment.display_name }}</strong>
 
                                 <span>
-
                                     {% if comment.created_at %}
-
                                         {{ comment.created_at.strftime("%d %b %Y") }}
-
                                     {% endif %}
-
                                 </span>
-
                             </div>
 
-
-                            <p>
-                                {{ comment.comment_text }}
-                            </p>
-
-
-                            <!-- COMMENT UPVOTE -->
+                            <p>{{ comment.comment_text }}</p>
 
                             <div class="comment-actions">
 
@@ -873,123 +414,55 @@
                                     type="button"
                                     data-comment-upvote
                                     data-comment-id="{{ comment.id }}"
-                                    data-upvote-url="{{ url_for(
-                                        'public.toggle_comment_upvote',
-                                        slug=article.slug,
-                                        comment_id=comment.id
-                                    ) }}"
+                                    data-upvote-url="{{ url_for('public.toggle_comment_upvote', slug=article.slug, comment_id=comment.id) }}"
                                     aria-pressed="{% if comment_is_upvoted %}true{% else %}false{% endif %}"
-                                    aria-label="{% if comment_is_upvoted %}Remove upvote from this comment{% else %}Upvote this comment{% endif %}"
-                                >
+                                    aria-label="{% if comment_is_upvoted %}Remove upvote from this comment{% else %}Upvote this comment{% endif %}">
 
-                                    <span
-                                        class="comment-upvote-icon"
-                                        data-upvote-icon
-                                        aria-hidden="true"
-                                    >
-
-                                        {% if comment_is_upvoted %}
-                                            ♥
-                                        {% else %}
-                                            ♡
-                                        {% endif %}
-
+                                    <span class="comment-upvote-icon" data-upvote-icon aria-hidden="true">
+                                        {% if comment_is_upvoted %}♥{% else %}♡{% endif %}
                                     </span>
 
-
-                                    <span
-                                        class="comment-upvote-label"
-                                        data-upvote-label
-                                    >
-
-                                        {% if comment_is_upvoted %}
-                                            Upvoted
-                                        {% else %}
-                                            Upvote
-                                        {% endif %}
-
+                                    <span class="comment-upvote-label" data-upvote-label>
+                                        {% if comment_is_upvoted %}Upvoted{% else %}Upvote{% endif %}
                                     </span>
 
-
-                                    <span
-                                        class="comment-upvote-count"
-                                        data-upvote-count
-                                    >
+                                    <span class="comment-upvote-count" data-upvote-count>
                                         {{ comment.upvote_count }}
                                     </span>
-
                                 </button>
 
-
-                                <span
-                                    class="comment-upvote-feedback"
-                                    data-upvote-feedback
-                                    role="status"
-                                    aria-live="polite"
-                                ></span>
+                                <span class="comment-upvote-feedback" data-upvote-feedback role="status" aria-live="polite"></span>
 
                             </div>
-
                         </div>
-
                     </article>
 
                     {% endfor %}
 
                 </div>
 
-
                 {% elif article.comments_open %}
 
                 <div class="no-comments">
-
-                    <div class="no-comments-icon">
-                        ◌
-                    </div>
-
+                    <div class="no-comments-icon">◌</div>
                     <div>
-
-                        <strong>
-                            Start the conversation.
-                        </strong>
-
-                        <p>
-                            Be the first to comment on this story.
-                        </p>
-
+                        <strong>Start the conversation.</strong>
+                        <p>Be the first to comment on this story.</p>
                     </div>
-
                 </div>
 
                 {% endif %}
 
             </section>
 
+            <!-- SHARE STORY -->
 
-            <!-- =================================================
-                 SHARE STORY
-            ================================================== -->
-
-            <section
-                class="story-share"
-                aria-labelledby="story-share-heading"
-            >
+            <section class="story-share" aria-labelledby="story-share-heading">
 
                 <div class="story-share-copy">
-
-                    <span
-                        class="story-share-eyebrow"
-                        id="story-share-heading"
-                    >
-                        SHARE THE STORY
-                    </span>
-
-                    <p>
-                        Share with Friends
-                    </p>
-
+                    <span class="story-share-eyebrow" id="story-share-heading">SHARE THE STORY</span>
+                    <p>Share with Friends</p>
                 </div>
-
 
                 <div
                     class="story-share-actions"
@@ -997,339 +470,119 @@
                     data-story-id="{{ article.id }}"
                     data-story-slug="{{ article.slug }}"
                     data-story-title="{{ article.title }}"
-                    data-canonical-url="{{ canonical_story_url }}"
-                >
+                    data-canonical-url="{{ canonical_story_url }}">
 
-                    <!-- WHATSAPP -->
-
-                    <button
-                        class="share-button share-whatsapp"
-                        type="button"
-                        data-share-channel="whatsapp"
-                        aria-label="Share this story on WhatsApp"
-                    >
-
-                        <span
-                            class="share-icon"
-                            aria-hidden="true"
-                        >
-
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-
-                                <path
-                                    d="M20.5 11.7a8.45 8.45 0 0 1-12.5 7.4L3.5 20.5l1.45-4.35A8.46 8.46 0 1 1 20.5 11.7Z"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                />
-
-                                <path
-                                    d="M8.4 7.65c.18-.4.37-.41.68-.42h.57c.18 0 .38.05.48.32l.68 1.64c.08.21.05.4-.08.57l-.51.64c-.15.18-.12.35-.03.51.54.94 1.27 1.69 2.18 2.22.17.1.34.12.5-.06l.66-.76c.16-.19.37-.23.58-.14l1.59.75c.23.11.37.26.33.49-.08.52-.36 1.27-.84 1.66-.45.36-1.05.57-1.67.54-1.06-.05-2.47-.52-4.03-1.88-1.27-1.11-2.16-2.46-2.45-3.56-.27-1.02-.12-1.88.36-2.52Z"
-                                    fill="currentColor"
-                                />
-
+                    <button class="share-button share-whatsapp" type="button" data-share-channel="whatsapp" aria-label="Share this story on WhatsApp">
+                        <span class="share-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.5 11.7a8.45 8.45 0 0 1-12.5 7.4L3.5 20.5l1.45-4.35A8.46 8.46 0 1 1 20.5 11.7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M8.4 7.65c.18-.4.37-.41.68-.42h.57c.18 0 .38.05.48.32l.68 1.64c.08.21.05.4-.08.57l-.51.64c-.15.18-.12.35-.03.51.54.94 1.27 1.69 2.18 2.22.17.1.34.12.5-.06l.66-.76c.16-.19.37-.23.58-.14l1.59.75c.23.11.37.26.33.49-.08.52-.36 1.27-.84 1.66-.45.36-1.05.57-1.67.54-1.06-.05-2.47-.52-4.03-1.88-1.27-1.11-2.16-2.46-2.45-3.56-.27-1.02-.12-1.88.36-2.52Z" fill="currentColor"/>
                             </svg>
-
                         </span>
-
-                        <span>
-                            WhatsApp
-                        </span>
-
+                        <span>WhatsApp</span>
                     </button>
 
-
-                    <!-- FACEBOOK -->
-
-                    <button
-                        class="share-button share-facebook"
-                        type="button"
-                        data-share-channel="facebook"
-                        aria-label="Share this story on Facebook"
-                    >
-
-                        <span
-                            class="share-icon"
-                            aria-hidden="true"
-                        >
-
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-
-                                <path
-                                    d="M13.7 21v-8h2.7l.4-3.1h-3.1V7.92c0-.9.25-1.52 1.56-1.52h1.67V3.63c-.29-.04-1.28-.13-2.44-.13-2.42 0-4.08 1.48-4.08 4.2v2.2H7.67V13h2.74v8h3.29Z"
-                                />
-
+                    <button class="share-button share-facebook" type="button" data-share-channel="facebook" aria-label="Share this story on Facebook">
+                        <span class="share-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.7 21v-8h2.7l.4-3.1h-3.1V7.92c0-.9.25-1.52 1.56-1.52h1.67V3.63c-.29-.04-1.28-.13-2.44-.13-2.42 0-4.08 1.48-4.08 4.2v2.2H7.67V13h2.74v8h3.29Z"/>
                             </svg>
-
                         </span>
-
-                        <span>
-                            Facebook
-                        </span>
-
+                        <span>Facebook</span>
                     </button>
 
-
-                    <!-- COPY LINK -->
-
-                    <button
-                        class="share-button share-copy"
-                        type="button"
-                        data-share-channel="copy_link"
-                        aria-label="Copy story link"
-                    >
-
-                        <span
-                            class="share-icon"
-                            aria-hidden="true"
-                        >
-
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-
-                                <path
-                                    d="M10.4 13.6a4 4 0 0 0 5.66 0l2.1-2.1a4 4 0 0 0-5.66-5.66l-1.2 1.2"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    stroke-linecap="round"
-                                />
-
-                                <path
-                                    d="M13.6 10.4a4 4 0 0 0-5.66 0l-2.1 2.1a4 4 0 1 0 5.66 5.66l1.2-1.2"
-                                    stroke="currentColor"
-                                    stroke-width="1.8"
-                                    stroke-linecap="round"
-                                />
-
+                    <button class="share-button share-copy" type="button" data-share-channel="copy_link" aria-label="Copy story link">
+                        <span class="share-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10.4 13.6a4 4 0 0 0 5.66 0l2.1-2.1a4 4 0 0 0-5.66-5.66l-1.2 1.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M13.6 10.4a4 4 0 0 0-5.66 0l-2.1 2.1a4 4 0 1 0 5.66 5.66l1.2-1.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                             </svg>
-
                         </span>
-
-                        <span id="copy-link-label">
-                            Copy link
-                        </span>
-
+                        <span id="copy-link-label">Copy link</span>
                     </button>
 
                 </div>
 
-
-                <div
-                    class="share-feedback"
-                    id="share-feedback"
-                    role="status"
-                    aria-live="polite"
-                ></div>
+                <div class="share-feedback" id="share-feedback" role="status" aria-live="polite"></div>
 
             </section>
 
-
-            <!-- =================================================
-                 EDITORIAL DIVIDER
-            ================================================== -->
-
             <div class="story-divider">
-
-                <span>
-                    K
-                </span>
-
+                <span>K</span>
             </div>
 
         </div>
-
     </section>
 
 </article>
 
-
-<!-- =========================================================
-     RELATED STORIES
-========================================================= -->
-
 {% if related_articles %}
-
 <section class="related-section">
-
     <div class="page-container">
 
         <div class="related-heading">
-
             <div>
-
-                <span class="editorial-eyebrow">
-                    Keep discovering
-                </span>
-
-                <h2>
-                    More from Kalxa Stories
-                </h2>
-
+                <span class="editorial-eyebrow">Keep discovering</span>
+                <h2>More from Kalxa Stories</h2>
             </div>
 
-
-            <a
-                class="view-all-stories"
-                href="{{ url_for('public.stories') }}"
-            >
+            <a class="view-all-stories" href="{{ url_for('public.stories') }}">
                 View all stories →
             </a>
-
         </div>
-
 
         <div class="story-grid">
 
             {% for related in related_articles %}
-
             <article class="story-card">
 
-                <a
-                    class="story-image-link"
-                    href="{{ url_for(
-                        'public.article_detail',
-                        slug=related.slug
-                    ) }}"
-                >
-
+                <a class="story-image-link" href="{{ url_for('public.article_detail', slug=related.slug) }}">
                     <div class="story-image">
 
                         {% if related.display_cover_image_url %}
-
-                        <img
-                            src="{{ related.display_cover_image_url }}"
-                            alt="{{ related.title }}"
-                            loading="lazy"
-                        >
-
+                        <img src="{{ related.display_cover_image_url }}" alt="{{ related.title }}" loading="lazy">
                         {% else %}
-
                         <div class="image-placeholder small">
-
-                            <span>
-                                K
-                            </span>
-
+                            <span>K</span>
                         </div>
-
                         {% endif %}
 
                     </div>
-
                 </a>
-
 
                 <div class="story-card-content">
 
                     <div class="story-meta">
-
-                        <span>
-
-                            {{ related.article_type
-                                .replace("_", " ")
-                                .title()
-                            }}
-
-                        </span>
-
+                        <span>{{ related.article_type.replace("_", " ").title() }}</span>
                     </div>
 
-
                     <h3>
-
-                        <a
-                            href="{{ url_for(
-                                'public.article_detail',
-                                slug=related.slug
-                            ) }}"
-                        >
+                        <a href="{{ url_for('public.article_detail', slug=related.slug) }}">
                             {{ related.title }}
                         </a>
-
                     </h3>
 
-
                     {% if related.excerpt %}
-
-                    <p>
-                        {{ related.excerpt }}
-                    </p>
-
+                    <p>{{ related.excerpt }}</p>
                     {% endif %}
 
-
-                    <a
-                        class="read-link"
-                        href="{{ url_for(
-                            'public.article_detail',
-                            slug=related.slug
-                        ) }}"
-                    >
-
-                        Read story
-
-                        <span>→</span>
-
+                    <a class="read-link" href="{{ url_for('public.article_detail', slug=related.slug) }}">
+                        Read story <span>→</span>
                     </a>
 
                 </div>
-
             </article>
-
             {% endfor %}
 
         </div>
-
     </div>
-
 </section>
-
 {% endif %}
 
-
-<!-- =========================================================
-     IMAGE LIGHTBOX
-========================================================= -->
-
-<div
-    class="story-lightbox"
-    id="story-lightbox"
-    aria-hidden="true"
->
-
-    <button
-        class="story-lightbox-close"
-        id="story-lightbox-close"
-        type="button"
-        aria-label="Close image"
-    >
-        ×
-    </button>
-
-    <img
-        id="story-lightbox-image"
-        src=""
-        alt="Story image"
-    >
-
+<div class="story-lightbox" id="story-lightbox" aria-hidden="true">
+    <button class="story-lightbox-close" id="story-lightbox-close" type="button" aria-label="Close image">×</button>
+    <img id="story-lightbox-image" src="" alt="Story image">
 </div>
-
-
-<!-- =========================================================
-     ARTICLE STYLES
-========================================================= -->
 
 <style>
 
@@ -1342,17 +595,11 @@
 }
 
 .article-container {
-    width: min(
-        var(--kalxa-reading-width),
-        calc(100% - 40px)
-    );
+    width: min(var(--kalxa-reading-width), calc(100% - 40px));
     margin: 0 auto;
 }
 
-
-/* =========================================================
-   HERO
-========================================================= */
+/* HERO */
 
 .article-hero {
     padding: 100px 0 60px;
@@ -1452,12 +699,7 @@
     font-weight: 700;
 }
 
-
-/* =========================================================
-   NEW: STORY VIEWS AND LIKES
-
-   NO EYE ICON
-========================================================= */
+/* STORY VIEWS AND LIKES */
 
 .story-engagement-summary {
     display: flex;
@@ -1486,10 +728,7 @@
     color: var(--kalxa-muted);
 }
 
-
-/* =========================================================
-   COVER
-========================================================= */
+/* COVER */
 
 .article-cover {
     width: min(1240px, calc(100% - 40px));
@@ -1523,10 +762,7 @@
     font-size: 9px;
 }
 
-
-/* =========================================================
-   BODY
-========================================================= */
+/* BODY */
 
 .article-body-section {
     padding: 70px 0 95px;
@@ -1572,10 +808,7 @@
     line-height: 1.5;
 }
 
-
-/* =========================================================
-   SUPPORTING IMAGES
-========================================================= */
+/* SUPPORTING IMAGES */
 
 .article-supporting-images {
     display: grid;
@@ -1600,10 +833,7 @@
     font-size: 9px;
 }
 
-
-/* =========================================================
-   EDITORIAL LABELS
-========================================================= */
+/* EDITORIAL LABELS */
 
 .story-share-eyebrow,
 .editorial-eyebrow {
@@ -1616,23 +846,14 @@
     text-transform: uppercase;
 }
 
-
-/* =========================================================
-   NEW: STORY REACTIONS SECTION
-========================================================= */
+/* STORY REACTIONS */
 
 .story-reactions {
     margin-top: 65px;
     padding: 35px;
     border: 1px solid var(--kalxa-border);
     border-radius: 8px;
-    background:
-        linear-gradient(
-            135deg,
-            #ffffff 0%,
-            #f8faf8 50%,
-            #edf5ee 100%
-        );
+    background: linear-gradient(135deg, #ffffff 0%, #f8faf8 50%, #edf5ee 100%);
 }
 
 .story-reactions-header h2 {
@@ -1650,10 +871,7 @@
     line-height: 1.7;
 }
 
-
-/* =========================================================
-   STORY LIKE BUTTON
-========================================================= */
+/* STORY LIKE BUTTON */
 
 .story-like-button {
     display: inline-flex;
@@ -1669,12 +887,7 @@
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
-
-    transition:
-        transform .2s ease,
-        background .2s ease,
-        border-color .2s ease,
-        box-shadow .2s ease;
+    transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
 
 .story-like-button:hover {
@@ -1693,11 +906,6 @@
     opacity: .7;
 }
 
-
-/* =========================================================
-   HEART ICON
-========================================================= */
-
 .story-like-icon {
     color: #b73c55;
     font-size: 23px;
@@ -1705,12 +913,7 @@
 }
 
 .story-like-button.is-liked {
-    background:
-        linear-gradient(
-            135deg,
-            #fff2f4,
-            #fce3e8
-        );
+    background: linear-gradient(135deg, #fff2f4, #fce3e8);
     border-color: #e4a4b0;
     color: #963047;
 }
@@ -1718,11 +921,6 @@
 .story-like-button.is-liked .story-like-icon {
     color: #d5204b;
 }
-
-
-/* =========================================================
-   STORY LIKE COUNTER
-========================================================= */
 
 .story-like-count {
     min-width: 26px;
@@ -1749,10 +947,7 @@
     font-size: 10px;
 }
 
-
-/* =========================================================
-   RESTAURANTS / CONTINUE ON KALXA
-========================================================= */
+/* RESTAURANTS */
 
 .restaurant-discovery {
     margin-top: 25px;
@@ -1787,11 +982,6 @@
     gap: 14px;
 }
 
-
-/* =========================================================
-   RESTAURANT CARD
-========================================================= */
-
 .restaurant-reference {
     position: relative;
     display: grid;
@@ -1801,18 +991,8 @@
     padding: 25px;
     overflow: hidden;
     border: 1px solid var(--kalxa-border);
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--kalxa-paper) 0%,
-            var(--kalxa-cream) 100%
-        );
-
-    transition:
-        transform .2s ease,
-        border-color .2s ease,
-        box-shadow .2s ease;
+    background: linear-gradient(135deg, var(--kalxa-paper) 0%, var(--kalxa-cream) 100%);
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
 
 .restaurant-reference::before {
@@ -1917,11 +1097,6 @@
     transform: translateY(-50%);
 }
 
-
-/* =========================================================
-   VIEW RESTAURANT BUTTON
-========================================================= */
-
 .restaurant-view-button {
     min-width: 178px;
     min-height: 58px;
@@ -1934,11 +1109,7 @@
     background: var(--kalxa-black);
     color: #ffffff;
     text-decoration: none;
-
-    transition:
-        background .18s ease,
-        border-color .18s ease,
-        transform .18s ease;
+    transition: background .18s ease, border-color .18s ease, transform .18s ease;
 }
 
 .restaurant-view-button:hover {
@@ -1987,10 +1158,7 @@
     transform: translateX(4px);
 }
 
-
-/* =========================================================
-   COMMENTS
-========================================================= */
+/* COMMENTS */
 
 .story-comments {
     margin-top: 85px;
@@ -2079,21 +1247,26 @@
 
 .comment-list {
     display: grid;
+    width: 100%;
     margin-top: 38px;
+    text-align: left !important;
 }
 
 .comment-list-heading {
     display: flex;
     align-items: center;
+    justify-content: flex-start !important;
     gap: 9px;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--kalxa-border);
+    text-align: left !important;
 }
 
 .comment-list-heading strong {
     font-size: 10px;
     letter-spacing: .5px;
     text-transform: uppercase;
+    text-align: left !important;
 }
 
 .comment-list-heading span {
@@ -2111,9 +1284,12 @@
 .story-comment {
     display: grid;
     grid-template-columns: 43px minmax(0, 1fr);
+    align-items: start;
     gap: 15px;
+    width: 100%;
     padding: 24px 0;
     border-bottom: 1px solid var(--kalxa-border-soft);
+    text-align: left !important;
 }
 
 .comment-avatar {
@@ -2126,40 +1302,66 @@
     background: var(--kalxa-black);
     color: #eadbc3;
     font-family: var(--kalxa-serif);
+    text-align: center;
+}
+
+.comment-content {
+    display: block;
+    min-width: 0;
+    width: 100%;
+    text-align: left !important;
 }
 
 .comment-meta {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: flex-start !important;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    width: 100%;
+    text-align: left !important;
 }
 
 .comment-meta strong {
+    display: block;
+    margin: 0;
     color: var(--kalxa-ink);
     font-size: 11px;
+    font-weight: 700;
+    text-align: left !important;
 }
 
 .comment-meta span {
+    display: block;
+    margin: 0;
     color: var(--kalxa-muted);
     font-size: 9px;
+    text-align: left !important;
 }
 
 .comment-content > p {
+    display: block;
+    width: 100%;
     margin: 8px 0 0;
+    padding: 0;
     color: var(--kalxa-text-soft);
     font-size: 13px;
     line-height: 1.7;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+    text-align: left !important;
 }
 
 .comment-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-start !important;
     flex-wrap: wrap;
     gap: 9px;
+    width: 100%;
     margin-top: 13px;
+    text-align: left !important;
 }
 
 .comment-upvote-button {
@@ -2240,10 +1442,7 @@
     font-size: 10px;
 }
 
-
-/* =========================================================
-   SHARE
-========================================================= */
+/* SHARE */
 
 .story-share {
     margin-top: 70px;
@@ -2293,11 +1492,7 @@
     font-size: 10px;
     font-weight: 700;
     cursor: pointer;
-
-    transition:
-        transform .15s ease,
-        border-color .15s ease,
-        background .15s ease;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
 }
 
 .share-button:hover {
@@ -2336,10 +1531,7 @@
     font-size: 9px;
 }
 
-
-/* =========================================================
-   DIVIDER
-========================================================= */
+/* DIVIDER */
 
 .story-divider {
     position: relative;
@@ -2373,10 +1565,7 @@
     font-size: 17px;
 }
 
-
-/* =========================================================
-   RELATED STORIES
-========================================================= */
+/* RELATED STORIES */
 
 .related-section {
     padding: 90px 0 110px;
@@ -2400,10 +1589,7 @@
     font-weight: 600;
 }
 
-
-/* =========================================================
-   READING PROGRESS
-========================================================= */
+/* READING PROGRESS */
 
 .reading-progress {
     position: fixed;
@@ -2415,10 +1601,7 @@
     background: var(--kalxa-gold);
 }
 
-
-/* =========================================================
-   IMAGE LIGHTBOX
-========================================================= */
+/* IMAGE LIGHTBOX */
 
 .story-lightbox {
     position: fixed;
@@ -2455,10 +1638,7 @@
     cursor: pointer;
 }
 
-
-/* =========================================================
-   TABLET
-========================================================= */
+/* TABLET */
 
 @media (max-width: 800px) {
 
@@ -2516,13 +1696,9 @@
         align-items: flex-start;
         flex-direction: column;
     }
-
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
+/* MOBILE */
 
 @media (max-width: 480px) {
 
@@ -2547,8 +1723,6 @@
         font-size: 30px;
     }
 
-    /* STORY ENGAGEMENT */
-
     .story-engagement-summary {
         margin-top: 20px;
         font-size: 10px;
@@ -2566,8 +1740,6 @@
     .story-like-button {
         width: 100%;
     }
-
-    /* SHARE */
 
     .story-share {
         margin-top: 52px;
@@ -2590,8 +1762,6 @@
         justify-content: flex-start;
         padding: 0 17px;
     }
-
-    /* RESTAURANTS */
 
     .discovery-heading {
         margin-bottom: 25px;
@@ -2623,8 +1793,6 @@
         padding: 10px 16px;
     }
 
-    /* COMMENTS */
-
     .comment-form {
         padding: 20px;
     }
@@ -2638,1087 +1806,622 @@
         width: 100%;
     }
 
-    .comment-meta {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 3px;
+    /* Keep commenter name and comment left-aligned on mobile. */
+    .story-comment {
+        grid-template-columns: 38px minmax(0, 1fr);
+        align-items: start;
+        text-align: left !important;
     }
 
+    .comment-avatar {
+        width: 38px;
+        height: 38px;
+    }
+
+    .comment-content,
+    .comment-meta,
+    .comment-meta strong,
+    .comment-meta span,
+    .comment-content > p,
+    .comment-actions {
+        text-align: left !important;
+    }
+
+    .comment-meta {
+        align-items: flex-start;
+        justify-content: flex-start !important;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .comment-actions {
+        justify-content: flex-start !important;
+    }
 }
 
+/* =========================================================
+   FINAL COMMENT ALIGNMENT OVERRIDE
 
-    /* =========================================================
-   FIX: FORCE COMMUNITY COMMENTS TO ALIGN LEFT
+   These rules intentionally appear at the end of the
+   stylesheet to override inherited styles from base.html.
 ========================================================= */
 
-.comment-list {
-    display: grid;
-    width: 100%;
+.article-page .story-comments,
+.article-page .comment-list,
+.article-page .story-comment,
+.article-page .comment-content,
+.article-page .comment-meta,
+.article-page .comment-meta strong,
+.article-page .comment-meta span,
+.article-page .comment-content > p,
+.article-page .comment-actions {
     text-align: left !important;
 }
 
-.story-comment {
-    display: grid;
-    grid-template-columns: 43px minmax(0, 1fr);
+.article-page .comment-list-heading {
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
+.article-page .story-comment {
+    justify-items: stretch;
     align-items: start;
-    width: 100%;
-    text-align: left !important;
 }
 
-.comment-content {
+.article-page .comment-content {
+    display: block !important;
+    width: 100%;
     min-width: 0;
-    width: 100%;
-    text-align: left !important;
 }
 
-.comment-meta {
-    display: flex;
+.article-page .comment-meta {
+    display: flex !important;
+    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: flex-start !important;
     flex-wrap: wrap;
     gap: 8px 12px;
     width: 100%;
-    text-align: left !important;
 }
 
-.comment-content > p {
+.article-page .comment-meta strong,
+.article-page .comment-meta span {
     display: block;
+    margin: 0;
+}
+
+.article-page .comment-content > p {
+    display: block !important;
     width: 100%;
     margin: 8px 0 0;
-    color: var(--kalxa-text-soft);
-    font-size: 13px;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
+    padding: 0;
     text-align: left !important;
 }
 
-.comment-actions {
-    display: flex;
+.article-page .comment-actions {
+    display: flex !important;
+    justify-content: flex-start !important;
     align-items: center;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: 9px;
     width: 100%;
-    margin-top: 13px;
-    text-align: left !important;
+}
+
+@media (max-width: 480px) {
+
+    .article-page .comment-meta {
+        align-items: flex-start;
+        justify-content: flex-start !important;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .article-page .comment-meta strong,
+    .article-page .comment-meta span,
+    .article-page .comment-content > p {
+        text-align: left !important;
+    }
+
+    .article-page .comment-actions {
+        justify-content: flex-start !important;
+    }
 }
 
 </style>
 
-
-<!-- =========================================================
-     ARTICLE JAVASCRIPT
-========================================================= -->
-
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        // ====================================================
-        // READING PROGRESS
-        // ====================================================
+    // READING PROGRESS
 
-        const progress =
-            document.getElementById(
-                "reading-progress"
-            );
+    const progress = document.getElementById("reading-progress");
 
-        function updateReadingProgress() {
+    function updateReadingProgress() {
 
-            if (!progress) {
-                return;
-            }
-
-            const scrollTop =
-                window.scrollY
-                ||
-                document.documentElement.scrollTop;
-
-            const documentHeight =
-                document.documentElement.scrollHeight
-                -
-                window.innerHeight;
-
-            const percentage =
-                documentHeight > 0
-                    ?
-                    (scrollTop / documentHeight) * 100
-                    :
-                    0;
-
-            progress.style.width =
-                Math.min(
-                    100,
-                    Math.max(
-                        0,
-                        percentage
-                    )
-                )
-                +
-                "%";
-
+        if (!progress) {
+            return;
         }
 
-        window.addEventListener(
-            "scroll",
-            updateReadingProgress,
-            {
-                passive: true
-            }
-        );
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
 
-        updateReadingProgress();
+        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
 
+        const percentage = documentHeight > 0
+            ? (scrollTop / documentHeight) * 100
+            : 0;
 
-        // ====================================================
-        // NEW: STORY LIKES
-        // ====================================================
-
-        const storyLikeButton =
-            document.getElementById(
-                "story-like-button"
-            );
-
-        const storyLikeIcon =
-            document.getElementById(
-                "story-like-icon"
-            );
-
-        const storyLikeLabel =
-            document.getElementById(
-                "story-like-label"
-            );
-
-        const storyLikeCount =
-            document.getElementById(
-                "story-like-count"
-            );
-
-        const storySummaryLikeCount =
-            document.getElementById(
-                "story-summary-like-count"
-            );
-
-        const storyLikeFeedback =
-            document.getElementById(
-                "story-like-feedback"
-            );
-
-
-        if (storyLikeButton) {
-
-            storyLikeButton.addEventListener(
-                "click",
-                async function () {
-
-                    if (storyLikeButton.disabled) {
-                        return;
-                    }
-
-                    const likeUrl =
-                        storyLikeButton.getAttribute(
-                            "data-like-url"
-                        );
-
-                    const csrfToken =
-                        storyLikeButton.getAttribute(
-                            "data-csrf-token"
-                        );
-
-                    if (!likeUrl || !csrfToken) {
-
-                        if (storyLikeFeedback) {
-                            storyLikeFeedback.textContent =
-                                "Please refresh the page and try again.";
-                        }
-
-                        return;
-                    }
-
-                    storyLikeButton.disabled = true;
-
-                    if (storyLikeFeedback) {
-                        storyLikeFeedback.textContent = "";
-                    }
-
-                    try {
-
-                        const response = await fetch(
-                            likeUrl,
-                            {
-                                method: "POST",
-
-                                credentials: "same-origin",
-
-                                headers: {
-                                    "Accept": "application/json",
-                                    "X-CSRF-Token": csrfToken
-                                }
-                            }
-                        );
-
-                        let data = null;
-
-                        try {
-
-                            data = await response.json();
-
-                        }
-                        catch (error) {
-
-                            data = null;
-
-                        }
-
-                        if (
-                            !response.ok
-                            ||
-                            !data
-                            ||
-                            data.ok !== true
-                        ) {
-
-                            throw new Error(
-                                data && data.message
-                                    ?
-                                    data.message
-                                    :
-                                    "Unable to update your like."
-                            );
-
-                        }
-
-                        const liked =
-                            data.liked === true;
-
-                        const safeLikeCount =
-                            Number(data.like_count);
-
-                        const likes =
-                            Number.isFinite(safeLikeCount)
-                                ?
-                                Math.max(0, safeLikeCount)
-                                :
-                                0;
-
-                        // ====================================
-                        // UPDATE BUTTON STATE
-                        // ====================================
-
-                        storyLikeButton.classList.toggle(
-                            "is-liked",
-                            liked
-                        );
-
-                        storyLikeButton.setAttribute(
-                            "aria-pressed",
-                            liked ? "true" : "false"
-                        );
-
-                        storyLikeButton.setAttribute(
-                            "aria-label",
-                            liked
-                                ?
-                                "Remove your like from this story"
-                                :
-                                "Like this story"
-                        );
-
-                        // ====================================
-                        // UPDATE HEART
-                        // ====================================
-
-                        if (storyLikeIcon) {
-
-                            storyLikeIcon.textContent =
-                                liked
-                                    ?
-                                    "♥"
-                                    :
-                                    "♡";
-
-                        }
-
-                        // ====================================
-                        // UPDATE LABEL
-                        // ====================================
-
-                        if (storyLikeLabel) {
-
-                            storyLikeLabel.textContent =
-                                liked
-                                    ?
-                                    "Liked"
-                                    :
-                                    "Like this story";
-
-                        }
-
-                        // ====================================
-                        // UPDATE LIKE COUNT
-                        // ====================================
-
-                        if (storyLikeCount) {
-
-                            storyLikeCount.textContent =
-                                likes;
-
-                        }
-
-                        if (storySummaryLikeCount) {
-
-                            storySummaryLikeCount.textContent =
-                                likes;
-
-                        }
-
-                        // ====================================
-                        // UPDATE VIEW COUNT IF RETURNED
-                        // ====================================
-
-                        const storyViewCount =
-                            document.getElementById(
-                                "story-view-count"
-                            );
-
-                        if (
-                            storyViewCount
-                            &&
-                            data.view_count !== undefined
-                        ) {
-
-                            const safeViewCount =
-                                Number(data.view_count);
-
-                            if (
-                                Number.isFinite(safeViewCount)
-                            ) {
-
-                                storyViewCount.textContent =
-                                    Math.max(
-                                        0,
-                                        safeViewCount
-                                    );
-
-                            }
-
-                        }
-
-                    }
-                    catch (error) {
-
-                        if (storyLikeFeedback) {
-
-                            storyLikeFeedback.textContent =
-                                error.message
-                                ||
-                                "Unable to update your like.";
-
-                        }
-
-                    }
-                    finally {
-
-                        storyLikeButton.disabled = false;
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        // ====================================================
-        // COMMENT UPVOTES
-        // ====================================================
-
-        document
-            .querySelectorAll(
-                "[data-comment-upvote]"
-            )
-            .forEach(
-                function (button) {
-
-                    button.addEventListener(
-                        "click",
-                        async function () {
-
-                            if (button.disabled) {
-                                return;
-                            }
-
-                            const upvoteUrl =
-                                button.getAttribute(
-                                    "data-upvote-url"
-                                );
-
-                            if (!upvoteUrl) {
-                                return;
-                            }
-
-                            const icon =
-                                button.querySelector(
-                                    "[data-upvote-icon]"
-                                );
-
-                            const label =
-                                button.querySelector(
-                                    "[data-upvote-label]"
-                                );
-
-                            const count =
-                                button.querySelector(
-                                    "[data-upvote-count]"
-                                );
-
-                            const actions =
-                                button.closest(
-                                    ".comment-actions"
-                                );
-
-                            const feedback =
-                                actions
-                                    ?
-                                    actions.querySelector(
-                                        "[data-upvote-feedback]"
-                                    )
-                                    :
-                                    null;
-
-                            if (feedback) {
-                                feedback.textContent = "";
-                            }
-
-                            button.disabled = true;
-
-                            try {
-
-                                const response =
-                                    await fetch(
-                                        upvoteUrl,
-                                        {
-                                            method: "POST",
-
-                                            credentials:
-                                                "same-origin",
-
-                                            headers: {
-                                                "Accept":
-                                                    "application/json"
-                                            }
-                                        }
-                                    );
-
-                                let data = null;
-
-                                try {
-
-                                    data =
-                                        await response.json();
-
-                                }
-                                catch (error) {
-
-                                    data = null;
-
-                                }
-
-                                if (
-                                    !response.ok
-                                    ||
-                                    !data
-                                    ||
-                                    data.ok !== true
-                                ) {
-
-                                    let message =
-                                        "Unable to update upvote.";
-
-                                    if (
-                                        data
-                                        &&
-                                        data.error ===
-                                        "comments_closed"
-                                    ) {
-
-                                        message =
-                                            "Upvotes are closed for this story.";
-
-                                    }
-
-                                    throw new Error(
-                                        message
-                                    );
-
-                                }
-
-                                const isUpvoted =
-                                    data.upvoted === true;
-
-                                button.classList.toggle(
-                                    "is-upvoted",
-                                    isUpvoted
-                                );
-
-                                button.setAttribute(
-                                    "aria-pressed",
-                                    isUpvoted
-                                        ?
-                                        "true"
-                                        :
-                                        "false"
-                                );
-
-                                button.setAttribute(
-                                    "aria-label",
-                                    isUpvoted
-                                        ?
-                                        "Remove upvote from this comment"
-                                        :
-                                        "Upvote this comment"
-                                );
-
-                                if (icon) {
-
-                                    icon.textContent =
-                                        isUpvoted
-                                            ?
-                                            "♥"
-                                            :
-                                            "♡";
-
-                                }
-
-                                if (label) {
-
-                                    label.textContent =
-                                        isUpvoted
-                                            ?
-                                            "Upvoted"
-                                            :
-                                            "Upvote";
-
-                                }
-
-                                if (count) {
-
-                                    const safeCount =
-                                        Number(
-                                            data.upvote_count
-                                        );
-
-                                    count.textContent =
-                                        Number.isFinite(
-                                            safeCount
-                                        )
-                                            ?
-                                            Math.max(
-                                                0,
-                                                safeCount
-                                            )
-                                            :
-                                            "0";
-
-                                }
-
-                            }
-                            catch (error) {
-
-                                if (feedback) {
-
-                                    feedback.textContent =
-                                        error.message
-                                        ||
-                                        "Unable to update upvote.";
-
-                                }
-
-                            }
-                            finally {
-
-                                button.disabled = false;
-
-                            }
-
-                        }
-                    );
-
-                }
-            );
-
-
-        // ====================================================
-        // SHARE STORY
-        // ====================================================
-
-        const shareActions =
-            document.getElementById(
-                "story-share-actions"
-            );
-
-        const shareFeedback =
-            document.getElementById(
-                "share-feedback"
-            );
-
-        const copyLabel =
-            document.getElementById(
-                "copy-link-label"
-            );
-
-
-        function buildSharedStoryUrl(source) {
-
-            if (!shareActions) {
-                return "";
-            }
-
-            const canonicalUrl =
-                shareActions.dataset.canonicalUrl;
-
-            if (!canonicalUrl) {
-                return "";
-            }
-
-            try {
-
-                const url = new URL(
-                    canonicalUrl
-                );
-
-                url.searchParams.set(
-                    "utm_source",
-                    source
-                );
-
-                url.searchParams.set(
-                    "utm_medium",
-                    "share"
-                );
-
-                url.searchParams.set(
-                    "utm_campaign",
-                    "story_share"
-                );
-
-                return url.toString();
-
-            }
-            catch (error) {
-
-                return canonicalUrl;
-
-            }
-
-        }
-
-
-        function showShareFeedback(message) {
-
-            if (!shareFeedback) {
-                return;
-            }
-
-            shareFeedback.textContent =
-                message;
-
-            window.setTimeout(
-                function () {
-
-                    if (
-                        shareFeedback.textContent
-                        ===
-                        message
-                    ) {
-
-                        shareFeedback.textContent =
-                            "";
-
-                    }
-
-                },
-                3000
-            );
-
-        }
-
-
-        function openShareWindow(url) {
-
-            window.open(
-                url,
-                "_blank",
-                "noopener,noreferrer"
-            );
-
-        }
-
-
-        async function copyStoryLink(url) {
-
-            try {
-
-                if (
-                    navigator.clipboard
-                    &&
-                    window.isSecureContext
-                ) {
-
-                    await navigator.clipboard.writeText(
-                        url
-                    );
-
-                }
-                else {
-
-                    const textarea =
-                        document.createElement(
-                            "textarea"
-                        );
-
-                    textarea.value = url;
-
-                    textarea.setAttribute(
-                        "readonly",
-                        ""
-                    );
-
-                    textarea.style.position =
-                        "fixed";
-
-                    textarea.style.opacity =
-                        "0";
-
-                    document.body.appendChild(
-                        textarea
-                    );
-
-                    textarea.select();
-
-                    const copied =
-                        document.execCommand(
-                            "copy"
-                        );
-
-                    textarea.remove();
-
-                    if (!copied) {
-
-                        throw new Error(
-                            "Copy command failed."
-                        );
-
-                    }
-
-                }
-
-                if (copyLabel) {
-
-                    copyLabel.textContent =
-                        "Copied!";
-
-                    window.setTimeout(
-                        function () {
-
-                            copyLabel.textContent =
-                                "Copy link";
-
-                        },
-                        2200
-                    );
-
-                }
-
-                showShareFeedback(
-                    "Story link copied."
-                );
-
-                return true;
-
-            }
-            catch (error) {
-
-                showShareFeedback(
-                    "Unable to copy automatically."
-                );
-
-                return false;
-
-            }
-
-        }
-
-
-        if (shareActions) {
-
-            shareActions
-                .querySelectorAll(
-                    "[data-share-channel]"
-                )
-                .forEach(
-                    function (button) {
-
-                        button.addEventListener(
-                            "click",
-                            async function () {
-
-                                const channel =
-                                    button.getAttribute(
-                                        "data-share-channel"
-                                    );
-
-                                const storyTitle =
-                                    shareActions.dataset.storyTitle
-                                    ||
-                                    "Kalxa Story";
-
-
-                                // =============================
-                                // WHATSAPP
-                                // =============================
-
-                                if (
-                                    channel === "whatsapp"
-                                ) {
-
-                                    const sharedUrl =
-                                        buildSharedStoryUrl(
-                                            "whatsapp"
-                                        );
-
-                                    const message =
-                                        storyTitle
-                                        +
-                                        "\n\n"
-                                        +
-                                        sharedUrl;
-
-                                    const whatsappUrl =
-                                        "https://wa.me/?text="
-                                        +
-                                        encodeURIComponent(
-                                            message
-                                        );
-
-                                    openShareWindow(
-                                        whatsappUrl
-                                    );
-
-                                    showShareFeedback(
-                                        "Opening WhatsApp…"
-                                    );
-
-                                }
-
-
-                                // =============================
-                                // FACEBOOK
-                                // =============================
-
-                                else if (
-                                    channel === "facebook"
-                                ) {
-
-                                    const sharedUrl =
-                                        buildSharedStoryUrl(
-                                            "facebook"
-                                        );
-
-                                    const facebookUrl =
-                                        "https://www.facebook.com/sharer/sharer.php?u="
-                                        +
-                                        encodeURIComponent(
-                                            sharedUrl
-                                        );
-
-                                    openShareWindow(
-                                        facebookUrl
-                                    );
-
-                                    showShareFeedback(
-                                        "Opening Facebook…"
-                                    );
-
-                                }
-
-
-                                // =============================
-                                // COPY LINK
-                                // =============================
-
-                                else if (
-                                    channel === "copy_link"
-                                ) {
-
-                                    const sharedUrl =
-                                        buildSharedStoryUrl(
-                                            "copy_link"
-                                        );
-
-                                    await copyStoryLink(
-                                        sharedUrl
-                                    );
-
-                                }
-
-                            }
-                        );
-
-                    }
-                );
-
-        }
-
-
-        // ====================================================
-        // IMAGE LIGHTBOX
-        // ====================================================
-
-        const lightbox =
-            document.getElementById(
-                "story-lightbox"
-            );
-
-        const lightboxImage =
-            document.getElementById(
-                "story-lightbox-image"
-            );
-
-        const closeButton =
-            document.getElementById(
-                "story-lightbox-close"
-            );
-
-
-        function closeLightbox() {
-
-            if (!lightbox) {
-                return;
-            }
-
-            lightbox.classList.remove(
-                "open"
-            );
-
-            lightbox.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-            document.body.style.overflow =
-                "";
-
-        }
-
-
-        document
-            .querySelectorAll(
-                "[data-story-image]"
-            )
-            .forEach(
-                function (button) {
-
-                    button.addEventListener(
-                        "click",
-                        function () {
-
-                            if (
-                                !lightbox
-                                ||
-                                !lightboxImage
-                            ) {
-
-                                return;
-
-                            }
-
-                            const imageUrl =
-                                button.getAttribute(
-                                    "data-story-image"
-                                );
-
-                            if (!imageUrl) {
-                                return;
-                            }
-
-                            lightboxImage.src =
-                                imageUrl;
-
-                            lightboxImage.alt =
-                                button.getAttribute(
-                                    "aria-label"
-                                )
-                                ||
-                                "Story image";
-
-                            lightbox.classList.add(
-                                "open"
-                            );
-
-                            lightbox.setAttribute(
-                                "aria-hidden",
-                                "false"
-                            );
-
-                            document.body.style.overflow =
-                                "hidden";
-
-                        }
-                    );
-
-                }
-            );
-
-
-        if (closeButton) {
-
-            closeButton.addEventListener(
-                "click",
-                closeLightbox
-            );
-
-        }
-
-
-        if (lightbox) {
-
-            lightbox.addEventListener(
-                "click",
-                function (event) {
-
-                    if (
-                        event.target === lightbox
-                    ) {
-
-                        closeLightbox();
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        document.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (event.key === "Escape") {
-
-                    closeLightbox();
-
-                }
-
-            }
-        );
-
+        progress.style.width = Math.min(100, Math.max(0, percentage)) + "%";
     }
-);
+
+    window.addEventListener("scroll", updateReadingProgress, {
+        passive: true
+    });
+
+    updateReadingProgress();
+
+
+    // STORY LIKES
+
+    const storyLikeButton = document.getElementById("story-like-button");
+    const storyLikeIcon = document.getElementById("story-like-icon");
+    const storyLikeLabel = document.getElementById("story-like-label");
+    const storyLikeCount = document.getElementById("story-like-count");
+    const storySummaryLikeCount = document.getElementById("story-summary-like-count");
+    const storyLikeFeedback = document.getElementById("story-like-feedback");
+
+    if (storyLikeButton) {
+
+        storyLikeButton.addEventListener("click", async function () {
+
+            if (storyLikeButton.disabled) {
+                return;
+            }
+
+            const likeUrl = storyLikeButton.getAttribute("data-like-url");
+            const csrfToken = storyLikeButton.getAttribute("data-csrf-token");
+
+            if (!likeUrl || !csrfToken) {
+
+                if (storyLikeFeedback) {
+                    storyLikeFeedback.textContent = "Please refresh the page and try again.";
+                }
+
+                return;
+            }
+
+            storyLikeButton.disabled = true;
+
+            if (storyLikeFeedback) {
+                storyLikeFeedback.textContent = "";
+            }
+
+            try {
+
+                const response = await fetch(likeUrl, {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json",
+                        "X-CSRF-Token": csrfToken
+                    }
+                });
+
+                let data = null;
+
+                try {
+                    data = await response.json();
+                } catch (error) {
+                    data = null;
+                }
+
+                if (!response.ok || !data || data.ok !== true) {
+                    throw new Error(
+                        data && data.message
+                            ? data.message
+                            : "Unable to update your like."
+                    );
+                }
+
+                const liked = data.liked === true;
+                const safeLikeCount = Number(data.like_count);
+
+                const likes = Number.isFinite(safeLikeCount)
+                    ? Math.max(0, safeLikeCount)
+                    : 0;
+
+                storyLikeButton.classList.toggle("is-liked", liked);
+
+                storyLikeButton.setAttribute(
+                    "aria-pressed",
+                    liked ? "true" : "false"
+                );
+
+                storyLikeButton.setAttribute(
+                    "aria-label",
+                    liked
+                        ? "Remove your like from this story"
+                        : "Like this story"
+                );
+
+                if (storyLikeIcon) {
+                    storyLikeIcon.textContent = liked ? "♥" : "♡";
+                }
+
+                if (storyLikeLabel) {
+                    storyLikeLabel.textContent = liked ? "Liked" : "Like this story";
+                }
+
+                if (storyLikeCount) {
+                    storyLikeCount.textContent = likes;
+                }
+
+                if (storySummaryLikeCount) {
+                    storySummaryLikeCount.textContent = likes;
+                }
+
+                const storyViewCount = document.getElementById("story-view-count");
+
+                if (storyViewCount && data.view_count !== undefined) {
+
+                    const safeViewCount = Number(data.view_count);
+
+                    if (Number.isFinite(safeViewCount)) {
+                        storyViewCount.textContent = Math.max(0, safeViewCount);
+                    }
+                }
+
+            } catch (error) {
+
+                if (storyLikeFeedback) {
+                    storyLikeFeedback.textContent =
+                        error.message || "Unable to update your like.";
+                }
+
+            } finally {
+
+                storyLikeButton.disabled = false;
+
+            }
+        });
+    }
+
+
+    // COMMENT UPVOTES
+
+    document.querySelectorAll("[data-comment-upvote]").forEach(function (button) {
+
+        button.addEventListener("click", async function () {
+
+            if (button.disabled) {
+                return;
+            }
+
+            const upvoteUrl = button.getAttribute("data-upvote-url");
+
+            if (!upvoteUrl) {
+                return;
+            }
+
+            const icon = button.querySelector("[data-upvote-icon]");
+            const label = button.querySelector("[data-upvote-label]");
+            const count = button.querySelector("[data-upvote-count]");
+
+            const actions = button.closest(".comment-actions");
+
+            const feedback = actions
+                ? actions.querySelector("[data-upvote-feedback]")
+                : null;
+
+            if (feedback) {
+                feedback.textContent = "";
+            }
+
+            button.disabled = true;
+
+            try {
+
+                const response = await fetch(upvoteUrl, {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                let data = null;
+
+                try {
+                    data = await response.json();
+                } catch (error) {
+                    data = null;
+                }
+
+                if (!response.ok || !data || data.ok !== true) {
+
+                    let message = "Unable to update upvote.";
+
+                    if (data && data.error === "comments_closed") {
+                        message = "Upvotes are closed for this story.";
+                    }
+
+                    throw new Error(message);
+                }
+
+                const isUpvoted = data.upvoted === true;
+
+                button.classList.toggle("is-upvoted", isUpvoted);
+
+                button.setAttribute(
+                    "aria-pressed",
+                    isUpvoted ? "true" : "false"
+                );
+
+                button.setAttribute(
+                    "aria-label",
+                    isUpvoted
+                        ? "Remove upvote from this comment"
+                        : "Upvote this comment"
+                );
+
+                if (icon) {
+                    icon.textContent = isUpvoted ? "♥" : "♡";
+                }
+
+                if (label) {
+                    label.textContent = isUpvoted ? "Upvoted" : "Upvote";
+                }
+
+                if (count) {
+
+                    const safeCount = Number(data.upvote_count);
+
+                    count.textContent = Number.isFinite(safeCount)
+                        ? Math.max(0, safeCount)
+                        : "0";
+                }
+
+            } catch (error) {
+
+                if (feedback) {
+                    feedback.textContent =
+                        error.message || "Unable to update upvote.";
+                }
+
+            } finally {
+
+                button.disabled = false;
+
+            }
+        });
+    });
+
+
+    // SHARE STORY
+
+    const shareActions = document.getElementById("story-share-actions");
+    const shareFeedback = document.getElementById("share-feedback");
+    const copyLabel = document.getElementById("copy-link-label");
+
+    function buildSharedStoryUrl(source) {
+
+        if (!shareActions) {
+            return "";
+        }
+
+        const canonicalUrl = shareActions.dataset.canonicalUrl;
+
+        if (!canonicalUrl) {
+            return "";
+        }
+
+        try {
+
+            const url = new URL(canonicalUrl);
+
+            url.searchParams.set("utm_source", source);
+            url.searchParams.set("utm_medium", "share");
+            url.searchParams.set("utm_campaign", "story_share");
+
+            return url.toString();
+
+        } catch (error) {
+
+            return canonicalUrl;
+
+        }
+    }
+
+    function showShareFeedback(message) {
+
+        if (!shareFeedback) {
+            return;
+        }
+
+        shareFeedback.textContent = message;
+
+        window.setTimeout(function () {
+
+            if (shareFeedback.textContent === message) {
+                shareFeedback.textContent = "";
+            }
+
+        }, 3000);
+    }
+
+    function openShareWindow(url) {
+
+        window.open(
+            url,
+            "_blank",
+            "noopener,noreferrer"
+        );
+    }
+
+    async function copyStoryLink(url) {
+
+        try {
+
+            if (navigator.clipboard && window.isSecureContext) {
+
+                await navigator.clipboard.writeText(url);
+
+            } else {
+
+                const textarea = document.createElement("textarea");
+
+                textarea.value = url;
+                textarea.setAttribute("readonly", "");
+                textarea.style.position = "fixed";
+                textarea.style.opacity = "0";
+
+                document.body.appendChild(textarea);
+
+                textarea.select();
+
+                const copied = document.execCommand("copy");
+
+                textarea.remove();
+
+                if (!copied) {
+                    throw new Error("Copy command failed.");
+                }
+            }
+
+            if (copyLabel) {
+
+                copyLabel.textContent = "Copied!";
+
+                window.setTimeout(function () {
+                    copyLabel.textContent = "Copy link";
+                }, 2200);
+            }
+
+            showShareFeedback("Story link copied.");
+
+            return true;
+
+        } catch (error) {
+
+            showShareFeedback("Unable to copy automatically.");
+
+            return false;
+
+        }
+    }
+
+    if (shareActions) {
+
+        shareActions.querySelectorAll("[data-share-channel]").forEach(function (button) {
+
+            button.addEventListener("click", async function () {
+
+                const channel = button.getAttribute("data-share-channel");
+
+                const storyTitle = shareActions.dataset.storyTitle || "Kalxa Story";
+
+                if (channel === "whatsapp") {
+
+                    const sharedUrl = buildSharedStoryUrl("whatsapp");
+
+                    const message = storyTitle + "\n\n" + sharedUrl;
+
+                    const whatsappUrl = "https://wa.me/?text=" + encodeURIComponent(message);
+
+                    openShareWindow(whatsappUrl);
+
+                    showShareFeedback("Opening WhatsApp…");
+
+                } else if (channel === "facebook") {
+
+                    const sharedUrl = buildSharedStoryUrl("facebook");
+
+                    const facebookUrl =
+                        "https://www.facebook.com/sharer/sharer.php?u=" +
+                        encodeURIComponent(sharedUrl);
+
+                    openShareWindow(facebookUrl);
+
+                    showShareFeedback("Opening Facebook…");
+
+                } else if (channel === "copy_link") {
+
+                    const sharedUrl = buildSharedStoryUrl("copy_link");
+
+                    await copyStoryLink(sharedUrl);
+
+                }
+            });
+        });
+    }
+
+
+    // IMAGE LIGHTBOX
+
+    const lightbox = document.getElementById("story-lightbox");
+    const lightboxImage = document.getElementById("story-lightbox-image");
+    const closeButton = document.getElementById("story-lightbox-close");
+
+    function closeLightbox() {
+
+        if (!lightbox) {
+            return;
+        }
+
+        lightbox.classList.remove("open");
+
+        lightbox.setAttribute("aria-hidden", "true");
+
+        document.body.style.overflow = "";
+    }
+
+    document.querySelectorAll("[data-story-image]").forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            if (!lightbox || !lightboxImage) {
+                return;
+            }
+
+            const imageUrl = button.getAttribute("data-story-image");
+
+            if (!imageUrl) {
+                return;
+            }
+
+            lightboxImage.src = imageUrl;
+
+            lightboxImage.alt =
+                button.getAttribute("aria-label") || "Story image";
+
+            lightbox.classList.add("open");
+
+            lightbox.setAttribute("aria-hidden", "false");
+
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    if (closeButton) {
+        closeButton.addEventListener("click", closeLightbox);
+    }
+
+    if (lightbox) {
+
+        lightbox.addEventListener("click", function (event) {
+
+            if (event.target === lightbox) {
+                closeLightbox();
+            }
+        });
+    }
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+            closeLightbox();
+        }
+    });
+
+});
 
 </script>
 
