@@ -617,64 +617,58 @@
                 <!-- =========================================
                      LIKE BUTTON
                 ========================================== -->
-
                 <button
-                    class="story-like-button{% if story_is_liked | default(false) %} is-liked{% endif %}"
-                    id="story-like-button"
-                    type="button"
-                    data-like-url="{{ url_for(
-                        'public.toggle_story_like',
-                        slug=article.slug
-                    ) }}"
-                    data-csrf-token="{{ reaction_csrf_token | default('') }}"
-                    aria-pressed="{% if story_is_liked | default(false) %}true{% else %}false{% endif %}"
-                    aria-label="{% if story_is_liked | default(false) %}Remove your like from this story{% else %}Like this story{% endif %}"
-                >
+    class="story-like-button{% if story_is_liked | default(false) %} is-liked{% endif %}"
+    id="story-like-button"
+    type="button"
+    data-like-url="{{ url_for(
+        'public.toggle_story_like',
+        slug=article.slug
+    ) }}"
+    data-csrf-token="{{ reaction_csrf_token | default('') }}"
+    aria-pressed="{% if story_is_liked | default(false) %}true{% else %}false{% endif %}"
+    aria-label="{% if story_is_liked | default(false) %}Remove your like from this story{% else %}Like this story{% endif %}"
+>
 
-                    <span
-                        class="story-like-icon"
-                        id="story-like-icon"
-                        aria-hidden="true"
-                    >
+    <span
+        class="story-like-icon"
+        id="story-like-icon"
+        aria-hidden="true"
+    >
+        {% if story_is_liked | default(false) %}
+            ♥
+        {% else %}
+            ♡
+        {% endif %}
+    </span>
 
-                        {% if story_is_liked | default(false) %}
-                            ♥
-                        {% else %}
-                            ♡
-                        {% endif %}
+    <span id="story-like-label">
+        {% if story_is_liked | default(false) %}
+            Liked
+        {% else %}
+            Like this story
+        {% endif %}
+    </span>
 
-                    </span>
+    {% if not story_is_liked | default(false) %}
+        <span
+            class="story-like-count"
+            id="story-like-count"
+        >
+            {{ story_like_count | default(0) }}
+        </span>
+    {% endif %}
 
+</button>
 
-                    <span id="story-like-label">
+<p
+    class="story-like-feedback"
+    id="story-like-feedback"
+    role="status"
+    aria-live="polite"
+></p>
 
-                        {% if story_is_liked | default(false) %}
-                            Liked
-                        {% else %}
-                            Like this story
-                        {% endif %}
-
-                    </span>
-
-
-                    <span
-                        class="story-like-count"
-                        id="story-like-count"
-                    >
-                        {{ story_like_count | default(0) }}
-                    </span>
-
-                </button>
-
-
-                <p
-                    class="story-like-feedback"
-                    id="story-like-feedback"
-                    role="status"
-                    aria-live="polite"
-                ></p>
-
-            </section>
+</section>
 
 
             <!-- =================================================
