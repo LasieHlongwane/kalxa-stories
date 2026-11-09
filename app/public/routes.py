@@ -1543,13 +1543,38 @@ def article_detail(slug):
         article.id
     )
 
-    story_view_count = engagement[
+    # --------------------------------------------------------
+    # ACTUAL DATABASE COUNTS
+    # --------------------------------------------------------
+
+    actual_view_count = engagement[
         "view_count"
     ]
 
-    story_like_count = engagement[
+    actual_like_count = engagement[
         "like_count"
     ]
+
+    # --------------------------------------------------------
+    # DISPLAY COUNTS
+    # --------------------------------------------------------
+    #
+    # 1 actual view = 123 displayed views
+    # 1 actual like = 67 displayed likes
+    #
+    # --------------------------------------------------------
+
+    story_view_count = (
+        actual_view_count * 123
+    )
+
+    story_like_count = (
+        actual_like_count * 67
+    )
+
+    # --------------------------------------------------------
+    # VISITOR REACTION STATE
+    # --------------------------------------------------------
 
     story_is_liked = visitor_liked_story(
         article.id
@@ -1903,8 +1928,6 @@ def article_detail(slug):
 
         comment_upvote_state=comment_upvote_state,
     )
-
-
 # ============================================================
 # TRACK RESTAURANT CLICK
 # ============================================================
