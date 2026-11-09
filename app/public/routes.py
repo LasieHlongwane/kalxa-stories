@@ -668,35 +668,34 @@ def story_reaction_csrf_token():
 # STORY ENGAGEMENT COUNTS
 # ============================================================
 def get_story_engagement(article_id):
-
-actual_view_count = (
-    StoryAnalyticsEvent.query
-    .filter(
-        StoryAnalyticsEvent.article_id == article_id,
-        StoryAnalyticsEvent.event_type == "article_view",
-        StoryAnalyticsEvent.kalxa_restaurant_id.is_(None),
+    actual_view_count = (
+        StoryAnalyticsEvent.query
+        .filter(
+            StoryAnalyticsEvent.article_id == article_id,
+            StoryAnalyticsEvent.event_type == "article_view",
+            StoryAnalyticsEvent.kalxa_restaurant_id.is_(None),
+        )
+        .count()
     )
-    .count()
-)
-
-actual_like_count = (
-    StoryReaction.query
-    .filter_by(
-        article_id=article_id,
-        reaction_type="like",
+    
+    actual_like_count = (
+        StoryReaction.query
+        .filter_by(
+            article_id=article_id,
+            reaction_type="like",
+        )
+        .count()
     )
-    .count()
-)
+    
+    return {
+        # Actual engagement
+        "view_count": actual_view_count,
+        "like_count": actual_like_count,
+        # Separate popularity scores
+        "view_score": actual_view_count * 123,
+        "like_score": actual_like_count * 67,
+    }
 
-return {
-    # Actual engagement
-    "view_count": actual_view_count,
-    "like_count": actual_like_count,
-
-    # Separate popularity scores
-    "view_score": actual_view_count * 123,
-    "like_score": actual_like_count * 67,
-}
 # ============================================================
 # CURRENT VISITOR LIKED STATE
 # ============================================================
