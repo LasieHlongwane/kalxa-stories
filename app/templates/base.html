@@ -2390,9 +2390,6 @@
                     Explore Kalxa
                 </strong>
 
-                <span>
-                    The connected local ecosystem
-                </span>
 
             </div>
 
@@ -2416,32 +2413,26 @@
 
             <!-- KWANDEBELE HUB -->
 
-            <a href="{{ url_for('public.home') }}">
 
-                <span>
-                    KALXA News Hub
-                </span>
-
-                <span aria-hidden="true">
-                    ↗
-                </span>
-
-            </a>
 
 
             <!-- ALL STORIES -->
+            <!-- SUPPORT US -->
 
-            <a href="{{ url_for('public.stories') }}">
+            <a
+                href="{{ url_for('story_donations.donate_page') }}"
+            >
 
                 <span>
-                    All Stories
+                    Support Us
                 </span>
 
                 <span aria-hidden="true">
-                    ↗
+                    ♥
                 </span>
 
             </a>
+
 
 
             <!-- EVENTS & RESTAURANTS -->
@@ -2482,107 +2473,20 @@
 
 
             <!-- EXPLORE MORE -->
-
-            {% set discovery_link = config.get(
-                'KALXA_DISCOVERY_URL',
-                ''
-            ) %}
-
-            {% if discovery_link %}
-
             <a
-                href="https://kalxa.co.za"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="https://kalxa.co.za/q/KWM-TAXI-001"
             >
 
                 <span>
-                    Explore more
+                    Explore More
                 </span>
 
                 <span aria-hidden="true">
-                    ↗
+                    ☆
                 </span>
 
             </a>
-
-            {% else %}
-
-            <span
-                class="sidebar-disabled"
-                title="Set KALXA_DISCOVERY_URL"
-            >
-                Kalxa Discoveries · Coming soon
-            </span>
-
-            {% endif %}
-
-
-            <!-- SUPPORT US -->
-
-            <a
-                href="{{ url_for('story_donations.donate_page') }}"
-            >
-
-                <span>
-                    Support Us
-                </span>
-
-                <span aria-hidden="true">
-                    ♥
-                </span>
-
-            </a>
-
-
-            <!-- CREATE WEBSITE -->
-
-            {% set create_website_link = config.get(
-                'KALXA_CREATE_WEBSITE_URL',
-                'https://blog-creator-e5pz.onrender.com'
-            ) %}
-
-            <a
-                href="{{ create_website_link }}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-
-                <span>
-                    Create Website
-                </span>
-
-                <span aria-hidden="true">
-                    ↗
-                </span>
-
-            </a>
-
-
-            <!-- ABOUT US -->
-
-            {% set main_website_link = config.get(
-                'KALXA_MAIN_WEBSITE_URL',
-                'https://about.kalxa.co.za'
-            ) %}
-
-            <a
-                href="{{ main_website_link }}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-
-                <span>
-                    About Us
-                </span>
-
-                <span aria-hidden="true">
-                    ↗
-                </span>
-
-            </a>
-
-        </nav>
+  
 
 
         <div class="sidebar-footer">
