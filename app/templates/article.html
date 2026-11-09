@@ -2646,6 +2646,64 @@
 
 }
 
+
+    /* =========================================================
+   FIX: FORCE COMMUNITY COMMENTS TO ALIGN LEFT
+========================================================= */
+
+.comment-list {
+    display: grid;
+    width: 100%;
+    text-align: left !important;
+}
+
+.story-comment {
+    display: grid;
+    grid-template-columns: 43px minmax(0, 1fr);
+    align-items: start;
+    width: 100%;
+    text-align: left !important;
+}
+
+.comment-content {
+    min-width: 0;
+    width: 100%;
+    text-align: left !important;
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    width: 100%;
+    text-align: left !important;
+}
+
+.comment-content > p {
+    display: block;
+    width: 100%;
+    margin: 8px 0 0;
+    color: var(--kalxa-text-soft);
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    text-align: left !important;
+}
+
+.comment-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 9px;
+    width: 100%;
+    margin-top: 13px;
+    text-align: left !important;
+}
+
 </style>
 
 
