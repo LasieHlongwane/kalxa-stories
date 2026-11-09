@@ -2,19 +2,19 @@
 
 {% block title %}
 {% if article.meta_title %}
-    {{ article.meta_title }}
+{{ article.meta_title }}
 {% else %}
-    {{ article.title }} | Kalxa Stories
+{{ article.title }} | Kalxa Stories
 {% endif %}
 {% endblock %}
 
 {% block meta_description %}
 {% if article.meta_description %}
-    {{ article.meta_description }}
+{{ article.meta_description }}
 {% elif article.excerpt %}
-    {{ article.excerpt }}
+{{ article.excerpt }}
 {% else %}
-    Discover local stories, restaurants and experiences on Kalxa.
+Discover local stories, restaurants and experiences on Kalxa.
 {% endif %}
 {% endblock %}
 
@@ -27,7 +27,6 @@
 <meta property="og:site_name" content="Kalxa Stories">
 <meta property="og:title" content="{{ article.seo_title }}">
 <meta property="og:description" content="{{ article.seo_description }}">
-
 <meta property="og:url" content="{{ url_for('public.article_detail', slug=article.slug, _external=True) }}">
 
 {% if article.display_cover_image_url %}
@@ -299,11 +298,6 @@
                         {% if story_is_liked | default(false) %}Liked{% else %}Like this story{% endif %}
                     </span>
 
-                    {% if not story_is_liked | default(false) %}
-                    <span class="story-like-count" id="story-like-count">
-                        {{ story_like_count | default(0) }}
-                    </span>
-                    {% endif %}
                 </button>
 
                 <p class="story-like-feedback" id="story-like-feedback" role="status" aria-live="polite"></p>
@@ -517,6 +511,7 @@
 </article>
 
 {% if related_articles %}
+
 <section class="related-section">
     <div class="page-container">
 
@@ -577,6 +572,7 @@
         </div>
     </div>
 </section>
+
 {% endif %}
 
 <div class="story-lightbox" id="story-lightbox" aria-hidden="true">
@@ -920,24 +916,6 @@
 
 .story-like-button.is-liked .story-like-icon {
     color: #d5204b;
-}
-
-.story-like-count {
-    min-width: 26px;
-    min-height: 24px;
-    padding: 3px 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: #f0e6e8;
-    color: #913147;
-    font-size: 10px;
-    font-weight: 800;
-}
-
-.story-like-button.is-liked .story-like-count {
-    background: #f4ccd5;
 }
 
 .story-like-feedback {
@@ -1807,6 +1785,7 @@
     }
 
     /* Keep commenter name and comment left-aligned on mobile. */
+
     .story-comment {
         grid-template-columns: 38px minmax(0, 1fr);
         align-items: start;
@@ -1964,7 +1943,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const storyLikeButton = document.getElementById("story-like-button");
     const storyLikeIcon = document.getElementById("story-like-icon");
     const storyLikeLabel = document.getElementById("story-like-label");
-    const storyLikeCount = document.getElementById("story-like-count");
     const storySummaryLikeCount = document.getElementById("story-summary-like-count");
     const storyLikeFeedback = document.getElementById("story-like-feedback");
 
@@ -2050,9 +2028,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     storyLikeLabel.textContent = liked ? "Liked" : "Like this story";
                 }
 
-                if (storyLikeCount) {
-                    storyLikeCount.textContent = likes;
-                }
+                // Update the separate engagement summary.
+                // No numerical count is displayed inside the Like button.
 
                 if (storySummaryLikeCount) {
                     storySummaryLikeCount.textContent = likes;
