@@ -221,7 +221,6 @@ def recent_event_exists(
 # ============================================================
 # RECORD ANALYTICS EVENT
 # ============================================================
-
 def record_analytics_event(
     article,
     event_type,
@@ -229,20 +228,53 @@ def record_analytics_event(
     metadata=None,
     deduplicate=True,
 ):
+    """
+    Record a Kalxa Stories analytics event.
+
+    Article views:
+        Every article page opening is counted.
+
+    Other events:
+        Session-based deduplication is applied when enabled.
+
+    Returns:
+        True  - Event successfully saved.
+        False - Event was not saved or was deduplicated.
+    """
+
+    # ========================================================
+    # ANALYTICS SESSION
+    # ========================================================
 
     session_id = get_analytics_session_id()
 
-    if (
+    # ========================================================
+    # DEDUPLICATION
+    # ========================================================
+    #
+    # Article views must count every article opening.
+    # Other event types can still use deduplication.
+    # ========================================================
+
+    should_deduplicate = (
         deduplicate
-        and recent_event_exists(
+        and event_type != "article_view"
+    )
+
+    if should_deduplicate:
+
+        if recent_event_exists(
             article_id=article.id,
             event_type=event_type,
             session_id=session_id,
             restaurant_id=restaurant_id,
-        )
-    ):
+        ):
 
-        return False
+            return False
+
+    # ========================================================
+    # CREATE ANALYTICS EVENT
+    # ========================================================
 
     event = StoryAnalyticsEvent(
         article_id=article.id,
@@ -253,10 +285,25 @@ def record_analytics_event(
         event_metadata=metadata or {},
     )
 
+    # ========================================================
+    # SAVE EVENT TO DATABASE
+    # ========================================================
+
     try:
 
         db.session.add(event)
+
         db.session.commit()
+
+        current_app.logger.info(
+            "[Kalxa Stories Analytics] "
+            "Event saved: event_type=%s article_id=%s "
+            "restaurant_id=%s session_id=%s",
+            event_type,
+            article.id,
+            restaurant_id,
+            session_id,
+        )
 
         return True
 
@@ -265,12 +312,14 @@ def record_analytics_event(
         db.session.rollback()
 
         current_app.logger.exception(
-            "Unable to record Kalxa Stories analytics event."
+            "[Kalxa Stories Analytics] "
+            "Unable to record analytics event. "
+            "event_type=%s article_id=%s",
+            event_type,
+            article.id,
         )
 
         return False
-
-
 # ============================================================
 # BUILD SIGNED ATTRIBUTION TOKEN
 # ============================================================
