@@ -702,41 +702,26 @@ def dashboard():
     if analytics_period not in allowed_analytics_periods:
         analytics_period = "30d"
 
-    analytics_now = datetime.now(
-        timezone.utc
-    )
+    analytics_now = datetime.now(timezone.utc)
 
     if analytics_period == "today":
-
         analytics_start = analytics_now.replace(
             hour=0,
             minute=0,
             second=0,
             microsecond=0,
         )
-
         analytics_period_label = "Today"
 
     elif analytics_period == "7d":
-
-        analytics_start = (
-            analytics_now
-            - timedelta(days=7)
-        )
-
+        analytics_start = analytics_now - timedelta(days=7)
         analytics_period_label = "Last 7 Days"
 
     elif analytics_period == "30d":
-
-        analytics_start = (
-            analytics_now
-            - timedelta(days=30)
-        )
-
+        analytics_start = analytics_now - timedelta(days=30)
         analytics_period_label = "Last 30 Days"
 
     else:
-
         analytics_start = None
         analytics_period_label = "All Time"
 
@@ -772,13 +757,30 @@ def dashboard():
     )
 
     # ========================================================
+    # PENDING COMMENT MODERATION
+    # ========================================================
+
+    pending_comments = (
+        ArticleComment.query
+        .filter_by(
+            moderation_status="pending",
+            active=True,
+        )
+        .order_by(
+            ArticleComment.created_at.asc()
+        )
+        .all()
+    )
+
+    pending_comment_count = len(pending_comments)
+
+    # ========================================================
     # ANALYTICS PERIOD FILTER HELPER
     # ========================================================
 
     def apply_analytics_period(query):
 
         if analytics_start is not None:
-
             query = query.filter(
                 StoryAnalyticsEvent.created_at
                 >= analytics_start
@@ -812,10 +814,8 @@ def dashboard():
         )
     )
 
-    restaurant_impressions_query = (
-        apply_analytics_period(
-            restaurant_impressions_query
-        )
+    restaurant_impressions_query = apply_analytics_period(
+        restaurant_impressions_query
     )
 
     total_restaurant_impressions = (
@@ -830,10 +830,8 @@ def dashboard():
         )
     )
 
-    restaurant_clicks_query = (
-        apply_analytics_period(
-            restaurant_clicks_query
-        )
+    restaurant_clicks_query = apply_analytics_period(
+        restaurant_clicks_query
     )
 
     total_restaurant_clicks = (
@@ -855,14 +853,11 @@ def dashboard():
         .filter(
             StoryAnalyticsEvent.event_type
             == "article_view",
-
-            StoryAnalyticsEvent.session_id
-            .isnot(None),
+            StoryAnalyticsEvent.session_id.isnot(None),
         )
     )
 
     if analytics_start is not None:
-
         unique_visitors_query = (
             unique_visitors_query.filter(
                 StoryAnalyticsEvent.created_at
@@ -871,8 +866,7 @@ def dashboard():
         )
 
     unique_story_visitors = (
-        unique_visitors_query.scalar()
-        or 0
+        unique_visitors_query.scalar() or 0
     )
 
     # ========================================================
@@ -880,7 +874,6 @@ def dashboard():
     # ========================================================
 
     if total_restaurant_impressions > 0:
-
         restaurant_ctr = round(
             (
                 total_restaurant_clicks
@@ -888,9 +881,7 @@ def dashboard():
             ) * 100,
             1,
         )
-
     else:
-
         restaurant_ctr = 0.0
 
     # ========================================================
@@ -925,12 +916,10 @@ def dashboard():
     )
 
     article_event_join_conditions = [
-        StoryAnalyticsEvent.article_id
-        == Article.id
+        StoryAnalyticsEvent.article_id == Article.id
     ]
 
     if analytics_start is not None:
-
         article_event_join_conditions.append(
             StoryAnalyticsEvent.created_at
             >= analytics_start
@@ -941,37 +930,26 @@ def dashboard():
             Article.id,
             Article.title,
             Article.slug,
-
-            func.sum(
-                article_view_case
-            ).label("views"),
-
+            func.sum(article_view_case).label("views"),
             func.sum(
                 restaurant_impression_case
             ).label("impressions"),
-
             func.sum(
                 restaurant_click_case
             ).label("clicks"),
         )
         .outerjoin(
             StoryAnalyticsEvent,
-            and_(
-                *article_event_join_conditions
-            ),
+            and_(*article_event_join_conditions),
         )
-        .filter(
-            Article.status == "published"
-        )
+        .filter(Article.status == "published")
         .group_by(
             Article.id,
             Article.title,
             Article.slug,
         )
         .order_by(
-            func.sum(
-                article_view_case
-            ).desc(),
+            func.sum(article_view_case).desc(),
             Article.id.desc(),
         )
         .all()
@@ -989,22 +967,17 @@ def dashboard():
     ticketing_conversion_analytics = {}
 
     if published_story_ids:
-
         try:
-
             ticketing_conversion_analytics = (
                 get_story_conversion_analytics(
                     published_story_ids
                 )
             )
-
         except Exception:
-
             current_app.logger.exception(
                 "Unable to retrieve Ticketing "
                 "conversion analytics."
             )
-
             ticketing_conversion_analytics = {}
 
     ticketing_analytics_period_label = "All Time"
@@ -1018,24 +991,12 @@ def dashboard():
     for row in article_rows:
 
         views = int(row.views or 0)
-
-        impressions = int(
-            row.impressions or 0
-        )
-
-        clicks = int(
-            row.clicks or 0
-        )
+        impressions = int(row.impressions or 0)
+        clicks = int(row.clicks or 0)
 
         if impressions > 0:
-
-            ctr = round(
-                (clicks / impressions) * 100,
-                1,
-            )
-
+            ctr = round((clicks / impressions) * 100, 1)
         else:
-
             ctr = 0.0
 
         ticketing_story = (
@@ -1046,113 +1007,64 @@ def dashboard():
         )
 
         ticketing_totals = (
-            ticketing_story.get(
-                "totals",
-                {},
-            )
-            or {}
+            ticketing_story.get("totals", {}) or {}
         )
 
         restaurant_views = int(
-            ticketing_totals.get(
-                "restaurant_views",
-                0,
-            ) or 0
+            ticketing_totals.get("restaurant_views", 0) or 0
         )
 
         experience_views = int(
-            ticketing_totals.get(
-                "experience_views",
-                0,
-            ) or 0
+            ticketing_totals.get("experience_views", 0) or 0
         )
 
         whatsapp_clicks = int(
-            ticketing_totals.get(
-                "whatsapp_clicks",
-                0,
-            ) or 0
+            ticketing_totals.get("whatsapp_clicks", 0) or 0
         )
 
         phone_clicks = int(
-            ticketing_totals.get(
-                "phone_clicks",
-                0,
-            ) or 0
+            ticketing_totals.get("phone_clicks", 0) or 0
         )
 
         directions_clicks = int(
-            ticketing_totals.get(
-                "directions_clicks",
-                0,
-            ) or 0
+            ticketing_totals.get("directions_clicks", 0) or 0
         )
 
         meaningful_actions = int(
-            ticketing_totals.get(
-                "meaningful_actions",
-                0,
-            ) or 0
+            ticketing_totals.get("meaningful_actions", 0) or 0
         )
 
         if clicks > 0:
-
             restaurant_view_rate = round(
-                (
-                    restaurant_views
-                    / clicks
-                ) * 100,
+                (restaurant_views / clicks) * 100,
                 1,
             )
-
         else:
-
             restaurant_view_rate = 0.0
 
         if restaurant_views > 0:
-
             action_rate = round(
-                (
-                    meaningful_actions
-                    / restaurant_views
-                ) * 100,
+                (meaningful_actions / restaurant_views) * 100,
                 1,
             )
-
         else:
-
             action_rate = 0.0
 
         story_performance.append({
-
             "id": row.id,
-
             "title": row.title,
-
             "slug": row.slug,
-
             "views": views,
-
             "impressions": impressions,
-
             "clicks": clicks,
-
             "ctr": ctr,
-
             "restaurant_views": restaurant_views,
-
             "experience_views": experience_views,
-
             "whatsapp_clicks": whatsapp_clicks,
-
             "phone_clicks": phone_clicks,
-
             "directions_clicks": directions_clicks,
-
             "meaningful_actions": meaningful_actions,
-
             "restaurant_view_rate": restaurant_view_rate,
-
             "action_rate": action_rate,
         })
 
@@ -1191,7 +1103,6 @@ def dashboard():
     )
 
     if total_restaurant_clicks > 0:
-
         ticketing_visit_rate = round(
             (
                 total_ticketing_restaurant_views
@@ -1199,13 +1110,10 @@ def dashboard():
             ) * 100,
             1,
         )
-
     else:
-
         ticketing_visit_rate = 0.0
 
     if total_ticketing_restaurant_views > 0:
-
         meaningful_action_rate = round(
             (
                 total_meaningful_actions
@@ -1213,9 +1121,7 @@ def dashboard():
             ) * 100,
             1,
         )
-
     else:
-
         meaningful_action_rate = 0.0
 
     # ========================================================
@@ -1243,11 +1149,9 @@ def dashboard():
     restaurant_rows_query = (
         db.session.query(
             StoryAnalyticsEvent.kalxa_restaurant_id,
-
             func.sum(
                 restaurant_impression_case
             ).label("impressions"),
-
             func.sum(
                 restaurant_click_case
             ).label("clicks"),
@@ -1259,7 +1163,6 @@ def dashboard():
     )
 
     if analytics_start is not None:
-
         restaurant_rows_query = (
             restaurant_rows_query.filter(
                 StoryAnalyticsEvent.created_at
@@ -1273,13 +1176,8 @@ def dashboard():
             StoryAnalyticsEvent.kalxa_restaurant_id
         )
         .order_by(
-            func.sum(
-                restaurant_click_case
-            ).desc(),
-
-            StoryAnalyticsEvent
-            .kalxa_restaurant_id
-            .asc(),
+            func.sum(restaurant_click_case).desc(),
+            StoryAnalyticsEvent.kalxa_restaurant_id.asc(),
         )
         .all()
     )
@@ -1290,46 +1188,28 @@ def dashboard():
 
     ticketing_by_restaurant = {}
 
-    for story_data in (
-        ticketing_conversion_analytics.values()
-    ):
+    for story_data in ticketing_conversion_analytics.values():
 
         restaurants = (
-            story_data.get(
-                "restaurants",
-                [],
-            )
-            or []
+            story_data.get("restaurants", []) or []
         )
 
         for restaurant_data in restaurants:
 
-            restaurant_id = (
-                restaurant_data.get(
-                    "restaurant_id"
-                )
+            restaurant_id = restaurant_data.get(
+                "restaurant_id"
             )
 
             if restaurant_id is None:
                 continue
 
             try:
-
-                restaurant_id = int(
-                    restaurant_id
-                )
-
+                restaurant_id = int(restaurant_id)
             except (TypeError, ValueError):
                 continue
 
-            if (
-                restaurant_id
-                not in ticketing_by_restaurant
-            ):
-
-                ticketing_by_restaurant[
-                    restaurant_id
-                ] = {
+            if restaurant_id not in ticketing_by_restaurant:
+                ticketing_by_restaurant[restaurant_id] = {
                     "restaurant_views": 0,
                     "experience_views": 0,
                     "whatsapp_clicks": 0,
@@ -1338,50 +1218,30 @@ def dashboard():
                     "meaningful_actions": 0,
                 }
 
-            totals = ticketing_by_restaurant[
-                restaurant_id
-            ]
+            totals = ticketing_by_restaurant[restaurant_id]
 
             totals["restaurant_views"] += int(
-                restaurant_data.get(
-                    "restaurant_views",
-                    0,
-                ) or 0
+                restaurant_data.get("restaurant_views", 0) or 0
             )
 
             totals["experience_views"] += int(
-                restaurant_data.get(
-                    "experience_views",
-                    0,
-                ) or 0
+                restaurant_data.get("experience_views", 0) or 0
             )
 
             totals["whatsapp_clicks"] += int(
-                restaurant_data.get(
-                    "whatsapp_clicks",
-                    0,
-                ) or 0
+                restaurant_data.get("whatsapp_clicks", 0) or 0
             )
 
             totals["phone_clicks"] += int(
-                restaurant_data.get(
-                    "phone_clicks",
-                    0,
-                ) or 0
+                restaurant_data.get("phone_clicks", 0) or 0
             )
 
             totals["directions_clicks"] += int(
-                restaurant_data.get(
-                    "directions_clicks",
-                    0,
-                ) or 0
+                restaurant_data.get("directions_clicks", 0) or 0
             )
 
             totals["meaningful_actions"] += int(
-                restaurant_data.get(
-                    "meaningful_actions",
-                    0,
-                ) or 0
+                restaurant_data.get("meaningful_actions", 0) or 0
             )
 
     # ========================================================
@@ -1401,27 +1261,20 @@ def dashboard():
     live_restaurants = []
 
     if restaurant_ids:
-
         try:
-
             live_restaurants = get_restaurants_by_ids(
                 sorted(restaurant_ids)
             )
-
         except Exception:
-
             current_app.logger.exception(
                 "Unable to retrieve restaurant "
                 "names for analytics dashboard."
             )
-
             live_restaurants = []
 
     restaurant_lookup = {
         restaurant.get("id"): restaurant
-
         for restaurant in live_restaurants
-
         if restaurant.get("id") is not None
     }
 
@@ -1435,16 +1288,9 @@ def dashboard():
 
         restaurant_id = row.kalxa_restaurant_id
 
-        stories_restaurant_lookup[
-            restaurant_id
-        ] = {
-            "impressions": int(
-                row.impressions or 0
-            ),
-
-            "clicks": int(
-                row.clicks or 0
-            ),
+        stories_restaurant_lookup[restaurant_id] = {
+            "impressions": int(row.impressions or 0),
+            "clicks": int(row.clicks or 0),
         }
 
     all_performance_restaurant_ids = set(
@@ -1480,86 +1326,48 @@ def dashboard():
         )
 
         impressions = int(
-            stories_metrics.get(
-                "impressions",
-                0,
-            ) or 0
+            stories_metrics.get("impressions", 0) or 0
         )
 
         clicks = int(
-            stories_metrics.get(
-                "clicks",
-                0,
-            ) or 0
+            stories_metrics.get("clicks", 0) or 0
         )
 
         restaurant_views = int(
-            ticketing_metrics.get(
-                "restaurant_views",
-                0,
-            ) or 0
+            ticketing_metrics.get("restaurant_views", 0) or 0
         )
 
         experience_views = int(
-            ticketing_metrics.get(
-                "experience_views",
-                0,
-            ) or 0
+            ticketing_metrics.get("experience_views", 0) or 0
         )
 
         whatsapp_clicks = int(
-            ticketing_metrics.get(
-                "whatsapp_clicks",
-                0,
-            ) or 0
+            ticketing_metrics.get("whatsapp_clicks", 0) or 0
         )
 
         phone_clicks = int(
-            ticketing_metrics.get(
-                "phone_clicks",
-                0,
-            ) or 0
+            ticketing_metrics.get("phone_clicks", 0) or 0
         )
 
         directions_clicks = int(
-            ticketing_metrics.get(
-                "directions_clicks",
-                0,
-            ) or 0
+            ticketing_metrics.get("directions_clicks", 0) or 0
         )
 
         meaningful_actions = int(
-            ticketing_metrics.get(
-                "meaningful_actions",
-                0,
-            ) or 0
+            ticketing_metrics.get("meaningful_actions", 0) or 0
         )
 
         if impressions > 0:
-
-            ctr = round(
-                (
-                    clicks / impressions
-                ) * 100,
-                1,
-            )
-
+            ctr = round((clicks / impressions) * 100, 1)
         else:
-
             ctr = 0.0
 
         if restaurant_views > 0:
-
             action_rate = round(
-                (
-                    meaningful_actions
-                    / restaurant_views
-                ) * 100,
+                (meaningful_actions / restaurant_views) * 100,
                 1,
             )
-
         else:
-
             action_rate = 0.0
 
         restaurant = restaurant_lookup.get(
@@ -1568,37 +1376,21 @@ def dashboard():
         )
 
         restaurant_performance.append({
-
             "restaurant_id": restaurant_id,
-
             "business_name": (
                 restaurant.get("business_name")
                 or f"Restaurant #{restaurant_id}"
             ),
-
-            "area": (
-                restaurant.get("area")
-                or ""
-            ),
-
+            "area": restaurant.get("area") or "",
             "impressions": impressions,
-
             "clicks": clicks,
-
             "ctr": ctr,
-
             "restaurant_views": restaurant_views,
-
             "experience_views": experience_views,
-
             "whatsapp_clicks": whatsapp_clicks,
-
             "phone_clicks": phone_clicks,
-
             "directions_clicks": directions_clicks,
-
             "meaningful_actions": meaningful_actions,
-
             "action_rate": action_rate,
         })
 
@@ -1615,12 +1407,9 @@ def dashboard():
     # RECENT ANALYTICS ACTIVITY
     # ========================================================
 
-    recent_events_query = (
-        StoryAnalyticsEvent.query
-    )
+    recent_events_query = StoryAnalyticsEvent.query
 
     if analytics_start is not None:
-
         recent_events_query = (
             recent_events_query.filter(
                 StoryAnalyticsEvent.created_at
@@ -1650,9 +1439,7 @@ def dashboard():
         recent_event_articles = (
             Article.query
             .filter(
-                Article.id.in_(
-                    recent_article_ids
-                )
+                Article.id.in_(recent_article_ids)
             )
             .all()
         )
@@ -1664,44 +1451,29 @@ def dashboard():
 
     recent_restaurant_ids = {
         event.kalxa_restaurant_id
-
         for event in recent_events
-
         if event.kalxa_restaurant_id is not None
     }
 
     missing_restaurant_ids = [
         restaurant_id
-
         for restaurant_id in recent_restaurant_ids
-
         if restaurant_id not in restaurant_lookup
     ]
 
     if missing_restaurant_ids:
-
         try:
-
-            additional_restaurants = (
-                get_restaurants_by_ids(
-                    missing_restaurant_ids
-                )
+            additional_restaurants = get_restaurants_by_ids(
+                missing_restaurant_ids
             )
 
             for restaurant in additional_restaurants:
-
-                restaurant_id = restaurant.get(
-                    "id"
-                )
+                restaurant_id = restaurant.get("id")
 
                 if restaurant_id is not None:
-
-                    restaurant_lookup[
-                        restaurant_id
-                    ] = restaurant
+                    restaurant_lookup[restaurant_id] = restaurant
 
         except Exception:
-
             current_app.logger.exception(
                 "Unable to retrieve recent "
                 "analytics restaurant data."
@@ -1718,31 +1490,24 @@ def dashboard():
         restaurant = None
 
         if event.kalxa_restaurant_id is not None:
-
             restaurant = restaurant_lookup.get(
                 event.kalxa_restaurant_id
             )
 
         recent_activity.append({
-
             "event_type": event.event_type,
-
             "article_id": event.article_id,
-
             "article_title": (
                 article.title
                 if article
                 else f"Story #{event.article_id}"
             ),
-
             "restaurant_id": event.kalxa_restaurant_id,
-
             "restaurant_name": (
                 restaurant.get("business_name")
                 if restaurant
                 else None
             ),
-
             "created_at": event.created_at,
         })
 
@@ -1759,16 +1524,12 @@ def dashboard():
     )
 
     trending_now_total = 0
-
     trending_now_active = 0
-
     trending_now_expired = 0
 
     if trending_category is not None:
 
-        now_utc = datetime.now(
-            timezone.utc
-        )
+        now_utc = datetime.now(timezone.utc)
 
         trending_now_total = (
             Article.query
@@ -1782,14 +1543,9 @@ def dashboard():
         trending_now_active = (
             Article.query
             .filter(
-                Article.category_id
-                == trending_category.id,
-
-                Article.status
-                == "published",
-
-                Article.expires_at
-                > now_utc,
+                Article.category_id == trending_category.id,
+                Article.status == "published",
+                Article.expires_at > now_utc,
             )
             .count()
         )
@@ -1797,11 +1553,8 @@ def dashboard():
         trending_now_expired = (
             Article.query
             .filter(
-                Article.category_id
-                == trending_category.id,
-
-                Article.expires_at
-                <= now_utc,
+                Article.category_id == trending_category.id,
+                Article.expires_at <= now_utc,
             )
             .count()
         )
@@ -1814,13 +1567,8 @@ def dashboard():
         "admin/dashboard.html",
 
         analytics_period=analytics_period,
-
-        analytics_period_label=(
-            analytics_period_label
-        ),
-
+        analytics_period_label=analytics_period_label,
         analytics_start=analytics_start,
-
         analytics_now=analytics_now,
 
         ticketing_analytics_period_label=(
@@ -1828,81 +1576,46 @@ def dashboard():
         ),
 
         total_articles=total_articles,
-
         published_articles=published_articles,
-
         draft_articles=draft_articles,
-
         sponsored_articles=sponsored_articles,
-
         recent_articles=recent_articles,
 
-        total_story_views=total_story_views,
+        # Comment moderation
+        pending_comments=pending_comments,
+        pending_comment_count=pending_comment_count,
 
-        unique_story_visitors=(
-            unique_story_visitors
-        ),
+        total_story_views=total_story_views,
+        unique_story_visitors=unique_story_visitors,
 
         total_restaurant_impressions=(
             total_restaurant_impressions
         ),
 
-        total_restaurant_clicks=(
-            total_restaurant_clicks
-        ),
-
+        total_restaurant_clicks=total_restaurant_clicks,
         restaurant_ctr=restaurant_ctr,
 
         total_ticketing_restaurant_views=(
             total_ticketing_restaurant_views
         ),
 
-        total_experience_views=(
-            total_experience_views
-        ),
+        total_experience_views=total_experience_views,
+        total_whatsapp_clicks=total_whatsapp_clicks,
+        total_phone_clicks=total_phone_clicks,
+        total_directions_clicks=total_directions_clicks,
+        total_meaningful_actions=total_meaningful_actions,
 
-        total_whatsapp_clicks=(
-            total_whatsapp_clicks
-        ),
+        ticketing_visit_rate=ticketing_visit_rate,
+        meaningful_action_rate=meaningful_action_rate,
 
-        total_phone_clicks=(
-            total_phone_clicks
-        ),
-
-        total_directions_clicks=(
-            total_directions_clicks
-        ),
-
-        total_meaningful_actions=(
-            total_meaningful_actions
-        ),
-
-        ticketing_visit_rate=(
-            ticketing_visit_rate
-        ),
-
-        meaningful_action_rate=(
-            meaningful_action_rate
-        ),
-
-        story_performance=(
-            story_performance
-        ),
-
-        restaurant_performance=(
-            restaurant_performance
-        ),
-
+        story_performance=story_performance,
+        restaurant_performance=restaurant_performance,
         recent_activity=recent_activity,
 
         trending_now_total=trending_now_total,
-
         trending_now_active=trending_now_active,
-
         trending_now_expired=trending_now_expired,
     )
-
-
 # ============================================================
 # ARTICLES LIST
 # ============================================================
