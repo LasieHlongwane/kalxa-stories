@@ -12,7 +12,7 @@
 
     <meta
         name="theme-color"
-        content="#87ceeb"
+        content="#faf8f3"
     >
 
     <meta
@@ -207,17 +207,10 @@
 
 
             /* =================================================
-               SKY BLUE HEADER GRADIENT
+               TRANSPARENT HEADER BACKGROUND
             ================================================= */
 
-            --kalxa-header-gradient:
-                linear-gradient(
-                    115deg,
-                    #87ceeb 0%,
-                    #70c5ed 30%,
-                    #4bb5e8 65%,
-                    #2196d2 100%
-                );
+            --kalxa-header-gradient: transparent;
 
 
             /* =================================================
@@ -356,9 +349,6 @@
             border-bottom:
                 3px solid var(--ndebele-dark);
 
-            box-shadow:
-                0 6px 26px rgba(28, 17, 13, .2);
-
         }
 
 
@@ -411,6 +401,8 @@
 
             text-align: center;
 
+            background: transparent;
+
         }
 
 
@@ -428,7 +420,7 @@
 
             padding: 2px 0;
 
-            color: #ffffff;
+            color: var(--kalxa-ink);
 
             font-family:
                 var(--ndebele-art-font);
@@ -444,9 +436,7 @@
 
             text-transform: uppercase;
 
-            text-shadow:
-                0 2px 3px rgba(0, 0, 0, .4),
-                0 4px 8px rgba(0, 0, 0, .3);
+            text-shadow: none;
 
             transition:
                 opacity .2s ease;
@@ -455,13 +445,13 @@
 
 
         .brand:hover .brand-name {
-            opacity: .94;
+            opacity: .82;
         }
 
 
         .brand-section {
 
-            color: #ffffff;
+            color: var(--kalxa-ink);
 
             font-family:
                 var(--kalxa-serif);
@@ -470,8 +460,7 @@
 
             font-weight: 700;
 
-            text-shadow:
-                0 2px 5px rgba(0, 0, 0, .4);
+            text-shadow: none;
 
         }
 
@@ -495,7 +484,7 @@
 
             padding: 3px 0;
 
-            color: #ffffff;
+            color: var(--kalxa-ink);
 
             font-size: 11px;
 
@@ -503,8 +492,7 @@
 
             letter-spacing: .25px;
 
-            text-shadow:
-                0 1px 4px rgba(0, 0, 0, .65);
+            text-shadow: none;
 
         }
 
@@ -523,7 +511,7 @@
 
             height: 2px;
 
-            background: #ffffff;
+            background: var(--kalxa-ink);
 
             transition:
                 right .2s ease;
@@ -540,7 +528,7 @@
         .site-header button:focus-visible {
 
             outline:
-                3px solid #ffffff;
+                3px solid var(--kalxa-ink);
 
             outline-offset: 3px;
 
@@ -1133,11 +1121,11 @@
          align-items: center;
          justify-content: center;
 
-         border: 1px solid rgba(255, 255, 255, .7);
+         border: 1px solid var(--kalxa-border);
          border-radius: 8px;
 
-         background: rgba(15, 19, 24, .35);
-         color: #ffffff;
+         background: var(--kalxa-surface);
+         color: var(--kalxa-ink);
 
          cursor: pointer;
          font-size: 22px;
@@ -1148,11 +1136,11 @@
       }
 
       .sidebar-toggle:hover {
-       background: rgba(15, 19, 24, .55);
+       background: var(--kalxa-surface-soft);
       }
 
       .sidebar-toggle:focus-visible {
-       outline: 3px solid #ffffff;
+       outline: 3px solid var(--kalxa-ink);
        outline-offset: 3px;
       }
 
